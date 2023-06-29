@@ -5,17 +5,17 @@ Mesh Generation
 Grid generation
 ===============
 
-.. automodule:: polymesh.grid
+.. automodule:: sigmaepsilon.mesh.grid
     :members:
 
 Recipes
 =======
 
-.. automodule:: polymesh.recipes
+.. automodule:: sigmaepsilon.mesh.recipes
     :members:
 
 Downloadable examples
 =====================
 
-.. automodule:: polymesh.examples
+.. automodule:: sigmaepsilon.mesh.examples
     :members:

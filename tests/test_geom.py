@@ -4,11 +4,11 @@ import unittest
 
 from neumann.linalg import Vector
 
-from polymesh import PolyData, grid, PointCloud, CartesianFrame
-from polymesh.grid import grid
-from polymesh import PolyData, PointData
-from polymesh.space import StandardFrame
-from polymesh.cells import H27
+from sigmaepsilon.mesh import PolyData, grid, PointCloud, CartesianFrame
+from sigmaepsilon.mesh.grid import grid
+from sigmaepsilon.mesh import PolyData, PointData
+from sigmaepsilon.mesh.space import StandardFrame
+from sigmaepsilon.mesh.cells import H27
 
 
 class TestCoords(unittest.TestCase):

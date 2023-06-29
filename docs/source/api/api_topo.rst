@@ -2,5 +2,5 @@
 Topology
 ========
 
-.. automodule:: polymesh.topoarray
+.. automodule:: sigmaepsilon.mesh.topoarray
     :members: 

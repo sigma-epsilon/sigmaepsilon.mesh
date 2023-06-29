@@ -5,5 +5,5 @@ requires = [
 ]
 build-backend = "setuptools.build_meta"
 
-[polymesh]
+[sigmaepsilon.mesh]
 compile=true

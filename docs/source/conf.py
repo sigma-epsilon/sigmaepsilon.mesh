@@ -15,7 +15,7 @@ import os
 from datetime import date
 import warnings
 
-import polymesh as library
+import sigmaepsilon.mesh as library
 
 from sphinx.config import Config
 

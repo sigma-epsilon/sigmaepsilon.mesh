@@ -4,8 +4,8 @@ import unittest
 
 import pyvista as pv
 import numpy as np
-from polymesh import PolyData
-from polymesh.grid import Grid
+from sigmaepsilon.mesh import PolyData
+from sigmaepsilon.mesh.grid import Grid
 
 
 class TestMeshAnalysis(unittest.TestCase):

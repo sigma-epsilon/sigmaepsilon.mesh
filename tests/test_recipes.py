@@ -2,7 +2,7 @@ import unittest
 import numpy as np
 
 
-from polymesh.recipes import circular_disk, ribbed_plate, perforated_cube, cylinder
+from sigmaepsilon.mesh.recipes import circular_disk, ribbed_plate, perforated_cube, cylinder
 
 
 class TestRecipes(unittest.TestCase):

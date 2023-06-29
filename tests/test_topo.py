@@ -3,7 +3,7 @@ import numpy as np
 import unittest
 
 
-from polymesh.topoarray import TopologyArray
+from sigmaepsilon.mesh.topoarray import TopologyArray
 
 
 class TestTopo(unittest.TestCase):

@@ -1,7 +1,7 @@
 import numpy as np
 import unittest
 
-from polymesh.utils.colors import rgb_to_hex, hex_to_rgb
+from sigmaepsilon.mesh.utils.colors import rgb_to_hex, hex_to_rgb
 
 
 class TestColors(unittest.TestCase):

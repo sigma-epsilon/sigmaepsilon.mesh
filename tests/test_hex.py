@@ -2,7 +2,7 @@
 import numpy as np
 import unittest
 
-from polymesh.grid import Grid
+from sigmaepsilon.mesh.grid import Grid
 
 
 class TestHex(unittest.TestCase):

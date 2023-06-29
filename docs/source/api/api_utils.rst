@@ -2,23 +2,23 @@
 Utilities
 =========
 
-.. automodule:: polymesh.utils.space
+.. automodule:: sigmaepsilon.mesh.utils.space
     :members:
 
-.. automodule:: polymesh.utils.topology.topo
+.. automodule:: sigmaepsilon.mesh.utils.topology.topo
     :members:
 
-.. automodule:: polymesh.utils.topology.tr
+.. automodule:: sigmaepsilon.mesh.utils.topology.tr
     :members:
 
-.. automodule:: polymesh.utils.tri
+.. automodule:: sigmaepsilon.mesh.utils.tri
     :members:
 
-.. automodule:: polymesh.utils.tet
+.. automodule:: sigmaepsilon.mesh.utils.tet
     :members:
 
-.. automodule:: polymesh.utils.knn
+.. automodule:: sigmaepsilon.mesh.utils.knn
     :members:
 
-.. automodule:: polymesh.utils.utils
+.. automodule:: sigmaepsilon.mesh.utils.utils
     :members:

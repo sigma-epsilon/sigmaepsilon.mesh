@@ -2,12 +2,12 @@ import unittest
 import os
 import numpy as np
 
-from polymesh import PolyData, PointData
-from polymesh.cells import T3, Q4, H8
-from polymesh.trimesh import TriMesh
-from polymesh.grid import Grid
-from polymesh.space import StandardFrame
-from neumann.logical import isclose
+from sigmaepsilon.mesh import PolyData, PointData
+from sigmaepsilon.mesh.cells import T3, Q4, H8
+from sigmaepsilon.mesh.trimesh import TriMesh
+from sigmaepsilon.mesh.grid import Grid
+from sigmaepsilon.mesh.space import StandardFrame
+from sigmaepsilon.math.logical import isclose
 
 
 class TestIO(unittest.TestCase):

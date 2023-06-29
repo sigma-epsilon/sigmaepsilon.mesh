@@ -1,9 +1,9 @@
 import unittest
 
-from polymesh.triang import triangulate
-from polymesh.grid import grid
-from polymesh.extrude import extrude_T3_W6
-from polymesh.utils.topology import (
+from sigmaepsilon.mesh.triang import triangulate
+from sigmaepsilon.mesh.grid import grid
+from sigmaepsilon.mesh.extrude import extrude_T3_W6
+from sigmaepsilon.mesh.utils.topology import (
     T3_to_T6,
     T6_to_T3,
     Q9_to_Q4,

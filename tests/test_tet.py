@@ -2,10 +2,10 @@
 import numpy as np
 import unittest
 
-from polymesh.trimesh import TriMesh
-from polymesh import CartesianFrame
-from polymesh.recipes import circular_disk
-from polymesh.cells import T3
+from sigmaepsilon.mesh.trimesh import TriMesh
+from sigmaepsilon.mesh import CartesianFrame
+from sigmaepsilon.mesh.recipes import circular_disk
+from sigmaepsilon.mesh.cells import T3
 
 
 class TestTet(unittest.TestCase):

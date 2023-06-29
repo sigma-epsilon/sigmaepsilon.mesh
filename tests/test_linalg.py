@@ -1,11 +1,11 @@
 import numpy as np
 import unittest
 
-from neumann.linalg import Vector, linspace
-from polymesh import PointCloud, CartesianFrame
-from polymesh.triang import triangulate
-from polymesh.space import StandardFrame
-from polymesh.utils.utils import center_of_points
+from sigmaepsilon.math.linalg import Vector, linspace
+from sigmaepsilon.mesh import PointCloud, CartesianFrame
+from sigmaepsilon.mesh.triang import triangulate
+from sigmaepsilon.mesh.space import StandardFrame
+from sigmaepsilon.mesh.utils.utils import center_of_points
 
 
 class TestLinalg(unittest.TestCase):

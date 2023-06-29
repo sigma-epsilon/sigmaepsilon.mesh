@@ -1,6 +1,6 @@
 import unittest
-from polymesh.space import PointCloud
-from polymesh.triang import triangulate
+from sigmaepsilon.mesh.space import PointCloud
+from sigmaepsilon.mesh.triang import triangulate
 from numba import njit
 import numpy as np
 

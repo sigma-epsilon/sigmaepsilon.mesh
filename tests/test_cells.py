@@ -1,10 +1,10 @@
 import numpy as np
 import unittest
 
-from polymesh.cells import H8, TET10
-from polymesh import grid, PolyData, CartesianFrame
-from polymesh.cells import H8
-from polymesh.space import PointCloud
+from sigmaepsilon.mesh.cells import H8, TET10
+from sigmaepsilon.mesh import grid, PolyData, CartesianFrame
+from sigmaepsilon.mesh.cells import H8
+from sigmaepsilon.mesh.space import PointCloud
 
 
 class TestGeneratedExpressions(unittest.TestCase):

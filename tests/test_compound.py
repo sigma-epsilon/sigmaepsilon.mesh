@@ -1,8 +1,8 @@
 import unittest
-from polymesh import PolyData
-from polymesh.trimesh import TriMesh
-from polymesh.grid import Grid
-from polymesh.space import StandardFrame
+from sigmaepsilon.mesh import PolyData
+from sigmaepsilon.mesh.trimesh import TriMesh
+from sigmaepsilon.mesh.grid import Grid
+from sigmaepsilon.mesh.space import StandardFrame
 import numpy as np
 
 

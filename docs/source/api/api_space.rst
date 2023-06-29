@@ -2,11 +2,11 @@
 Vectors in Euclidean Space
 ==========================
 
-.. autoclass:: polymesh.space.point.Point
+.. autoclass:: sigmaepsilon.mesh.space.point.Point
     :members:
 
-.. autoclass:: polymesh.space.PointCloud
+.. autoclass:: sigmaepsilon.mesh.space.PointCloud
     :members: 
 
-.. autoclass:: polymesh.space.CartesianFrame
+.. autoclass:: sigmaepsilon.mesh.space.CartesianFrame
     :members: 

@@ -2,15 +2,15 @@
 import numpy as np
 import unittest
 
-from polymesh.trimesh import TriMesh
-from polymesh.grid import Grid
-from polymesh import PolyData
-from polymesh.recipes import circular_disk
-from polymesh.voxelize import voxelize_cylinder
-from polymesh.cells import H8, TET4, W6
-from polymesh.utils.topology import detach_mesh_bulk
-from polymesh.extrude import extrude_T3_TET4, extrude_T3_W6
-from polymesh.space import StandardFrame
+from sigmaepsilon.mesh.trimesh import TriMesh
+from sigmaepsilon.mesh.grid import Grid
+from sigmaepsilon.mesh import PolyData
+from sigmaepsilon.mesh.recipes import circular_disk
+from sigmaepsilon.mesh.voxelize import voxelize_cylinder
+from sigmaepsilon.mesh.cells import H8, TET4, W6
+from sigmaepsilon.mesh.utils.topology import detach_mesh_bulk
+from sigmaepsilon.mesh.extrude import extrude_T3_TET4, extrude_T3_W6
+from sigmaepsilon.mesh.space import StandardFrame
 
 
 class TestMeshing(unittest.TestCase):
