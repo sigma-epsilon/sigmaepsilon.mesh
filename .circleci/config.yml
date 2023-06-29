@@ -1,0 +1,95 @@
+# Python CircleCI 2.0 configuration file
+version: 2.1
+
+orbs:
+  # The python orb contains a set of prepackaged circleci configuration you can use repeatedly in your configurations files
+  # Orb commands and jobs help you with common scripting around a language/tool
+  # so you dont have to copy and paste it everywhere.
+  # See the orb documentation here: https://circleci.com/developer/orbs/orb/circleci/python
+  python: circleci/python@2.1.1
+  codecov: codecov/codecov@3
+
+jobs:  
+  test_pypi_publish:
+    docker:
+      - image: cimg/python:3.10
+    steps:
+      - checkout  # checkout source code to working directory
+      - run:
+          name: Deploy to testpypi
+          command: |
+            pip install wheel twine
+            python setup.py sdist bdist_wheel
+            python -m twine upload --skip-existing --repository testpypi dist/*
+
+  pypi_publish:
+    docker:
+      - image: cimg/python:3.10
+    steps:
+      - checkout  # checkout source code to working directory
+      - run:
+          name: Deploy to pypi
+          command: |
+            pip install wheel twine
+            python setup.py sdist bdist_wheel
+            python -m twine upload --skip-existing dist/*
+  
+  test310:  # This is the name of the job, feel free to change it to better match what you're trying to do!
+    # These next lines defines a docker executors: https://circleci.com/docs/2.0/executor-types/
+    # You can specify an image from dockerhub or use one of the convenience images from CircleCI's Developer Hub
+    # A list of available CircleCI docker convenience images are available here: https://circleci.com/developer/images/image/cimg/python
+    # The executor is the environment in which the steps below will be executed - below will use a python 3.9 container
+    # Change the version below to your required version of python
+    docker:
+      - image: cimg/python:3.10
+    # Checkout the code as the first step. This is a dedicated CircleCI step.
+    # The python orb's install-packages step will install the dependencies from a Pipfile via Pipenv by default.
+    # Here we're making sure we use just use the system-wide pip. By default it uses the project root's requirements.txt.
+    # Then run your tests!
+    # CircleCI will report the results back to your VCS provider.
+    
+    working_directory: ~/project
+    
+    steps:
+      - checkout
+      - run:
+          command: pip install wheel
+      - python/install-packages:
+          pkg-manager: pip
+          pip-dependency-file: test-requirements.txt
+      - run:
+          command: python setup.py install
+      - run:
+          name: Run tests and generate artifact
+          command: |
+            coverage run -m pytest
+            coverage html
+      #- codecov/upload
+      - store_artifacts:
+          path: ~/project/htmlcov
+
+workflows:
+  main:
+    jobs:
+      - test310
+
+      - test_pypi_publish:
+          context:
+            - pypi deploy
+          requires:
+            - test310
+          filters:
+            branches:
+              only:
+                - main
+                
+      - pypi_publish:
+          context:
+            - pypi deploy
+          requires:
+            - test310
+            - test_pypi_publish
+          filters:
+            branches:
+              only:
+                - main

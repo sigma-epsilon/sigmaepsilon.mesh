@@ -1,0 +1,13 @@
+networkx>=3.0
+matplotlib
+vtk
+pyvista
+sectionproperties
+pythreejs
+ipyvtklink
+pandas
+plotly
+tetgen
+autopep8
+awkward
+pyarrow
