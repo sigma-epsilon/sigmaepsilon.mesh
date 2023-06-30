@@ -3,7 +3,7 @@ import numpy as np
 from numpy import ndarray
 from numba import njit, prange, vectorize
 
-from neumann.linalg import normalize, norm
+from sigmaepsilon.math.linalg import normalize, norm
 
 from ..utils.utils import cells_coords, cell_coords
 
@@ -536,7 +536,7 @@ def tri_glob_to_loc(points: np.ndarray, triangles: np.ndarray):
 if __name__ == "__main__":
     from sigmaepsilon.mesh.triang import triangulate
     from sigmaepsilon.mesh.utils.space import frames_of_surfaces, is_planar_surface
-    from neumann import ascont
+    from sigmaepsilon.math import ascont
     from time import time
 
     points, triangles, triobj = triangulate(size=(800, 600), shape=(100, 100))

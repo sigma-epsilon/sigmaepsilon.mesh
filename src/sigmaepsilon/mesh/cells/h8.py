@@ -4,7 +4,7 @@ from sympy import symbols
 import numpy as np
 from numpy import ndarray
 
-from neumann.numint import gauss_points as gp
+from sigmaepsilon.math.numint import gauss_points as gp
 
 from ..polyhedron import HexaHedron
 from ..utils.utils import cells_coords

@@ -2,7 +2,7 @@ from numba import njit, prange
 import numpy as np
 from numpy import ndarray
 
-from neumann.linalg import inv
+from sigmaepsilon.math.linalg import inv
 
 __cache = True
 

@@ -4,9 +4,9 @@ import numpy as np
 from numpy import ndarray
 from sympy import Matrix, lambdify
 
-from neumann import atleast1d, atleast2d, ascont
-from neumann.utils import to_range_1d
-from neumann.linalg import ReferenceFrame as FrameLike
+from sigmaepsilon.math import atleast1d, atleast2d, ascont
+from sigmaepsilon.math.utils import to_range_1d
+from sigmaepsilon.math.linalg import ReferenceFrame as FrameLike
 
 from sigmaepsilon.mesh.space import PointCloud, CartesianFrame
 from .celldata import CellData

@@ -11,11 +11,11 @@ from scipy.sparse import spmatrix
 import awkward as ak
 from meshio import Mesh as MeshioMesh
 
-from sigmaepsilon.core.warning import PerformanceWarning
+from sigmaepsilon.core.warning import SigmaEpsilonPerformanceWarning
 from linkeddeepdict import DeepDict
-from neumann.linalg.sparse import csr_matrix
-from neumann.linalg import Vector, ReferenceFrame as FrameLike
-from neumann import atleast1d, minmax, repeat
+from sigmaepsilon.math.linalg.sparse import csr_matrix
+from sigmaepsilon.math.linalg import Vector, ReferenceFrame as FrameLike
+from sigmaepsilon.math import atleast1d, minmax, repeat
 
 from .akwrap import AkWrapper
 from .utils.topology.topo import inds_to_invmap_as_dict, remap_topo_1d
@@ -375,7 +375,7 @@ class PolyData(PolyDataBase):
         return self._pointdata
 
     @pointdata.setter
-    def pointdata(self, pd: Union[PointData, None]):
+    def pointdata(self, pd: Union[PointData, None]) -> None:
         """
         Returns the attached pointdata.
         """
@@ -400,7 +400,7 @@ class PolyData(PolyDataBase):
         return self._celldata
 
     @celldata.setter
-    def celldata(self, cd: Union[PolyCell, None]):
+    def celldata(self, cd: Union[PolyCell, None]) -> None:
         """
         Returns the attached celldata.
         """
@@ -465,7 +465,7 @@ class PolyData(PolyDataBase):
                 "Calling 'obj.lock(create_mappers=True)' creates additional"
                 " mappers that make lookups like this much more efficient. "
                 "See the doc of the sigmaepsilon.mesh library for more details.",
-                PerformanceWarning,
+                SigmaEpsilonPerformanceWarning,
             )
             bid2b, cid2bid = self._create_mappers_()
         else:
@@ -1328,7 +1328,7 @@ class PolyData(PolyDataBase):
         ----------
         v: VectorLike, Optional
             A vector describing a translation.
-        frame: :class:`~neumann.linalg.FrameLike`, Optional
+        frame: :class:`~sigmaepsilon.math.linalg.FrameLike`, Optional
             If `v` is only an array, this can be used to specify
             a frame in which the components should be understood.
         inplace: bool, Optional
@@ -1360,17 +1360,17 @@ class PolyData(PolyDataBase):
     def rotate(self, *args, inplace: bool = True, **kwargs) -> "PolyData":
         """
         Rotates and returns the object. Positional and keyword arguments
-        not listed here are forwarded to :class:`neumann.linalg.frame.ReferenceFrame`
+        not listed here are forwarded to :class:`sigmaepsilon.math.linalg.frame.ReferenceFrame`
 
         Parameters
         ----------
         *args
-            Forwarded to :class:`neumann.linalg.frame.ReferenceFrame`.
+            Forwarded to :class:`sigmaepsilon.math.linalg.frame.ReferenceFrame`.
         inplace: bool, Optional
             If True, the transformation is done on the instance, otherwise
             a deep copy is created first. Default is True.
         **kwargs
-            Forwarded to :class:`neumann.linalg.frame.ReferenceFrame`.
+            Forwarded to :class:`sigmaepsilon.math.linalg.frame.ReferenceFrame`.
 
         Examples
         --------
@@ -1397,17 +1397,17 @@ class PolyData(PolyDataBase):
     def spin(self, *args, inplace: bool = True, **kwargs) -> "PolyData":
         """
         Like rotate, but rotation happens around centroidal axes. Positional and keyword
-        arguments not listed here are forwarded to :class:`neumann.linalg.frame.ReferenceFrame`
+        arguments not listed here are forwarded to :class:`sigmaepsilon.math.linalg.frame.ReferenceFrame`
 
         Parameters
         ----------
         *args
-            Forwarded to :class:`neumann.linalg.frame.ReferenceFrame`.
+            Forwarded to :class:`sigmaepsilon.math.linalg.frame.ReferenceFrame`.
         inplace: bool, Optional
             If True, the transformation is done on the instance, otherwise
             a deep copy is created first. Default is True.
         **kwargs
-            Forwarded to :class:`neumann.linalg.frame.ReferenceFrame`.
+            Forwarded to :class:`sigmaepsilon.math.linalg.frame.ReferenceFrame`.
 
         Examples
         --------
@@ -1529,7 +1529,7 @@ class PolyData(PolyDataBase):
 
         Parameters
         ----------
-        target: :class:`~neumann.linalg.FrameLike`, Optional
+        target: :class:`~sigmaepsilon.math.linalg.FrameLike`, Optional
             The target frame in which the returned coordinates are to be understood.
             A `None` value means the frame the mesh is embedded in. Default is None.
 
@@ -1552,7 +1552,7 @@ class PolyData(PolyDataBase):
 
         Parameters
         ----------
-        target: :class:`~neumann.linalg.FrameLike`, Optional
+        target: :class:`~sigmaepsilon.math.linalg.FrameLike`, Optional
             The target frame in which the returned coordinates are to be understood.
             A `None` value means the frame the mesh is embedded in. Default is None.
 
@@ -1586,7 +1586,7 @@ class PolyData(PolyDataBase):
 
         Parameters
         ----------
-        target: :class:`~neumann.linalg.FrameLike`, Optional
+        target: :class:`~sigmaepsilon.math.linalg.FrameLike`, Optional
             The target frame the mesh should be central to. A `None` value
             means the frame the mesh is embedded in. Default is True.
         inplace: bool, Optional
@@ -2204,7 +2204,8 @@ class PolyData(PolyDataBase):
                 params.update(config)
                 if cmap is not None:
                     params["cmap"] = cmap
-                params["show_edges"] = show_edges
+                if block.cd.NDIM > 1:
+                    params["show_edges"] = show_edges
                 if isinstance(show_scalar_bar, bool):
                     params["show_scalar_bar"] = show_scalar_bar
                 plotter.add_mesh(poly, **params)
@@ -2220,7 +2221,7 @@ class PolyData(PolyDataBase):
                     plotter.show(auto_close=False)
                     plotter.show(screenshot=True)
                     return plotter.last_image
-
+            
             return plotter.show(**show_params)
 
     def plot(

@@ -21,8 +21,8 @@ from numpy import ndarray
 import numpy as np
 
 from sigmaepsilon.core.typing import issequence
-from neumann import minmax
-from neumann.linalg import Vector, FrameLike
+from sigmaepsilon.math import minmax
+from sigmaepsilon.math.linalg import Vector, FrameLike
 
 from .frame import CartesianFrame
 from .point import Point

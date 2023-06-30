@@ -3,7 +3,7 @@ from typing import Tuple
 import numpy as np
 from numpy import ndarray
 
-from neumann import atleast2d
+from sigmaepsilon.math import atleast2d
 
 from .knn import k_nearest_neighbours
 from .utils import cell_centers_bulk

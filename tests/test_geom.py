@@ -2,7 +2,7 @@
 import numpy as np
 import unittest
 
-from neumann.linalg import Vector
+from sigmaepsilon.math.linalg import Vector
 
 from sigmaepsilon.mesh import PolyData, grid, PointCloud, CartesianFrame
 from sigmaepsilon.mesh.grid import grid

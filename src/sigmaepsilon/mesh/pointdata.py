@@ -7,9 +7,9 @@ from numpy import ndarray
 from awkward import Record as akRecord
 
 from sigmaepsilon.core import classproperty
-from neumann.linalg import ReferenceFrame as FrameLike
-from neumann.logical import isboolarray
-from neumann.linalg.sparse import csr_matrix
+from sigmaepsilon.math.linalg import ReferenceFrame as FrameLike
+from sigmaepsilon.math.logical import isboolarray
+from sigmaepsilon.math.linalg.sparse import csr_matrix
 
 from .space import CartesianFrame, PointCloud
 from .base import PointDataBase, PolyDataBase as PolyData

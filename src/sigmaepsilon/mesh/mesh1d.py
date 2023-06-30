@@ -3,7 +3,7 @@ import numpy as np
 from numpy import ndarray
 from numba import njit
 
-from neumann import atleast3d, repeat
+from sigmaepsilon.math import atleast3d, repeat
 
 from .space import frames_of_lines
 from .grid import rgridMT as grid

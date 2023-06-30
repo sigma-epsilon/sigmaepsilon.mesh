@@ -1,14 +1,14 @@
 from typing import Union, Iterable
 import numpy as np
 
-from neumann.linalg import Vector, FrameLike, CartesianFrame, ReferenceFrame
+from sigmaepsilon.math.linalg import Vector, FrameLike, CartesianFrame, ReferenceFrame
 
 
 class Point(Vector):
     """
     A class a to handle one or more points in Euclidean space.
 
-    It inherits :class:`Vector <neumann.linalg.vector.Vector>`,
+    It inherits :class:`Vector <sigmaepsilon.math.linalg.vector.Vector>`,
     and extends its behaviour with default frame management for domain
     specific applications.
 
@@ -30,7 +30,7 @@ class Point(Vector):
     >>> from sigmaepsilon.mesh.space import Point
     >>> p = Point([1., 1., 1.])
     >>> type(p.frame)
-    neumann.linalg.frame.CartesianFrame
+    sigmaepsilon.math.linalg.frame.CartesianFrame
 
     If we want to handle more than one points:
 

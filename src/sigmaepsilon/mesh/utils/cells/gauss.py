@@ -1,6 +1,6 @@
 import numpy as np
 
-from neumann.numint import gauss_points as gp
+from sigmaepsilon.math.numint import gauss_points as gp
 
 
 # LINES

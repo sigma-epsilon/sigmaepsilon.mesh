@@ -120,7 +120,7 @@ intersphinx_mapping = {
     "sphinx": (r"https://www.sphinx-doc.org/en/master", None),
     "pandas": (r"https://pandas.pydata.org/pandas-docs/stable/", None),
     "awkward": (r"https://awkward-array.readthedocs.io/en/latest/", None),
-    "neumann": (r"https://neumann.readthedocs.io/en/latest/", None),
+    "sigmaepsilon.math": (r"https://sigmaepsilon.math.readthedocs.io/en/latest/", None),
     "linkeddeepdict": (r"https://linkeddeepdict.readthedocs.io/en/latest/", None),
 }
 

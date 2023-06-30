@@ -5,8 +5,8 @@ from copy import deepcopy as dcopy
 import numpy as np
 from numpy import ndarray
 
-from neumann.linalg import CartesianFrame as Frame, FrameLike, Vector
-from neumann.linalg.vector import Vector
+from sigmaepsilon.math.linalg import CartesianFrame as Frame, FrameLike, Vector
+from sigmaepsilon.math.linalg.vector import Vector
 
 __all__ = ["CartesianFrame"]
 
@@ -19,12 +19,12 @@ class CartesianFrame(Frame):
     A field-specific reference frame to be used in problems related to
     Euclidean geometry.
 
-    It builds on top of :class:`FrameLike` from `neumann`, but adds
+    It builds on top of :class:`FrameLike` from `sigmaepsilon.math`, but adds
     the contept of 'origo', and some other applications related to the field.
 
     See Also
     --------
-    :class:`~neumann.linalg.frame.frame.FrameLike`
+    :class:`~sigmaepsilon.math.linalg.frame.frame.FrameLike`
 
     Parameters
     ----------
@@ -38,7 +38,7 @@ class CartesianFrame(Frame):
 
     Note
     ----
-    See the documentation of :class:`neumann.FrameLike` for more control over
+    See the documentation of :class:`sigmaepsilon.math.FrameLike` for more control over
     object creation. However, if your problem not very extreme in some sense,
     you are probably good to goo only by following the examples.
 

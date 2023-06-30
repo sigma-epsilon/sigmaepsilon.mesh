@@ -3,7 +3,7 @@ import numpy as np
 from numpy import ndarray as array
 from numba import njit, prange
 
-from neumann import minmax
+from sigmaepsilon.math import minmax
 
 from .utils.topology import detach_mesh_bulk as detach_mesh, remap_topo
 

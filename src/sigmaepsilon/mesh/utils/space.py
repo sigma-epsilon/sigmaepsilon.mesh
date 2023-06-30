@@ -2,8 +2,8 @@ import numpy as np
 from numpy import ndarray
 from numba import njit, prange
 
-from neumann.linalg import normalize, normalize2d, norm2d
-from neumann import atleast2d
+from sigmaepsilon.math.linalg import normalize, normalize2d, norm2d
+from sigmaepsilon.math import atleast2d
 
 from .utils import center_of_points, cell_center, cell_coords
 from .knn import k_nearest_neighbours

@@ -6,9 +6,9 @@ import numpy as np
 from numpy import ndarray
 
 from sigmaepsilon.core import classproperty
-from neumann import atleast2d, atleast3d, repeat
-from neumann.linalg.sparse import csr_matrix
-from neumann.linalg import ReferenceFrame
+from sigmaepsilon.math import atleast2d, atleast3d, repeat
+from sigmaepsilon.math.linalg.sparse import csr_matrix
+from sigmaepsilon.math.linalg import ReferenceFrame
 
 from .base import PointDataBase, CellDataBase, PolyDataBase as PolyData
 from .akwrap import AwkwardLike
@@ -125,7 +125,7 @@ class CellData(CellDataBase):
                 else:
                     msg = (
                         "'frames' must be a NumPy array, or a ",
-                        "neumann.linalg.ReferenceFrame instance.",
+                        "sigmaepsilon.math.linalg.ReferenceFrame instance.",
                     )
                     raise TypeError(msg)
 

@@ -3,7 +3,7 @@ import numpy as np
 from numpy import ndarray
 import sympy as sy
 
-from neumann.numint import gauss_points as gp
+from sigmaepsilon.math.numint import gauss_points as gp
 
 from ..polyhedron import TriquadraticHexaHedron
 from ..utils.utils import cells_coords

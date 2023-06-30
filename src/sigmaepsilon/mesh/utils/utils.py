@@ -7,8 +7,8 @@ from numba import njit, prange
 from numba.typed import Dict as nbDict
 from numba import types as nbtypes
 
-from neumann import matrixform
-from neumann.linalg.sparse import JaggedArray, csr_matrix
+from sigmaepsilon.math import matrixform
+from sigmaepsilon.math.linalg.sparse import JaggedArray, csr_matrix
 
 __cache = True
 nbint64 = nbtypes.int64
@@ -51,12 +51,12 @@ def points_around(
 
     Returns
     -------
-    if frmt = 'csr' : neumann.linalg.sparse.csr.csr_matrix
+    if frmt = 'csr' : sigmaepsilon.math.linalg.sparse.csr.csr_matrix
         A numba-jittable sparse matrix format.
 
     frmt = 'dict' : numba Dict(int : int[:])
 
-    frmt = 'jagged' : neumann.linalg.sparse.JaggedArray
+    frmt = 'jagged' : sigmaepsilon.math.linalg.sparse.JaggedArray
         A subclass of `awkward.Array`
     """
     if MT:

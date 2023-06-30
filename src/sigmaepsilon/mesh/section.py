@@ -290,7 +290,7 @@ class LineSection(Wrapper):
 
         Examples
         --------
-        >>> from sigmaepsilon import BeamSection
+        >>> from sigmaepsilon.mesh import BeamSection
         >>> section = BeamSection(get_section('CHS', d=1.0, t=0.1, n=64))
         >>> trimesh = section.trimesh()
         """

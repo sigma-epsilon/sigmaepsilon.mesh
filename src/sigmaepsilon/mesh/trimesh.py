@@ -1,6 +1,6 @@
 import numpy as np
 
-from neumann import ascont
+from sigmaepsilon.math import ascont
 
 from .polydata import PolyData
 from .cells import T3, T6, TET4

@@ -1,7 +1,7 @@
 from numba import njit, prange
 import numpy as np
 from numpy import ndarray
-from neumann import flatten2dC
+from sigmaepsilon.math import flatten2dC
 
 from ..tri import area_tri_bulk
 

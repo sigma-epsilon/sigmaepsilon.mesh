@@ -11,7 +11,7 @@ from typing import Union, Iterable
 from numpy import ndarray
 
 from linkeddeepdict import LinkedDeepDict
-from neumann.linalg.sparse import csr_matrix
+from sigmaepsilon.math.linalg.sparse import csr_matrix
 
 from .topoarray import TopologyArray
 from .akwrap import AkWrapper

@@ -9,9 +9,9 @@ from scipy.sparse import csr_matrix as csr_scipy
 from numba import njit, prange, types as nbtypes
 from numba.typed import Dict as nbDict
 
-from neumann.linalg.sparse import csr_matrix, JaggedArray
-from neumann.arraysetops import unique2d
-from neumann import count_cols
+from sigmaepsilon.math.linalg.sparse import csr_matrix, JaggedArray
+from sigmaepsilon.math.arraysetops import unique2d
+from sigmaepsilon.math import count_cols
 
 from ...space import PointCloud
 from ...topoarray import TopologyArray

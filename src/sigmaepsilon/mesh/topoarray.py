@@ -3,9 +3,9 @@ import numpy as np
 
 from awkward import Array as akArray
 
-from neumann.linalg.sparse import JaggedArray
-from neumann.arraysetops import unique2d
-from neumann import atleast2d
+from sigmaepsilon.math.linalg.sparse import JaggedArray
+from sigmaepsilon.math.arraysetops import unique2d
+from sigmaepsilon.math import atleast2d
 
 
 __all__ = ["TopologyArray"]
@@ -79,7 +79,7 @@ class TopologyArray(JaggedArray):
 
     See Also
     --------
-    :class:`~neumann.linalg.sparse.JaggedArray`
+    :class:`~sigmaepsilon.math.linalg.sparse.JaggedArray`
     """
 
     def __init__(self, *topo, cuts: Iterable = None, force_numpy: bool = True):

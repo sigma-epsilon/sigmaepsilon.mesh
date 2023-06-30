@@ -6,8 +6,6 @@ coverage
 pandas
 pyarrow
 networkx>=3.0
-fsspec  # for ak.to_parquet
 k3d
-numpy==1.23.5
 setuptools>=65.5.1 # pinned by Snyk to avoid a vulnerability
 wheel>=0.38.0 # pinned by Snyk to avoid a vulnerability
