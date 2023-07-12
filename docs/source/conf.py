@@ -119,8 +119,8 @@ intersphinx_mapping = {
     "matplotlib": (r"https://matplotlib.org/stable", None),
     "sphinx": (r"https://www.sphinx-doc.org/en/master", None),
     "pandas": (r"https://pandas.pydata.org/pandas-docs/stable/", None),
-    "awkward": (r"https://awkward-array.readthedocs.io/en/latest/", None),
-    "sigmaepsilon.math": (r"https://sigmaepsilon.math.readthedocs.io/en/latest/", None),
+    "sigmaepsilon.core": (r"https://sigmaepsiloncore.readthedocs.io/en/latest/", None),
+    "sigmaepsilon.math": (r"https://sigmaepsilonmath.readthedocs.io/en/latest/", None),
     "linkeddeepdict": (r"https://linkeddeepdict.readthedocs.io/en/latest/", None),
 }
 
@@ -166,7 +166,7 @@ nbsphinx_prolog = r"""
 
     <div class="admonition note">
       This page was generated from
-      <a class="reference external" href="https://github.com/dewloosh/{{ env.config.project_name }}/blob/{{ env.config.release|e }}/{{ docname|e }}">{{ docname|e }}</a>.
+      <a class="reference external" href="https://github.com/sigmaepsilon/{{ env.config.project_name }}/blob/{{ env.config.release|e }}/{{ docname|e }}">{{ docname|e }}</a>.
     </div>
 
 .. raw:: latex
