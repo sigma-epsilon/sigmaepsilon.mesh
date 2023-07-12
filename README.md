@@ -2,8 +2,8 @@
 
 ![ ](logo.png)
 
-[![CircleCI](https://circleci.com/gh/dewloosh/sigmaepsilon.mesh.svg?style=shield)](https://circleci.com/gh/dewloosh/sigmaepsilon.mesh)
-[![Documentation Status](https://readthedocs.org/projects/sigmaepsilon.mesh/badge/?version=latest)](https://sigmaepsilon.mesh.readthedocs.io/en/latest/?badge=latest)
+[![CircleCI](https://dl.circleci.com/status-badge/img/gh/sigma-epsilon/sigmaepsilon.mesh/tree/main.svg?style=svg)](https://dl.circleci.com/status-badge/redirect/gh/sigma-epsilon/sigmaepsilon.mesh/tree/main)
+[![Documentation Status](https://readthedocs.org/projects/sigmaepsilonmesh/badge/?version=latest)](https://sigmaepsilonmesh.readthedocs.io/en/latest/?badge=latest)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![PyPI](https://badge.fury.io/py/sigmaepsilon.mesh.svg)](https://pypi.org/project/sigmaepsilon.mesh)
 [![Python 3.7‒3.10](https://img.shields.io/badge/python-3.7%E2%80%923.10-blue)](https://www.python.org)
