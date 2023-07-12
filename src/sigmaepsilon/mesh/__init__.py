@@ -34,4 +34,4 @@ __all__ = [
 
 __version__ = "0.0.1"
 __description__ = "A Python package to build, manipulate and analyze polygonal meshes."
-__project_name__ = "sigmaepsilon.mesh"  # for Sphinx
+__pkg_name__ = "sigmaepsilon.mesh"  # for Sphinx
