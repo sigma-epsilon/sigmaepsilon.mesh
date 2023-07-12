@@ -12,6 +12,7 @@ from .triang import triangulate
 from .grid import grid, Grid
 from .tetrahedralize import tetrahedralize
 from .config import load_pyproject_config
+import importlib.metadata
 
 __all__ = [
     "PointCloud",
@@ -32,6 +33,6 @@ __all__ = [
 
 # _config = load_pyproject_config()
 
-__version__ = "0.0.1"
-__description__ = "A Python package to build, manipulate and analyze polygonal meshes."
 __pkg_name__ = "sigmaepsilon.mesh"  # for Sphinx
+__version__ = importlib.metadata.version(__pkg_name__)
+__description__ = "A Python package to build, manipulate and analyze polygonal meshes."
