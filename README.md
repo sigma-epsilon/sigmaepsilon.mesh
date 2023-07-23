@@ -48,10 +48,22 @@ sigmaepsilon.mesh can be installed from PyPI using `pip` on Python >= 3.7:
 >>> pip install sigmaepsilon.mesh
 ```
 
-## Testing
+or chechkout with the following command using GitHub CLI
 
 ```console
->>> python -m unittest
+gh repo clone sigma-epsilon/sigmaepsilon.mesh
+```
+
+and install from source by typing
+
+```console
+>>> pip install .
+```
+
+If you want to run the tests, you can install the package along with the necessary optional dependencies like this
+
+```console
+>>> pip install ".[test]"
 ```
 
 ## How to contribute?
