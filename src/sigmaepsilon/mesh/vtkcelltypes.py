@@ -26,7 +26,7 @@ class vtkCellTypes(IntEnum):
     # VTK_HEXAGONAL_PRISM = 16
 
     # # Quadratic, isoparametric cells
-    # VTK_QUADRATIC_EDGE = 21
+    VTK_QUADRATIC_EDGE = 21
     VTK_QUADRATIC_TRIANGLE = 22
     # VTK_QUADRATIC_QUAD = 23
     # VTK_QUADRATIC_POLYGON = 36

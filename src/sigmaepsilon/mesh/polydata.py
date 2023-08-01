@@ -2221,7 +2221,7 @@ class PolyData(PolyDataBase):
                     plotter.show(auto_close=False)
                     plotter.show(screenshot=True)
                     return plotter.last_image
-            
+
             return plotter.show(**show_params)
 
     def plot(

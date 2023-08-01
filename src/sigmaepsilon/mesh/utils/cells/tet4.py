@@ -9,7 +9,7 @@ __cache = True
 def monoms_TET4_single(x: ndarray) -> ndarray:
     r, s, t = x
     return np.array(
-        [1, r, s, t, r * s, r * t, s * t, r**2, s**2, t**2], dtype=x.dtype
+        [1, r, s, t, r * s, r * t, s * t, r ** 2, s ** 2, t ** 2], dtype=x.dtype
     )
 
 
