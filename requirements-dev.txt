@@ -5,6 +5,7 @@ pyvista
 sectionproperties
 pythreejs
 ipyvtklink
+ipykernel
 pandas
 plotly
 tetgen
