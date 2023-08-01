@@ -12,11 +12,14 @@ from sigmaepsilon.mesh.space import PointCloud, CartesianFrame
 from .celldata import CellData
 from .utils.utils import (
     jacobian_matrix_bulk,
+    jacobian_matrix_bulk_1d,
+    jacobian_det_bulk_1d,
     points_of_cells,
     pcoords_to_coords,
     pcoords_to_coords_1d,
     cells_coords,
     lengths_of_lines,
+    global_shape_function_derivatives,
 )
 from .utils.cells.utils import (
     _loc_to_glob_bulk_,
@@ -82,6 +85,17 @@ class PolyCell(CellData):
         numpy.ndarray
         """
         raise NotImplementedError
+    
+    @classmethod
+    def master_coordinates(cls) -> ndarray:
+        """
+        Returns the coordinates of the master element.
+
+        Returns
+        -------
+        numpy.ndarray
+        """
+        return cls.lcoords()
 
     @classmethod
     def lcenter(cls) -> ndarray:
@@ -93,7 +107,7 @@ class PolyCell(CellData):
         -------
         numpy.ndarray
         """
-        return cell_center(cls.lcoords())
+        return cell_center(cls.master_coordinates())
 
     @classmethod
     def polybase(cls) -> Tuple[List]:
@@ -126,6 +140,23 @@ class PolyCell(CellData):
         update: bool, Optional
             If True, class methods are updated with the generated versions.
             Default is True.
+        
+        Notes
+        -----
+        Some cells are equipped with functions to evaluate shape functions a-priori,
+        other classes rely on symbolic generation of these functions. In the latter case,
+        this function is automatically invoked runtime, there is no need to manually
+        trigger it.
+        
+        Example
+        -------
+        >>> from sigmaepsilon.mesh.cells import H8
+        >>> shp, dshp, shpf, shpmf, dshpf = H8.generate_class_functions()
+        
+        Here `shp` and `dshp` are simbolic matrices for shape functions and
+        their first derivatives, `shpf`, `shpmf` and `dshpf` are functions for
+        fast evaluation of shape function values, the shape function matrix and
+        shape function derivatives, respectively.
         """
         nN = cls.NNODE
         nD = cls.NDIM
@@ -218,7 +249,7 @@ class PolyCell(CellData):
         return cls.shpfnc(pcoords).astype(float)
 
     @classmethod
-    def shape_function_matrix(cls, pcoords: ndarray, N: int = None) -> ndarray:
+    def shape_function_matrix(cls, pcoords: ndarray, *, N: int = None) -> ndarray:
         """
         Evaluates the shape function matrix at the specified locations.
 
@@ -253,14 +284,26 @@ class PolyCell(CellData):
             return cls.shpmfnc(pcoords).astype(float)
 
     @classmethod
-    def shape_function_derivatives(cls, pcoords: ndarray) -> ndarray:
+    def shape_function_derivatives(
+        cls, pcoords: Iterable[float], *, jac: ndarray = None
+    ) -> ndarray:
         """
-        Evaluates shape function derivatives wrt. the master element.
+        Evaluates shape function derivatives wrt. the master element or the local
+        coordinate frames of some cells. To control the behaviour, either 'jac' or 'wrt'
+        can be provided.
 
         Parameters
         ----------
-        pcoords: numpy.ndarray
+        pcoords: Iterable[float]
             Locations of the evaluation points.
+        jac: Iterable, Optional
+            The jacobian matrix as a float array of shape (nE, nP, nD, nD), evaluated for
+            an nP number of points and nP number cells and nD number of spatial dimensions.
+            Default is None.
+
+        Notes
+        -----
+        Only first derivatives are evaluated.
 
         Returns
         -------
@@ -268,14 +311,84 @@ class PolyCell(CellData):
             An array of shape (nP, nNE, nD), where nP, nNE and nD are
             the number of evaluation points, nodes and spatial dimensions.
         """
-        pcoords = np.array(pcoords)
-        if cls.dshpfnc is None:
-            cls.generate_class_functions(update=True)
-        if cls.NDIM == 3:
-            if len(pcoords.shape) == 1:
-                pcoords = atleast2d(pcoords, front=True)
-                return cls.dshpfnc(pcoords).astype(float)
-        return cls.dshpfnc(pcoords).astype(float)
+        if jac is None:
+            pcoords = np.array(pcoords) if pcoords is not None else cls.lcoords()
+            if cls.dshpfnc is None:
+                cls.generate_class_functions(update=True)
+            if cls.NDIM == 3:
+                if len(pcoords.shape) == 1:
+                    pcoords = atleast2d(pcoords, front=True)
+                    return cls.dshpfnc(pcoords).astype(float)
+            return cls.dshpfnc(pcoords).astype(float)
+        else:
+            pcoords = np.array(pcoords) if pcoords is not None else cls.lcoords()
+            dshp = cls.shape_function_derivatives(pcoords)
+            return global_shape_function_derivatives(dshp, jac)
+
+    def jacobian_matrix(
+        self, *, pcoords: Iterable[float] = None, dshp: ndarray = None, **__
+    ) -> ndarray:
+        """
+        Returns the jacobian matrices of the cells in the block. The evaluation
+        of the matrix is governed by the inputs in the following way:
+        - if `dshp` is provided, it must be a matrix of shape function derivatives
+          evaluated at the desired locations
+        - the desired locations are specified through `pcoords`
+
+        Parameters
+        ----------
+        pcoords: Iterable[float], Optional
+            Locations of the evaluation points.
+        dshp: numpy.ndarray, Optional
+            3d array of shape function derivatives for the master cell,
+            evaluated at some points. The array must have a shape of
+            (nG, nNE, nD), where nG, nNE and nD are the number of evaluation
+            points, nodes per cell and spatial dimensions.
+
+        Returns
+        -------
+        numpy.ndarray
+            A 4d array of shape (nE, nP, nD, nD), where nE, nP and nD
+            are the number of elements, evaluation points and spatial
+            dimensions. The number of evaluation points in the output
+            is governed by the parameter 'dshp' or 'pcoords'.
+        """
+        ecoords = self.local_coordinates()
+        if dshp is None:
+            x = np.array(pcoords) if pcoords is not None else self.lcoords()
+            dshp = self.shape_function_derivatives(x)
+        if self.NDIM == 1:
+            jacobian_matrix_bulk_1d(dshp, ecoords)
+        else:
+            return jacobian_matrix_bulk(dshp, ecoords)
+
+    def jacobian(self, *, jac: ndarray = None, **kwargs) -> Union[float, ndarray]:
+        """
+        Returns the jacobian determinant for one or more cells.
+
+        Parameters
+        ----------
+        jac: numpy.ndarray, Optional
+            One or more Jacobian matrices. Default is None.
+        **kwargs: dict
+            Forwarded to :func:`jacobian_matrix` if the jacobian
+            is not provided by the parameter 'jac'.
+
+        Returns
+        -------
+        float or numpy.ndarray
+            Value of the Jacobian for one or more cells.
+
+        See Also
+        --------
+        :func:`jacobian_matrix`
+        """
+        if jac is None:
+            jac = self.jacobian_matrix(**kwargs)
+        if self.NDIM == 1:
+            return jacobian_det_bulk_1d(jac)
+        else:
+            return np.linalg.det(jac)
 
     def flip(self) -> "PolyCell":
         """
@@ -314,54 +427,6 @@ class PolyCell(CellData):
         """Extracts the surface of the mesh. Only for 3d meshes."""
         raise NotImplementedError
 
-    def jacobian_matrix(self, *, dshp: ndarray = None, **__) -> ndarray:
-        """
-        Returns the jacobian matrices.
-
-        Parameters
-        ----------
-        dshp: numpy.ndarray
-            3d array of shape function derivatives for the master cell,
-            evaluated at some points. The array must have a shape of
-            (nG, nNE, nD), where nG, nNE and nD are he number of evaluation
-            points, nodes per cell and spatial dimensions.
-
-        Returns
-        -------
-        numpy.ndarray
-            A 4d array of shape (nE, nG, nD, nD), where nE, nG and nD
-            are the number of elements, evaluation points and spatial
-            dimensions. The number of evaluation points in the output
-            is governed by the parameter 'dshp'.
-        """
-        ecoords = self.local_coordinates()
-        return jacobian_matrix_bulk(dshp, ecoords)
-
-    def jacobian(self, *, jac: ndarray = None, **kwargs) -> Union[float, ndarray]:
-        """
-        Returns the jacobian determinant for one or more cells.
-
-        Parameters
-        ----------
-        jac: numpy.ndarray, Optional
-            One or more Jacobian matrices. Default is None.
-        **kwargs : dict
-            Forwarded to :func:`jacobian_matrix` if the jacobian
-            is not provided by the parameter 'jac'.
-
-        Returns
-        -------
-        float or numpy.ndarray
-            Value of the Jacobian for one or more cells.
-
-        See Also
-        --------
-        :func:`jacobian_matrix`
-        """
-        if jac is None:
-            jac = self.jacobian_matrix(**kwargs)
-        return np.linalg.det(jac)
-
     def source_points(self) -> PointCloud:
         """
         Returns the hosting pointcloud.
@@ -389,7 +454,7 @@ class PolyCell(CellData):
         *,
         points: Union[float, Iterable] = None,
         cells: Union[int, Iterable] = None,
-        target: Union[str, CartesianFrame] = "global"
+        target: Union[str, CartesianFrame] = "global",
     ) -> ndarray:
         """
         Returns the points of the cells as a NumPy array.
@@ -706,7 +771,7 @@ class PolyCell1d(PolyCell):
         flatten: bool = False,
         target: Union[str, CartesianFrame] = "global",
         rng: Iterable = None,
-        **kwargs
+        **kwargs,
     ) -> ndarray:
         if isinstance(target, str):
             assert target.lower() in ["global", "g"]
@@ -751,6 +816,97 @@ class PolyCell1d(PolyCell):
             res = res.reshape(nE, nP, res.shape[-1])  # (nE, nP, nD)
 
         return res
+
+    @classmethod
+    def shape_function_values(
+        cls, pcoords: ndarray, *, rng: Iterable = None
+    ) -> ndarray:
+        """
+        Evaluates the shape functions at the specified locations.
+
+        Parameters
+        ----------
+        pcoords: float or Iterable[float]
+            Locations of the evaluation points.
+        rng: Iterable, Optional
+            The range in which the locations ought to be understood,
+            typically [0, 1] or [-1, 1]. Default is [0, 1].
+
+        Returns
+        -------
+        numpy.ndarray
+            An array of shape (nP, nNE) where nP and nNE are the number of
+            evaluation points and shape functions. If there is only one
+            evaluation point, the returned array is one dimensional.
+        """
+        rng = np.array([-1, 1]) if rng is None else np.array(rng)
+        pcoords = atleast1d(np.array(pcoords))
+        pcoords = to_range_1d(pcoords, source=rng, target=[-1, 1])
+        return super().shape_function_values(pcoords)
+
+    @classmethod
+    def shape_function_matrix(
+        cls, pcoords: ndarray, *, rng: Iterable = None, N: int = None
+    ) -> ndarray:
+        """
+        Evaluates the shape function matrix at the specified locations.
+
+        Parameters
+        ----------
+        pcoords: float or Iterable[float]
+            Locations of the evaluation points.
+        rng: Iterable, Optional
+            The range in which the locations ought to be understood,
+            typically [0, 1] or [-1, 1]. Default is [0, 1].
+        N: int, Optional
+            Number of unknowns per node.
+
+        Returns
+        -------
+        numpy.ndarray
+            An array of shape (nP, nDOF, nDOF * nNE) where nP, nDOF and nNE
+            are the number of evaluation points, degrees of freedom per node
+            and nodes per cell.
+        """
+        rng = np.array([-1, 1]) if rng is None else np.array(rng)
+        pcoords = atleast1d(np.array(pcoords))
+        pcoords = to_range_1d(pcoords, source=rng, target=[-1, 1])
+        return super().shape_function_matrix(pcoords, N=N)
+
+    @classmethod
+    def shape_function_derivatives(
+        cls,
+        pcoords: Union[float, Iterable[float]] = None,
+        *,
+        rng: Iterable = None,
+        jac: ndarray = None,
+    ) -> ndarray:
+        """
+        Evaluates shape function derivatives wrt. the master element or the local
+        coordinate frames of some cells. To control the behaviour, either 'jac' or 'wrt'
+        can be provided.
+
+        Parameters
+        ----------
+        pcoords: float or Iterable[float], Optional
+            Locations of the evaluation points.
+        rng: Iterable, Optional
+            The range in which the locations ought to be understood,
+            typically [0, 1] or [-1, 1]. Default is [0, 1].
+        jac: Iterable, Optional
+            The jacobian matrix as a float array of shape (nE, nP, nD=1, nD=1), evaluated for
+            each point in each cell. Default is None.
+
+        Returns
+        -------
+        numpy.ndarray
+            An array of shape (nP, nNE, nD=1), where nP, nNE and nD are
+            the number of evaluation points, nodes and spatial dimensions.
+        """
+        rng = np.array([-1, 1], dtype=float) if rng is None else np.array(rng)
+        pcoords = atleast1d(np.array(pcoords, dtype=float))
+        pcoords = to_range_1d(pcoords, source=rng, target=[-1, 1])
+        return super().shape_function_derivatives(pcoords, jac=jac)
 
 
 class PolyCell2d(PolyCell):
