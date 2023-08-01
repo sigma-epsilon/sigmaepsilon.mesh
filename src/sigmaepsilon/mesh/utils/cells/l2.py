@@ -47,7 +47,7 @@ def dshp_L2(r):
 @njit(nogil=True, parallel=True, cache=__cache)
 def dshp_L2_multi(pcoords: ndarray):
     nP = pcoords.shape[0]
-    res = np.zeros((nP, 2), dtype=pcoords.dtype)
+    res = np.zeros((nP, 2, 1), dtype=pcoords.dtype)
     for iP in prange(nP):
-        res[iP, :] = dshp_L2(pcoords[iP])
+        res[iP, :, 0] = dshp_L2(pcoords[iP])
     return res

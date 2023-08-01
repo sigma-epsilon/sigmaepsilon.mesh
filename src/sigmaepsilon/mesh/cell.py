@@ -358,7 +358,7 @@ class PolyCell(CellData):
             x = np.array(pcoords) if pcoords is not None else self.lcoords()
             dshp = self.shape_function_derivatives(x)
         if self.NDIM == 1:
-            jacobian_matrix_bulk_1d(dshp, ecoords)
+            return jacobian_matrix_bulk_1d(dshp, ecoords)
         else:
             return jacobian_matrix_bulk(dshp, ecoords)
 

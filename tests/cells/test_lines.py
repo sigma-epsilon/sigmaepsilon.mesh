@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 import unittest
 
+import numpy as np
+
 from sigmaepsilon.mesh import PolyData, PointData, CartesianFrame
 from sigmaepsilon.mesh.grid import grid
 from sigmaepsilon.mesh.cells import L2
@@ -22,9 +24,12 @@ class TestLineCells(unittest.TestCase):
         mesh = PolyData(pd, cd, frame=frame)
 
         jac = cd.jacobian_matrix()
-        pcoords = L2.lcoords()
+        self.assertTrue(isinstance(jac, np.ndarray))
+        
+        pcoords = L2.master_coordinates()
+        self.assertTrue(isinstance(pcoords, np.ndarray))
+        
         gdshp = L2.shape_function_derivatives(pcoords, jac=jac)
-
         self.assertTrue(
             gdshp.shape, (topo.shape[0], pcoords.shape[0], topo.shape[1], 1)
         )
