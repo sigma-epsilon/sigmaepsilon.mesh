@@ -187,6 +187,7 @@ class PolyCell(CellData):
             Evaluates the shape functions at multiple points in the
             master domain.
             """
+            p = atleast2d(p, back=True)
             r = np.stack([_shpf(p[i])[0] for i in range(len(p))])
             return ascont(r)
 
@@ -195,6 +196,7 @@ class PolyCell(CellData):
             Evaluates the shape function matrix at multiple points
             in the master domain.
             """
+            p = atleast2d(p, back=True)
             nP = p.shape[0]
             eye = np.eye(ndof, dtype=float)
             shp = shpf(p)
@@ -209,6 +211,7 @@ class PolyCell(CellData):
             Evaluates the shape function derivatives at multiple points
             in the master domain.
             """
+            p = atleast2d(p, back=True)
             r = np.stack([_dshpf(p[i]) for i in range(len(p))])
             return ascont(r)
 
