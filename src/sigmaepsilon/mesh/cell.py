@@ -285,7 +285,7 @@ class PolyCell(CellData):
 
     @classmethod
     def shape_function_derivatives(
-        cls, pcoords: Iterable[float], *, jac: ndarray = None
+        cls, pcoords: Iterable[float], *, jac: ndarray = None, dshp: ndarray = None
     ) -> ndarray:
         """
         Evaluates shape function derivatives wrt. the master element or the local
@@ -300,10 +300,15 @@ class PolyCell(CellData):
             The jacobian matrix as a float array of shape (nE, nP, nD, nD), evaluated for
             an nP number of points and nP number cells and nD number of spatial dimensions.
             Default is None.
-
+        dshp: numpy.ndarray, Optional
+            Shape function derivatives wrt. the master element. Only relevant if 'jac' is
+            provided. The purpose of this argument is to avoid repeated evaluation in situations
+            where 'dshp' is required on its own and is already at hand when calling this function.
+            Default is None, in which case it is calculated automatically.
+            
         Notes
         -----
-        Only first derivatives are evaluated.
+        Only first derivatives are calculated.
 
         Returns
         -------
@@ -322,7 +327,8 @@ class PolyCell(CellData):
             return cls.dshpfnc(pcoords).astype(float)
         else:
             pcoords = np.array(pcoords) if pcoords is not None else cls.lcoords()
-            dshp = cls.shape_function_derivatives(pcoords)
+            if dshp is None:
+                dshp = cls.shape_function_derivatives(pcoords)
             return global_shape_function_derivatives(dshp, jac)
 
     def jacobian_matrix(
@@ -880,6 +886,7 @@ class PolyCell1d(PolyCell):
         *,
         rng: Iterable = None,
         jac: ndarray = None,
+        dshp: ndarray = None
     ) -> ndarray:
         """
         Evaluates shape function derivatives wrt. the master element or the local
@@ -896,6 +903,11 @@ class PolyCell1d(PolyCell):
         jac: Iterable, Optional
             The jacobian matrix as a float array of shape (nE, nP, nD=1, nD=1), evaluated for
             each point in each cell. Default is None.
+        dshp: numpy.ndarray, Optional
+            Shape function derivatives wrt. the master element. Only relevant if 'jac' is
+            provided. The purpose of this argument is to avoid repeated evaluation in situations
+            where 'dshp' is required on its own and is already at hand when calling this function.
+            Default is None, in which case it is calculated automatically.
 
         Returns
         -------
@@ -906,7 +918,7 @@ class PolyCell1d(PolyCell):
         rng = np.array([-1, 1], dtype=float) if rng is None else np.array(rng)
         pcoords = atleast1d(np.array(pcoords, dtype=float))
         pcoords = to_range_1d(pcoords, source=rng, target=[-1, 1])
-        return super().shape_function_derivatives(pcoords, jac=jac)
+        return super().shape_function_derivatives(pcoords, jac=jac, dshp=dshp)
 
 
 class PolyCell2d(PolyCell):
