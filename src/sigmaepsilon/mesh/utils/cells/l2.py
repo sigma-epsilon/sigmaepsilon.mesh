@@ -11,7 +11,7 @@ def monoms_L2(r: float) -> ndarray:
 
 
 @njit(nogil=True, cache=__cache)
-def shp_L2(r):
+def shp_L2(r) -> ndarray:
     """
     Evaluates the shape functions at one location in the range [-1, 1].
     """
@@ -19,7 +19,7 @@ def shp_L2(r):
 
 
 @njit(nogil=True, parallel=True, cache=__cache)
-def shp_L2_multi(pcoords: np.ndarray):
+def shp_L2_multi(pcoords: ndarray) -> ndarray:
     nP = pcoords.shape[0]
     res = np.zeros((nP, 2), dtype=pcoords.dtype)
     for iP in prange(nP):
@@ -40,12 +40,12 @@ def shape_function_matrix_L2_multi(pcoords: ndarray, ndof: int = 2) -> ndarray:
 
 
 @njit(nogil=True, cache=__cache)
-def dshp_L2(r):
+def dshp_L2(r) -> ndarray:
     return np.array([-1, 1]) / 2
 
 
 @njit(nogil=True, parallel=True, cache=__cache)
-def dshp_L2_multi(pcoords: ndarray):
+def dshp_L2_multi(pcoords: ndarray) -> ndarray:
     nP = pcoords.shape[0]
     res = np.zeros((nP, 2, 1), dtype=pcoords.dtype)
     for iP in prange(nP):
