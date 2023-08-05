@@ -737,8 +737,7 @@ class PolyCell1d(PolyCell):
     NDIM = 1
 
     def lenth(self) -> float:
-        """Returns the total length of the cells in
-        the database."""
+        """Returns the total length of the cells in the block."""
         return np.sum(self.lengths())
 
     def lengths(self) -> ndarray:
