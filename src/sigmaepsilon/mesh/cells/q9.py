@@ -3,7 +3,7 @@ import numpy as np
 from numpy import ndarray
 from sympy import symbols
 
-from ..polygon import BiQuadraticQuadrilateral
+from .base.polygon import BiQuadraticQuadrilateral
 from ..utils.cells.q9 import (
     shp_Q9_multi,
     dshp_Q9_multi,

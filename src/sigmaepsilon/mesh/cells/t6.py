@@ -5,7 +5,7 @@ from numpy import ndarray
 from sympy import symbols
 
 from ..utils.utils import cells_coords
-from ..polygon import QuadraticTriangle as Triangle
+from .base.polygon import QuadraticTriangle as Triangle
 from ..utils.cells.t6 import (
     shp_T6_multi,
     dshp_T6_multi,

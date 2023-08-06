@@ -6,7 +6,7 @@ import numpy as np
 from numpy import ndarray
 from sympy import symbols
 
-from ..line import Line
+from .base.line import Line
 from ..utils.cells.l2 import (
     shp_L2_multi,
     dshp_L2_multi,

@@ -1,4 +1,4 @@
-from .cell import PolyCell1d
+from .cell1d import PolyCell1d
 
 
 __all__ = ["Line", "QuadraticLine", "NonlinearLine"]

@@ -4,7 +4,7 @@ import numpy as np
 from numpy import ndarray
 from sympy import symbols
 
-from ..polygon import Quadrilateral
+from .base.polygon import Quadrilateral
 from ..utils.cells.q4 import (
     shp_Q4_multi,
     dshp_Q4_multi,

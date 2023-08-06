@@ -3,7 +3,7 @@ import numpy as np
 from numpy import ndarray
 from sympy import symbols
 
-from ..polyhedron import BiquadraticWedge
+from .base.polyhedron import BiquadraticWedge
 from ..utils.cells.gauss import Gauss_Legendre_Wedge_3x3
 from ..utils.cells.utils import volumes
 from ..utils.utils import cells_coords

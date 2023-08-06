@@ -3,7 +3,7 @@ import numpy as np
 from numpy import ndarray
 from sympy import symbols
 
-from ..polyhedron import QuadraticTetraHedron
+from .base.polyhedron import QuadraticTetraHedron
 from ..utils.cells.tet10 import (
     monoms_TET10,
 )

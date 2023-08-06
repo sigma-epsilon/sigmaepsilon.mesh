@@ -4,7 +4,7 @@ import numpy as np
 from numpy import ndarray
 from sympy import symbols
 
-from ..polygon import Triangle
+from .base.polygon import Triangle
 from ..utils.cells.gauss import Gauss_Legendre_Tri_1
 from ..utils.cells.t3 import (
     shp_T3_multi,

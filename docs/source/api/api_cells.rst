@@ -8,16 +8,25 @@ in 1, 2 or 3 dimensions.
 Base Classes
 ------------
 
-.. automodule:: sigmaepsilon.mesh.cell
+.. automodule:: sigmaepsilon.mesh.cells.base.cell
     :members:
 
-.. automodule:: sigmaepsilon.mesh.line
+.. automodule:: sigmaepsilon.mesh.cells.base.cell1d
+    :members:
+
+.. automodule:: sigmaepsilon.mesh.cells.base.cell2d
+    :members:
+
+.. automodule:: sigmaepsilon.mesh.cells.base.cell3d
+    :members:
+
+.. automodule:: sigmaepsilon.mesh.cells.base.line
     :members: 
 
-.. automodule:: sigmaepsilon.mesh.polygon
+.. automodule:: sigmaepsilon.mesh.cells.base.polygon
     :members: 
 
-.. automodule:: sigmaepsilon.mesh.polyhedron
+.. automodule:: sigmaepsilon.mesh.cells.base.polyhedron
     :members: 
 
 Lagrange Cells
