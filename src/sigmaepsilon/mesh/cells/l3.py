@@ -40,7 +40,7 @@ class L3(QuadraticLine):
             A list of monomials.
         """
         locvars = r = symbols("r", real=True)
-        monoms = [1, r, r**2]
+        monoms = [1, r, r ** 2]
         return [locvars], monoms
 
     @classmethod

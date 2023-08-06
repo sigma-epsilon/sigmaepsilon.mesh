@@ -49,11 +49,11 @@ class Q9(BiQuadraticQuadrilateral):
             r,
             s,
             r * s,
-            r**2,
-            s**2,
-            r * s**2,
-            s * r**2,
-            s**2 * r**2,
+            r ** 2,
+            s ** 2,
+            r * s ** 2,
+            s * r ** 2,
+            s ** 2 * r ** 2,
         ]
         return locvars, monoms
 

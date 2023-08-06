@@ -66,6 +66,14 @@ If you want to run the tests, you can install the package along with the necessa
 >>> pip install ".[test]"
 ```
 
+### Development mode
+
+If you are a developer and want to install the library in development mode, the suggested way is by using this command:
+
+```console
+>>> pip install "-e .[test, dev]"
+```
+
 ## How to contribute?
 
 Contributions are currently expected in any the following ways:

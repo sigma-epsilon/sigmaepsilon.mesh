@@ -682,7 +682,7 @@ def explode_mesh(coords: ndarray, topo: ndarray, *, data=None):
 
 
 @njit(nogil=True, parallel=True, cache=__cache)
-def decompose(ecoords, topo, coords_out):
+def decompose(ecoords: ndarray, topo: ndarray, coords_out: ndarray) -> None:
     """
     Performes the inverse operation to coordinate explosion.
     Example usage at AxisVM domains. Works for all kinds of arrays.
@@ -999,3 +999,34 @@ def is_ccw(points: Iterable) -> bool:
     False if it is clockwise.
     """
     return not is_cw(points)
+
+
+@njit(nogil=True, parallel=True, cache=__cache)
+def global_shape_function_derivatives(dshp: ndarray, jac: ndarray) -> ndarray:
+    """
+    Calculates derivatives of shape functions wrt. the local axes of cells
+    using derivatives along master axes evaulated at some points in
+    the interval [-1, 1], and jacobian matrices of local-to-global mappings.
+
+    Parameters
+    ----------
+    dshp: numpy.ndarray
+        Derivatives of an nNE number of shape functions evaluated at an nP number
+        of points as a float array of shape (nP, nNE, nD).
+    jac: numpy.ndarray
+        Jacobian matrices, evaluated for a a nP number of points in nE number of cells
+        and for nD spatial dimensions as a float array of shape (nE, nP, nD, nD).
+
+    Returns
+    -------
+    numpy.ndarray
+        4d float array of shape (nE, nP, nNE, nD).
+    """
+    nP, nNE, nD = dshp.shape
+    nE = jac.shape[0]
+    res = np.zeros((nE, nP, nNE, nD), dtype=dshp.dtype)
+    for iE in prange(nE):
+        for iP in prange(nP):
+            invJ = np.linalg.inv(jac[iE, iP])
+            res[iE, iP] = dshp[iP] @ invJ
+    return res

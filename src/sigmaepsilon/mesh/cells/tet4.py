@@ -45,7 +45,7 @@ class TET4(TetraHedron):
             A list of monomials.
         """
         locvars = r, s, t = symbols("r s t", real=True)
-        monoms = [1, r, s, t, r * s, r * t, s * t, r**2, s**2, t**2]
+        monoms = [1, r, s, t]
         return locvars, monoms
 
     @classmethod

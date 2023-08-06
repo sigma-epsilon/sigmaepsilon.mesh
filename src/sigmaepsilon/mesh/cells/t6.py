@@ -47,7 +47,7 @@ class T6(Triangle):
             A list of monomials.
         """
         locvars = r, s = symbols("r s", real=True)
-        monoms = [1, r, s, r**2, s**2, r * s]
+        monoms = [1, r, s, r ** 2, s ** 2, r * s]
         return locvars, monoms
 
     @classmethod

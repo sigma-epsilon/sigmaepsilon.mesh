@@ -2,13 +2,18 @@ import unittest
 import numpy as np
 
 
-from sigmaepsilon.mesh.recipes import circular_disk, ribbed_plate, perforated_cube, cylinder
+from sigmaepsilon.mesh.recipes import (
+    circular_disk,
+    ribbed_plate,
+    perforated_cube,
+    cylinder,
+)
 
 
 class TestRecipes(unittest.TestCase):
     def test_circular_disk(self):
         mesh = circular_disk(120, 60, 5, 25)
-        area = np.pi * (25**2 - 5**2)
+        area = np.pi * (25 ** 2 - 5 ** 2)
         self.assertTrue(np.isclose(mesh.area(), area, rtol=1e-3, atol=1e-3))
 
     def test_ribbed_plate(self):
@@ -45,7 +50,7 @@ class TestRecipes(unittest.TestCase):
         h = 50
         angle = 1
 
-        vol = np.pi * (max_radius**2 - min_radius**2) * h
+        vol = np.pi * (max_radius ** 2 - min_radius ** 2) * h
 
         shape = (min_radius, max_radius), angle, h
         size = n_radii, n_angles, n_z

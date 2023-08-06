@@ -86,7 +86,7 @@ def circular_disk(
 def cylinder(
     shape,
     size: Union[tuple, float, int] = None,
-    *args,
+    *,
     regular: bool = True,
     voxelize: bool = False,
     celltype=None,

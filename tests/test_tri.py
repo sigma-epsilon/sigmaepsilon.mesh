@@ -40,7 +40,7 @@ class TestTri(unittest.TestCase):
         def test_area_circular_disk_T3(min_radius, max_radius, n_angles, n_radii):
             try:
                 mesh = circular_disk(n_angles, n_radii, min_radius, max_radius)
-                a = np.pi * (max_radius**2 - min_radius**2)
+                a = np.pi * (max_radius ** 2 - min_radius ** 2)
                 assert np.isclose(mesh.area(), a, atol=0, rtol=a / 1000)
                 return True
             except AssertionError:
@@ -54,7 +54,7 @@ class TestTri(unittest.TestCase):
         def test_area_circular_disk_T6(min_radius, max_radius, n_angles, n_radii):
             try:
                 mesh = circular_disk(n_angles, n_radii, min_radius, max_radius)
-                a = np.pi * (max_radius**2 - min_radius**2)
+                a = np.pi * (max_radius ** 2 - min_radius ** 2)
                 assert np.isclose(mesh.area(), a, atol=0, rtol=a / 1000)
                 return True
             except AssertionError:

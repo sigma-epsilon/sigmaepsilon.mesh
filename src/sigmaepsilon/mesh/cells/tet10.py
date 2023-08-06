@@ -40,11 +40,11 @@ class TET10(QuadraticTetraHedron):
             A list of monomials.
         """
         locvars = r, s, t = symbols("r s t", real=True)
-        monoms = [1, r, s, t, r * s, r * t, s * t, r**2, s**2, t**2]
+        monoms = [1, r, s, t, r * s, r * t, s * t, r ** 2, s ** 2, t ** 2]
         return locvars, monoms
 
     @classmethod
-    def lcoords(cls):
+    def lcoords(cls) -> ndarray:
         return np.array(
             [
                 [0.0, 0.0, 0.0],
@@ -61,7 +61,7 @@ class TET10(QuadraticTetraHedron):
         )
 
     @classmethod
-    def lcenter(cls):
+    def lcenter(cls) -> ndarray:
         return np.array([[1 / 3, 1 / 3, 1 / 3]])
 
     def volumes(self, coords: ndarray = None, topo: ndarray = None) -> ndarray:

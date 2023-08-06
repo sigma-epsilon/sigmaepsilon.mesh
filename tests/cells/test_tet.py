@@ -5,7 +5,7 @@ import unittest
 from sigmaepsilon.mesh.trimesh import TriMesh
 from sigmaepsilon.mesh import CartesianFrame
 from sigmaepsilon.mesh.recipes import circular_disk
-from sigmaepsilon.mesh.cells import T3
+from sigmaepsilon.mesh.cells import T3, TET4, TET10
 
 
 class TestTet(unittest.TestCase):
@@ -22,7 +22,7 @@ class TestTet(unittest.TestCase):
             except Exception as e:
                 raise e
 
-        assert test_vol_TET4(1.0, 1.0, 1.0, 2, 2, 2)
+        self.assertTrue(test_vol_TET4(1.0, 1.0, 1.0, 2, 2, 2))
 
     def test_vol_cylinder_TET4(self):
         def test_vol_cylinder_TET4(
@@ -31,7 +31,7 @@ class TestTet(unittest.TestCase):
             try:
                 mesh2d = circular_disk(n_angles, n_radii, min_radius, max_radius)
                 mesh3d = mesh2d.extrude(h=height, N=n_z)
-                a = np.pi * (max_radius**2 - min_radius**2) * height
+                a = np.pi * (max_radius ** 2 - min_radius ** 2) * height
                 assert np.isclose(mesh3d.volume(), a, atol=0, rtol=a / 1000)
                 return True
             except AssertionError:
@@ -39,7 +39,21 @@ class TestTet(unittest.TestCase):
             except Exception as e:
                 raise e
 
-        assert test_vol_cylinder_TET4(1.0, 10.0, 10.0, 120, 80, 5)
+        self.assertTrue(test_vol_cylinder_TET4(1.0, 10.0, 10.0, 120, 80, 5))
+
+    def test_shp_TET4(self):
+        pcoords = TET4.lcoords()
+        shpf, shpmf, dshpf = TET4.generate_class_functions(return_symbolic=False)
+        shpf(pcoords)
+        shpmf(pcoords)
+        dshpf(pcoords)
+
+    def test_shp_TET10(self):
+        pcoords = TET10.lcoords()
+        shpf, shpmf, dshpf = TET10.generate_class_functions(return_symbolic=False)
+        shpf(pcoords)
+        shpmf(pcoords)
+        dshpf(pcoords)
 
 
 if __name__ == "__main__":
