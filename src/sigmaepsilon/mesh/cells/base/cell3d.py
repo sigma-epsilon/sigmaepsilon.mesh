@@ -1,34 +1,20 @@
-from typing import Union, MutableMapping, Iterable, Tuple, List, Callable
+from typing import Union, MutableMapping, Iterable, Tuple, Any
 
 import numpy as np
 from numpy import ndarray
-from sympy import Matrix, lambdify
 
-from sigmaepsilon.math import atleast1d, atleast2d, ascont
-from sigmaepsilon.math.utils import to_range_1d
-from sigmaepsilon.math.linalg import ReferenceFrame as FrameLike
+from sigmaepsilon.math import atleast2d
 
-from sigmaepsilon.mesh.space import PointCloud, CartesianFrame
 from .cell import PolyCell
-from ...celldata import CellData
 from ...utils.utils import (
-    jacobian_matrix_bulk,
-    jacobian_matrix_bulk_1d,
-    jacobian_det_bulk_1d,
     points_of_cells,
-    pcoords_to_coords,
-    pcoords_to_coords_1d,
     cells_coords,
-    lengths_of_lines,
-    global_shape_function_derivatives,
 )
 from ...utils.cells.utils import (
-    _loc_to_glob_bulk_,
     _find_first_hits_,
     _find_first_hits_knn_,
     _ntet_to_loc_bulk_,
 )
-from ...utils.tri import area_tri_bulk, _pip_tri_bulk_
 from ...utils.tet import (
     vol_tet_bulk,
     _pip_tet_bulk_knn_,
@@ -41,18 +27,15 @@ from ...utils.space import index_of_closest_point
 from ...vtkutils import mesh_to_UnstructuredGrid as mesh_to_vtk
 from ...utils.topology.topo import detach_mesh_bulk, rewire
 from ...utils.topology import transform_topology
-from ...utils.tri import triangulate_cell_coords
-from ...utils import cell_center, cell_center_2d, cell_centers_bulk
+from ...utils import cell_centers_bulk
 from ...utils.knn import k_nearest_neighbours
-from ...topoarray import TopologyArray
-from ...space import CartesianFrame
-from ...triang import triangulate
 from ...config import __haspyvista__
 
 if __haspyvista__:
     import pyvista as pv
 
 MapLike = Union[ndarray, MutableMapping]
+
 
 class PolyCell3d(PolyCell):
     """Base class for 3d cells"""
@@ -98,7 +81,7 @@ class PolyCell3d(PolyCell):
             nT = len(tetmap)
             return tetra.reshape(nE, nT, 4)
 
-    def to_vtk(self, detach: bool = False):
+    def to_vtk(self, detach: bool = False) -> Any:
         """
         Returns the block as a VTK object.
         """
