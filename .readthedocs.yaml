@@ -28,7 +28,6 @@ python:
    install:
    - requirements: requirements.txt
    - requirements: requirements-dev.txt
-   - requirements: requirements-devops.txt
    - requirements: docs/requirements.txt
    - method: pip
      path: .
