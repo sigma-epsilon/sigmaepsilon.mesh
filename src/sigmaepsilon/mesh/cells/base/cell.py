@@ -1,11 +1,12 @@
 from typing import Union, MutableMapping, Iterable, Tuple, List, Callable
+from functools import partial
 
 import numpy as np
 from numpy import ndarray
 from sympy import Matrix, lambdify
 
 from sigmaepsilon.math import atleast1d, atleast2d, ascont
-from sigmaepsilon.math.linalg import ReferenceFrame as FrameLike
+from sigmaepsilon.math.linalg import ReferenceFrame as FrameLike, generalized_inverse
 
 from sigmaepsilon.mesh.space import PointCloud, CartesianFrame
 from ...celldata import CellData
@@ -241,7 +242,7 @@ class PolyCell(CellData):
         Returns
         -------
         numpy.ndarray
-            An array of shape (nP, nDOF, nDOF * nNE) where nP, nDOF and nNE
+            An array of shape (nP, nNE, N * nNE) where nP, nDOF and nNE
             are the number of evaluation points, degrees of freedom per node
             and nodes per cell.
         """
@@ -310,18 +311,82 @@ class PolyCell(CellData):
             return global_shape_function_derivatives(dshp, jac)
 
     @classmethod
-    def interpolator(cls) -> Callable:
+    def interpolator(cls, x: Iterable = None) -> Callable:
         """
         Returns a callable object that can be used to interpolate over
         nodal values of one or more cells.
+        
+        Parameters
+        ----------
+        x: Iterable, Optional
+            The locations of known data. It can be fed into the returned interpolator
+            function directly, but since the operation involves the inversion of a matrix
+            related to these locations, it is a good idea to pre calculate it if you want
+            to reuse the interpolator with the same source coordinates.
+            
+        Returns
+        -------
+        Callable
+            A function that either takes 2 or 3 arguments. It the source coordinates
+            were provided when calling this function, the returned interpolator function
+            only takes 2 arguments.
+        
+        Notes
+        -----
+        If the number of source coorindates does not match the number of nodes (and hence
+        the number of shape functions) of the master element of the class, the interpolation
+        is gonna be under or overdetermined and the operation involves the calculation of a 
+        generalized inverse.
+        
+        Examples
+        --------
+        Let assume that we know some data at some locations:
+        >>> source_data = [1, 2, 3, 4]
+        >>> source_location = [[-0.5, -0.5], [0.5, -0.5], [0.5, 0.5], [-0.5, 0.5]]
+    
+        We want to extrapolate from this information to the location
+        >>> target_location = [[-2, -2], [2, -2], [2, 2], [-2, 2]]
+        
+        We have provided four points and four data values. If we want an exact extrapolation,
+        we use 4-noded quadrilaterals:
+        
+        >>> from sigmaepsilon.mesh import Q4
+        >>> interpolator = Q4.interpolator()
+        >>> target_data = interpolator(source_location, source_data, target_location)
+        
+        Here we provided 3 inputs to the interpolator. If we want to reuse the interpolator
+        with the same source locations, it is best to provide them when creating the interpolator.
+        This saves some time for repeated evaluations.
+        
+        >>> from sigmaepsilon.mesh import Q4
+        >>> interpolator = Q4.interpolator(source_location)
+        >>> target_data = interpolator(source_data, target_location)
         """
+        source_inverse = None
+        if isinstance(x, Iterable):
+            x = np.array(x, dtype=float)
+            shp_source = cls.shape_function_values(x)  # (nP_source, nNE)
+            source_inverse = generalized_inverse(shp_source)
 
         def interpolator(
-            x_source: Iterable, values: Iterable, x_target: Iterable, axis: int = None
+            x_source: Iterable, values_source: Iterable, x_target: Iterable
         ) -> Union[float, ndarray]:
-            shp = cls.shape_function_values(x_source)  # (nP, nNE)
+            """
+            Returns interpolated values from a set of known points and values.
+            """
+            nonlocal source_inverse
+            if source_inverse is None:
+                shp_source = cls.shape_function_values(x_source)  # (nP_source, nNE)
+                source_inverse = generalized_inverse(shp_source)
+            if not isinstance(values_source, ndarray):
+                values_source = np.array(values_source)
+            shp_target = cls.shape_function_values(x_target)  # (nP_target, nNE)
+            return shp_target @ source_inverse @ values_source
 
-        return interpolator
+        if isinstance(x, Iterable):
+            return partial(interpolator, x)
+        else:
+            return interpolator
 
     def jacobian_matrix(
         self, *, pcoords: Iterable[float] = None, dshp: ndarray = None, **__
