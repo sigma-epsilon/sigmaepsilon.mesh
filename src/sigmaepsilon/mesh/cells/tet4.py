@@ -11,7 +11,7 @@ from ..utils.cells.tet4 import (
     shape_function_matrix_TET4_multi,
     monoms_TET4,
 )
-from ..utils.cells.gauss import Gauss_Legendre_Tet_1
+from ..utils.cells.numint import Gauss_Legendre_Tet_1
 
 
 class TET4(TetraHedron):

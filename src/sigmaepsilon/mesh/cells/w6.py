@@ -4,7 +4,7 @@ from numpy import ndarray
 from sympy import symbols
 
 from .base.polyhedron import Wedge
-from ..utils.cells.gauss import Gauss_Legendre_Wedge_3x2
+from ..utils.cells.numint import Gauss_Legendre_Wedge_3x2
 from ..utils.cells.utils import volumes
 from ..utils.utils import cells_coords
 from ..utils.cells.w6 import monoms_W6

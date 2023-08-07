@@ -5,7 +5,7 @@ from numpy import ndarray
 from sympy import symbols
 
 from .base.line import QuadraticLine
-from ..utils.cells.gauss import Gauss_Legendre_Line_Grid
+from ..utils.cells.numint import Gauss_Legendre_Line_Grid
 from ..utils.cells.l3 import monoms_L3
 
 

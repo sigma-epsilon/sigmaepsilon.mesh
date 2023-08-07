@@ -10,7 +10,7 @@ from ..utils.cells.q9 import (
     shape_function_matrix_Q9_multi,
     monoms_Q9,
 )
-from ..utils.cells.gauss import Gauss_Legendre_Quad_9
+from ..utils.cells.numint import Gauss_Legendre_Quad_9
 
 
 class Q9(BiQuadraticQuadrilateral):
