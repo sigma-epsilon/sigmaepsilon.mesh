@@ -60,7 +60,7 @@ class PolyCell(CellData):
         numpy.ndarray
         """
         raise NotImplementedError
-    
+
     @classmethod
     def master_coordinates(cls) -> ndarray:
         """
@@ -115,19 +115,19 @@ class PolyCell(CellData):
         update: bool, Optional
             If True, class methods are updated with the generated versions.
             Default is True.
-        
+
         Notes
         -----
         Some cells are equipped with functions to evaluate shape functions a-priori,
         other classes rely on symbolic generation of these functions. In the latter case,
         this function is automatically invoked runtime, there is no need to manually
         trigger it.
-        
+
         Example
         -------
         >>> from sigmaepsilon.mesh.cells import H8
         >>> shp, dshp, shpf, shpmf, dshpf = H8.generate_class_functions()
-        
+
         Here `shp` and `dshp` are simbolic matrices for shape functions and
         their first derivatives, `shpf`, `shpmf` and `dshpf` are functions for
         fast evaluation of shape function values, the shape function matrix and
@@ -283,7 +283,7 @@ class PolyCell(CellData):
             provided. The purpose of this argument is to avoid repeated evaluation in situations
             where 'dshp' is required on its own and is already at hand when calling this function.
             Default is None, in which case it is calculated automatically.
-            
+
         Notes
         -----
         Only first derivatives are calculated.
@@ -308,6 +308,20 @@ class PolyCell(CellData):
             if dshp is None:
                 dshp = cls.shape_function_derivatives(pcoords)
             return global_shape_function_derivatives(dshp, jac)
+
+    @classmethod
+    def interpolator(cls) -> Callable:
+        """
+        Returns a callable object that can be used to interpolate over
+        nodal values of one or more cells.
+        """
+
+        def interpolator(
+            x_source: Iterable, values: Iterable, x_target: Iterable, axis: int = None
+        ) -> Union[float, ndarray]:
+            shp = cls.shape_function_values(x_source)  # (nP, nNE)
+
+        return interpolator
 
     def jacobian_matrix(
         self, *, pcoords: Iterable[float] = None, dshp: ndarray = None, **__
@@ -441,7 +455,7 @@ class PolyCell(CellData):
         target: Union[str, CartesianFrame] = "global",
     ) -> ndarray:
         """
-        Returns the points of the cells as a NumPy array.
+        Returns the points of selected cells as a NumPy array.
         """
         if cells is not None:
             cells = atleast1d(cells)
@@ -670,7 +684,7 @@ class PolyCell(CellData):
             return self.to_tetrahedra()
 
     def centers(self, target: FrameLike = None) -> ndarray:
-        """Returns the centers of the cells."""
+        """Returns the centers of the cells of the block."""
         coords = self.source_coords()
         t = self.topology().to_numpy()
         centers = cell_centers_bulk(coords, t)
@@ -690,6 +704,9 @@ class PolyCell(CellData):
         return self.source_points()[self.unique_indices()]
 
     def detach_points_cells(self) -> Tuple[ndarray]:
+        """
+        Returns the detached coordinate and topology array of the block.
+        """
         coords = self.container.source().coords()
         topo = self.topology().to_numpy()
         return detach_mesh_bulk(coords, topo)
