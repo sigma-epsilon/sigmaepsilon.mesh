@@ -1,4 +1,4 @@
-from typing import Union, MutableMapping, Iterable
+from typing import Union, Iterable
 
 import numpy as np
 from numpy import ndarray
