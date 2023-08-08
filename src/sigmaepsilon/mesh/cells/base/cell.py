@@ -1,12 +1,11 @@
 from typing import Union, MutableMapping, Iterable, Tuple, List, Callable
-from functools import partial
 
 import numpy as np
 from numpy import ndarray
 from sympy import Matrix, lambdify
 
 from sigmaepsilon.math import atleast1d, atleast2d, ascont
-from sigmaepsilon.math.linalg import ReferenceFrame as FrameLike, generalized_inverse
+from sigmaepsilon.math.linalg import ReferenceFrame as FrameLike
 
 from sigmaepsilon.mesh.space import PointCloud, CartesianFrame
 from ...celldata import CellData
@@ -25,6 +24,7 @@ from ...utils.topology.topo import detach_mesh_bulk, rewire
 from ...utils import cell_center, cell_centers_bulk
 from ...topoarray import TopologyArray
 from ...space import CartesianFrame
+from .interpolator import LagrangianCellInterpolator
 from ...config import __haspyvista__
 
 MapLike = Union[ndarray, MutableMapping]
@@ -311,7 +311,7 @@ class PolyCell(CellData):
             return global_shape_function_derivatives(dshp, jac)
 
     @classmethod
-    def interpolator(cls, x: Iterable = None) -> Callable:
+    def interpolator(cls, x: Iterable = None) -> LagrangianCellInterpolator:
         """
         Returns a callable object that can be used to interpolate over
         nodal values of one or more cells.
@@ -326,10 +326,8 @@ class PolyCell(CellData):
             
         Returns
         -------
-        Callable
-            A function that either takes 2 or 3 arguments. It the source coordinates
-            were provided when calling this function, the returned interpolator function
-            only takes 2 arguments.
+        :class:`~sigmaepsilon.mesh.cells.base.interpolator.LagrangianCellInterpolator`
+            A callable interpolator class. Refer to its documentation for more examples.
         
         Notes
         -----
@@ -337,6 +335,10 @@ class PolyCell(CellData):
         the number of shape functions) of the master element of the class, the interpolation
         is gonna be under or overdetermined and the operation involves the calculation of a 
         generalized inverse.
+        
+        See also
+        --------
+        :class:`~sigmaepsilon.mesh.cells.LagrangianCellInterpolator`
         
         Examples
         --------
@@ -352,7 +354,7 @@ class PolyCell(CellData):
         
         >>> from sigmaepsilon.mesh import Q4
         >>> interpolator = Q4.interpolator()
-        >>> target_data = interpolator(source_location, source_data, target_location)
+        >>> target_data = interpolator(source=source_location, values=source_data, target=target_location)
         
         Here we provided 3 inputs to the interpolator. If we want to reuse the interpolator
         with the same source locations, it is best to provide them when creating the interpolator.
@@ -360,34 +362,10 @@ class PolyCell(CellData):
         
         >>> from sigmaepsilon.mesh import Q4
         >>> interpolator = Q4.interpolator(source_location)
-        >>> target_data = interpolator(source_data, target_location)
+        >>> target_data = interpolator(values=source_data, target=target_location)
         """
-        source_inverse = None
-        if isinstance(x, Iterable):
-            x = np.array(x, dtype=float)
-            shp_source = cls.shape_function_values(x)  # (nP_source, nNE)
-            source_inverse = generalized_inverse(shp_source)
-
-        def interpolator(
-            x_source: Iterable, values_source: Iterable, x_target: Iterable
-        ) -> Union[float, ndarray]:
-            """
-            Returns interpolated values from a set of known points and values.
-            """
-            nonlocal source_inverse
-            if source_inverse is None:
-                shp_source = cls.shape_function_values(x_source)  # (nP_source, nNE)
-                source_inverse = generalized_inverse(shp_source)
-            if not isinstance(values_source, ndarray):
-                values_source = np.array(values_source)
-            shp_target = cls.shape_function_values(x_target)  # (nP_target, nNE)
-            return shp_target @ source_inverse @ values_source
-
-        if isinstance(x, Iterable):
-            return partial(interpolator, x)
-        else:
-            return interpolator
-
+        return LagrangianCellInterpolator(cls, x)
+        
     def jacobian_matrix(
         self, *, pcoords: Iterable[float] = None, dshp: ndarray = None, **__
     ) -> ndarray:
