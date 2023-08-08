@@ -21,24 +21,24 @@ Here and there we also use [NetworkX](https://networkx.org/documentation/stable/
 
 ## Highlights
 
-- Classes to handle points, pointclouds, reference frames and jagged topologies.
-- Array-like mesh composition with a Numba-jittable database model. Join or split meshes, attach numerical data and save to and load from disk.
-- Simplified and preconfigured plotting facility using PyVista.
-- Grid generation in 1, 2 and 3 dimensions for arbitrarily structured Lagrangian cells.
-- A mechanism for all sorts of geometrical and topological transformations.
-- A customizable nodal distribution mechanism to effortlessly pass around data between points and cells.
-- Generation of *Pseudo Peripheral Nodes*, *Rooted Level Structures* and *Adjancency Matrices* for arbitrary polygonal meshes.
-- Symbolic shape function generation for arbitrarily structured Lagrangian cells in 1, 2 and 3 dimensions.
-- Connections to popular third party libraries.
+* Classes to handle points, pointclouds, reference frames and jagged topologies.
+* Array-like mesh composition with a Numba-jittable database model. Join or split meshes, attach numerical data and save to and load from disk.
+* Simplified and preconfigured plotting facility using PyVista.
+* Grid generation in 1, 2 and 3 dimensions for arbitrarily structured Lagrangian cells.
+* A mechanism for all sorts of geometrical and topological transformations.
+* A customizable nodal distribution mechanism to effortlessly pass around data between points and cells.
+* Generation of *Pseudo Peripheral Nodes*, *Rooted Level Structures* and *Adjancency Matrices* for arbitrary polygonal meshes.
+* Symbolic shape function generation for arbitrarily structured Lagrangian cells in 1, 2 and 3 dimensions with an extendible interpolation and extrapolation mechanism.
+* Connections to popular third party libraries like `networkx`, `pandas`, `vtk`, `PyVista` and others.
 
 ## Projects using sigmaepsilon.mesh
 
-- [SigmaEpsilon](https://github.com/dewloosh/SigmaEpsilon) - A Python library for computational solid mechanics.
-- [PyAxisVM](https://github.com/AxisVM/pyaxisvm) - The official Python package of [AxisVM](https://axisvm.eu/), a popular structural analysis and design software.
+* [SigmaEpsilon.Solid](https://github.com/sigma-epsilon/sigmaepsilon.solid) - A Python library for computational solid mechanics.
+* [PyAxisVM](https://github.com/AxisVM/pyaxisvm) - The official Python package of [AxisVM](https://axisvm.eu/), a popular structural analysis and design software.
 
 ## Documentation
 
-The [documentation](https://sigmaepsilonmesh.readthedocs.io/en/latest/) is built with [Sphinx](https://www.sphinx-doc.org/en/master/) using the [PyData Sphinx Theme](https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html) and hosted on [ReadTheDocs](https://readthedocs.org/). Check it out for the user guide, an ever growing set examples, and the API Reference.
+The [documentation](https://sigmaepsilonmesh.readthedocs.io/en/latest/) is built with [Sphinx](https://www.sphinx-doc.org/en/master/) using the [PyData Sphinx Theme](https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html) and hosted on [ReadTheDocs](https://readthedocs.org/). Check it out for the user guide, an ever growing set examples, and API Reference.
 
 ## Installation
 
@@ -78,15 +78,15 @@ If you are a developer and want to install the library in development mode, the 
 
 Contributions are currently expected in any the following ways:
 
-- finding bugs
+* finding bugs
   If you run into trouble when using the library and you think it is a bug, feel free to raise an issue.
-- feedback
+* feedback
   All kinds of ideas are welcome. For instance if you feel like something is still shady (after reading the user guide), we want to know. Be gentle though, the development of the library is financially not supported yet.
-- feature requests
+* feature requests
   Tell us what you think is missing (with realistic expectations).
-- examples
+* examples
   If you've done something with the library and you think that it would make for a good example, get in touch with the developers and we will happily inlude it in the documention.
-- sharing is caring
+* sharing is caring
   If you like the library, share it with your friends or colleagues so they can like it too.
 
 ## Acknowledgements
