@@ -1,9 +1,12 @@
 from numpy import ndarray
 
+from sigmaepsilon.core.misc import get_index_suffix
+from sigmaepsilon.core.exceptions import SigmaEpsilonException
 
-class ArrayShapeMismatchError(Exception):
+
+class ArrayShapeMismatchError(SigmaEpsilonException):
     """
-    An exception for the case when an axis of an array does not
+    An exception for the case for when one or more axes of an array does not
     have the desired length.
     """
 
@@ -23,25 +26,10 @@ class ArrayShapeMismatchError(Exception):
                 and index is not None
                 and expected is not None
             )
-            suffix = self.get_index_suffix(index)
+            suffix = get_index_suffix(index)
             message = f"The {index}{suffix} axis of {arr_name} is {arr.shape[index]} but {expected} is expected."
         self.message = message
         super().__init__(message)
-
-    def get_index_suffix(self, index: int) -> str:
-        if index % 100 in {11, 12, 13}:  # Special case for 11th, 12th, and 13th
-            suffix = "th"
-        else:
-            last_digit = index % 10
-            if last_digit == 1:
-                suffix = "st"
-            elif last_digit == 2:
-                suffix = "nd"
-            elif last_digit == 3:
-                suffix = "rd"
-            else:
-                suffix = "th"
-        return suffix
 
     @classmethod
     def check_axis_length(cls, arr: ndarray, arr_name: str, index: int, expected: int):
