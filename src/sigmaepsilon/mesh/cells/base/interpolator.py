@@ -123,6 +123,8 @@ class LagrangianCellInterpolator:
     input values for utmost performance. The memory layout is optimal if the axis
     that goes along the input points is the last one:
     
+    >>> interpolator = H8.interpolator()
+    
     >>> source_values = np.random.rand(10, 2, 8)
     >>> interpolator(
     ...     source=source_coordinates, 
@@ -137,7 +139,7 @@ class LagrangianCellInterpolator:
     >>> interpolator(
     ...     source=source_coordinates, 
     ...     values=source_values, 
-    ...     target=target_coordinates[:3]
+    ...     target=target_coordinates[:3],
     ...     axis=0,
     ... ).shape
     (3, 2, 10)
