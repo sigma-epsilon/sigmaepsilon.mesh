@@ -3,7 +3,6 @@ import unittest
 
 from sigmaepsilon.mesh.cells import H8, TET10
 from sigmaepsilon.mesh import grid, PolyData, CartesianFrame
-from sigmaepsilon.mesh.cells import H8
 
 
 class TestGeneratedExpressions(unittest.TestCase):
