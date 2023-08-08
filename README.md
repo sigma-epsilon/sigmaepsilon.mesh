@@ -9,8 +9,6 @@
 [![Python 3.7‒3.10](https://img.shields.io/badge/python-3.7%E2%80%923.10-blue)](https://www.python.org)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
-> **Warning** sigmaepsilon.mesh is in the early stages of it's lifetime, and some concepts may change in the future. If you seek long-term stability, wait until version 1.0, which is planned to be released if the core concepts all seem to sit and the documentation covers all major concepts.
-
 The [sigmaepsilon.mesh](https://sigmaepsilon.mesh.readthedocs.io/en/latest/) library aims to provide the tools to build and analyse poligonal meshes with complex topologies. Meshes can be built like a dictionary, using arbitarily nested layouts and then be translated to other formats including [VTK](https://vtk.org/) and [PyVista](https://docs.pyvista.org/). For plotting, there is also support for [K3D](http://k3d-jupyter.org/), [Matplotlib](https://matplotlib.org/) and [Plotly](https://plotly.com/python/).
 
 The data model is built around [Awkward](https://awkward-array.org/doc/main/), which makes it possible to attach nested, variable-sized data to the points or the cells in a mesh, also providing interfaces to other popular libraries like [Pandas](https://vtk.org/) or [PyArrow](https://arrow.apache.org/docs/python/index.html). Implementations are fast as implementations rely on the vector math capabilities of [NumPy](https://numpy.org/doc/stable/index.html), while other computationally sensitive calculations are JIT-compiled using [Numba](https://numba.pydata.org/).
@@ -21,24 +19,24 @@ Here and there we also use [NetworkX](https://networkx.org/documentation/stable/
 
 ## Highlights
 
-- Classes to handle points, pointclouds, reference frames and jagged topologies.
-- Array-like mesh composition with a Numba-jittable database model. Join or split meshes, attach numerical data and save to and load from disk.
-- Simplified and preconfigured plotting facility using PyVista.
-- Grid generation in 1, 2 and 3 dimensions for arbitrarily structured Lagrangian cells.
-- A mechanism for all sorts of geometrical and topological transformations.
-- A customizable nodal distribution mechanism to effortlessly pass around data between points and cells.
-- Generation of *Pseudo Peripheral Nodes*, *Rooted Level Structures* and *Adjancency Matrices* for arbitrary polygonal meshes.
-- Symbolic shape function generation for arbitrarily structured Lagrangian cells in 1, 2 and 3 dimensions.
-- Connections to popular third party libraries.
+* Classes to handle points, pointclouds, reference frames and jagged topologies.
+* Array-like mesh composition with a Numba-jittable database model. Join or split meshes, attach numerical data and save to and load from disk.
+* Simplified and preconfigured plotting facility using PyVista.
+* Grid generation in 1, 2 and 3 dimensions for arbitrarily structured Lagrangian cells.
+* A mechanism for all sorts of geometrical and topological transformations.
+* A customizable nodal distribution mechanism to effortlessly pass around data between points and cells.
+* Generation of *Pseudo Peripheral Nodes*, *Rooted Level Structures* and *Adjancency Matrices* for arbitrary polygonal meshes.
+* Symbolic shape function generation for arbitrarily structured Lagrangian cells in 1, 2 and 3 dimensions with an extendible interpolation and extrapolation mechanism.
+* Connections to popular third party libraries like `networkx`, `pandas`, `vtk`, `PyVista` and others.
 
 ## Projects using sigmaepsilon.mesh
 
-- [SigmaEpsilon](https://github.com/dewloosh/SigmaEpsilon) - A Python library for computational solid mechanics.
-- [PyAxisVM](https://github.com/AxisVM/pyaxisvm) - The official Python package of [AxisVM](https://axisvm.eu/), a popular structural analysis and design software.
+* [SigmaEpsilon.Solid](https://github.com/sigma-epsilon/sigmaepsilon.solid) - A Python library for computational solid mechanics.
+* [PyAxisVM](https://github.com/AxisVM/pyaxisvm) - The official Python package of [AxisVM](https://axisvm.eu/), a popular structural analysis and design software.
 
 ## Documentation
 
-The [documentation](https://sigmaepsilonmesh.readthedocs.io/en/latest/) is built with [Sphinx](https://www.sphinx-doc.org/en/master/) using the [PyData Sphinx Theme](https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html) and hosted on [ReadTheDocs](https://readthedocs.org/). Check it out for the user guide, an ever growing set examples, and the API Reference.
+The [documentation](https://sigmaepsilonmesh.readthedocs.io/en/latest/) is built with [Sphinx](https://www.sphinx-doc.org/en/master/) using the [PyData Sphinx Theme](https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html) and hosted on [ReadTheDocs](https://readthedocs.org/). Check it out for the user guide, an ever growing set of examples, and API Reference.
 
 ## Installation
 
@@ -78,15 +76,15 @@ If you are a developer and want to install the library in development mode, the 
 
 Contributions are currently expected in any the following ways:
 
-- finding bugs
+* finding bugs
   If you run into trouble when using the library and you think it is a bug, feel free to raise an issue.
-- feedback
+* feedback
   All kinds of ideas are welcome. For instance if you feel like something is still shady (after reading the user guide), we want to know. Be gentle though, the development of the library is financially not supported yet.
-- feature requests
+* feature requests
   Tell us what you think is missing (with realistic expectations).
-- examples
+* examples
   If you've done something with the library and you think that it would make for a good example, get in touch with the developers and we will happily inlude it in the documention.
-- sharing is caring
+* sharing is caring
   If you like the library, share it with your friends or colleagues so they can like it too.
 
 ## Acknowledgements

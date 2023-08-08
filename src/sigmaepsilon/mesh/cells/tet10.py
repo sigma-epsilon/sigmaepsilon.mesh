@@ -3,11 +3,11 @@ import numpy as np
 from numpy import ndarray
 from sympy import symbols
 
-from ..polyhedron import QuadraticTetraHedron
+from .base.polyhedron import QuadraticTetraHedron
 from ..utils.cells.tet10 import (
     monoms_TET10,
 )
-from ..utils.cells.gauss import Gauss_Legendre_Tet_4
+from ..utils.cells.numint import Gauss_Legendre_Tet_4
 from ..utils.cells.utils import volumes
 from ..utils.utils import cells_coords
 

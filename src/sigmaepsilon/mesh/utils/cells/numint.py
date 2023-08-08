@@ -1,4 +1,6 @@
+from typing import Tuple
 import numpy as np
+from numpy import ndarray
 
 from sigmaepsilon.math.numint import gauss_points as gp
 
@@ -6,24 +8,24 @@ from sigmaepsilon.math.numint import gauss_points as gp
 # LINES
 
 
-def Gauss_Legendre_Line_Grid(n: int):
+def Gauss_Legendre_Line_Grid(n: int) -> Tuple[ndarray]:
     return gp(n)
 
 
 #  TRIANGLES
 
 
-def Gauss_Legendre_Tri_1():
+def Gauss_Legendre_Tri_1() -> Tuple[ndarray]:
     return np.array([[1 / 3, 1 / 3]]), np.array([1 / 2])
 
 
-def Gauss_Legendre_Tri_3a():
+def Gauss_Legendre_Tri_3a() -> Tuple[ndarray]:
     p = np.array([[1 / 6, 1 / 6], [2 / 3, 1 / 6], [1 / 6, 2 / 3]])
     w = np.array([1 / 6, 1 / 6, 1 / 6])
     return p, w
 
 
-def Gauss_Legendre_Tri_3b():
+def Gauss_Legendre_Tri_3b() -> Tuple[ndarray]:
     p = np.array([[1 / 2, 1 / 2], [0, 1 / 2], [1 / 2, 0]])
     w = np.array([1 / 6, 1 / 6, 1 / 6])
     return p, w
@@ -32,33 +34,33 @@ def Gauss_Legendre_Tri_3b():
 #  QUADRILATERALS
 
 
-def Gauss_Legendre_Quad_Grid(n: int, m: int = None):
-    m = n if m is None else m
-    return gp(n, m)
+def Gauss_Legendre_Quad_Grid(i: int, j: int = None) -> Tuple[ndarray]:
+    j = i if j is None else j
+    return gp(i, j)
 
 
-def Gauss_Legendre_Quad_1():
+def Gauss_Legendre_Quad_1() -> Tuple[ndarray]:
     return gp(1, 1)
 
 
-def Gauss_Legendre_Quad_4():
+def Gauss_Legendre_Quad_4() -> Tuple[ndarray]:
     return gp(2, 2)
 
 
-def Gauss_Legendre_Quad_9():
+def Gauss_Legendre_Quad_9() -> Tuple[ndarray]:
     return gp(3, 3)
 
 
 #  TETRAHEDRA
 
 
-def Gauss_Legendre_Tet_1():
+def Gauss_Legendre_Tet_1() -> Tuple[ndarray]:
     p = np.array([[1 / 4, 1 / 4, 1 / 4]])
     w = np.array([1 / 6])
     return p, w
 
 
-def Gauss_Legendre_Tet_4():
+def Gauss_Legendre_Tet_4() -> Tuple[ndarray]:
     a = (5 + 3 * np.sqrt(5)) / 20
     b = (5 - np.sqrt(5)) / 20
     p = np.array([[a, b, b], [b, a, b], [b, b, a], [b, b, b]])
@@ -66,7 +68,7 @@ def Gauss_Legendre_Tet_4():
     return p, w
 
 
-def Gauss_Legendre_Tet_5():
+def Gauss_Legendre_Tet_5() -> Tuple[ndarray]:
     p = np.array(
         [
             [1 / 4, 1 / 4, 1 / 4],
@@ -80,7 +82,7 @@ def Gauss_Legendre_Tet_5():
     return p, w
 
 
-def Gauss_Legendre_Tet_11():
+def Gauss_Legendre_Tet_11() -> Tuple[ndarray]:
     a = (1 + 3 * np.sqrt(5 / 15)) / 4
     b = (1 - np.sqrt(5 / 14)) / 4
     p = np.array(
@@ -118,17 +120,16 @@ def Gauss_Legendre_Tet_11():
 
 #  HEXAHEDRA
 
-
-def Gauss_Legendre_Hex_Grid(n: int, m: int = None, k: int = None):
-    m = n if m is None else m
-    k = m if k is None else k
-    return gp(n, m, k)
+def Gauss_Legendre_Hex_Grid(i: int, j: int = None, k: int = None) -> Tuple[ndarray]:
+    j = i if j is None else j
+    k = j if k is None else k
+    return gp(i, j, k)
 
 
 # WEDGES
 
 
-def Gauss_Legendre_Wedge_3x2():
+def Gauss_Legendre_Wedge_3x2() -> Tuple[ndarray]:
     p_tri, w_tri = Gauss_Legendre_Tri_3a()
     p_line, w_line = Gauss_Legendre_Line_Grid(2)
     p = np.zeros((6, 3), dtype=float)
@@ -142,7 +143,7 @@ def Gauss_Legendre_Wedge_3x2():
     return p, w
 
 
-def Gauss_Legendre_Wedge_3x3():
+def Gauss_Legendre_Wedge_3x3() -> Tuple[ndarray]:
     p_tri, w_tri = Gauss_Legendre_Tri_3a()
     p_line, w_line = Gauss_Legendre_Line_Grid(3)
     n = len(w_line) * len(w_tri)

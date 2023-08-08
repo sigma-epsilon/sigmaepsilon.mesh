@@ -4,14 +4,14 @@ import numpy as np
 from numpy import ndarray
 from sympy import symbols
 
-from ..polygon import Quadrilateral
+from .base.polygon import Quadrilateral
 from ..utils.cells.q4 import (
     shp_Q4_multi,
     dshp_Q4_multi,
     shape_function_matrix_Q4_multi,
     monoms_Q4,
 )
-from ..utils.cells.gauss import Gauss_Legendre_Quad_4
+from ..utils.cells.numint import Gauss_Legendre_Quad_4
 
 
 class Q4(Quadrilateral):

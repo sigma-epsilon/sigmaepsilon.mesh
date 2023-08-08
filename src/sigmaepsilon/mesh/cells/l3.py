@@ -4,8 +4,8 @@ import numpy as np
 from numpy import ndarray
 from sympy import symbols
 
-from ..line import QuadraticLine
-from ..utils.cells.gauss import Gauss_Legendre_Line_Grid
+from .base.line import QuadraticLine
+from ..utils.cells.numint import Gauss_Legendre_Line_Grid
 from ..utils.cells.l3 import monoms_L3
 
 

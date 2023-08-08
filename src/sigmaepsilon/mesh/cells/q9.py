@@ -3,14 +3,14 @@ import numpy as np
 from numpy import ndarray
 from sympy import symbols
 
-from ..polygon import BiQuadraticQuadrilateral
+from .base.polygon import BiQuadraticQuadrilateral
 from ..utils.cells.q9 import (
     shp_Q9_multi,
     dshp_Q9_multi,
     shape_function_matrix_Q9_multi,
     monoms_Q9,
 )
-from ..utils.cells.gauss import Gauss_Legendre_Quad_9
+from ..utils.cells.numint import Gauss_Legendre_Quad_9
 
 
 class Q9(BiQuadraticQuadrilateral):

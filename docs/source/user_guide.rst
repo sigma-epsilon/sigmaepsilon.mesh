@@ -15,3 +15,4 @@ User Guide
     notebooks/io
     notebooks/mesh_analysis
     notebooks/shape_function_generation
+    notebooks/interpolation

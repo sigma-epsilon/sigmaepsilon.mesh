@@ -5,7 +5,7 @@ import sympy as sy
 
 from sigmaepsilon.math.numint import gauss_points as gp
 
-from ..polyhedron import TriquadraticHexaHedron
+from .base.polyhedron import TriquadraticHexaHedron
 from ..utils.utils import cells_coords
 from ..utils.cells.h27 import (
     shp_H27_multi,
@@ -14,7 +14,7 @@ from ..utils.cells.h27 import (
     shape_function_matrix_H27_multi,
     monoms_H27,
 )
-from ..utils.cells.gauss import Gauss_Legendre_Hex_Grid
+from ..utils.cells.numint import Gauss_Legendre_Hex_Grid
 
 
 class H27(TriquadraticHexaHedron):

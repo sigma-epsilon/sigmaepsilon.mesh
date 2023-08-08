@@ -5,7 +5,7 @@ from numpy import ndarray
 from sympy import symbols
 
 from ..utils.utils import cells_coords
-from ..polygon import QuadraticTriangle as Triangle
+from .base.polygon import QuadraticTriangle as Triangle
 from ..utils.cells.t6 import (
     shp_T6_multi,
     dshp_T6_multi,
@@ -13,7 +13,7 @@ from ..utils.cells.t6 import (
     shape_function_matrix_T6_multi,
     monoms_T6,
 )
-from ..utils.cells.gauss import Gauss_Legendre_Tri_3a
+from ..utils.cells.numint import Gauss_Legendre_Tri_3a
 
 
 class T6(Triangle):

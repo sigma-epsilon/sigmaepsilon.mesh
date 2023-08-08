@@ -4,14 +4,14 @@ import numpy as np
 from numpy import ndarray
 from sympy import symbols
 
-from ..polyhedron import TetraHedron
+from .base.polyhedron import TetraHedron
 from ..utils.cells.tet4 import (
     shp_TET4_multi,
     dshp_TET4_multi,
     shape_function_matrix_TET4_multi,
     monoms_TET4,
 )
-from ..utils.cells.gauss import Gauss_Legendre_Tet_1
+from ..utils.cells.numint import Gauss_Legendre_Tet_1
 
 
 class TET4(TetraHedron):

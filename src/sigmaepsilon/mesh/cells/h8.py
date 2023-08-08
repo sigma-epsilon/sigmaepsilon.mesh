@@ -6,7 +6,7 @@ from numpy import ndarray
 
 from sigmaepsilon.math.numint import gauss_points as gp
 
-from ..polyhedron import HexaHedron
+from .base.polyhedron import HexaHedron
 from ..utils.utils import cells_coords
 from ..utils.cells.h8 import (
     shp_H8_multi,
@@ -15,7 +15,7 @@ from ..utils.cells.h8 import (
     shape_function_matrix_H8_multi,
     monoms_H8,
 )
-from ..utils.cells.gauss import Gauss_Legendre_Hex_Grid
+from ..utils.cells.numint import Gauss_Legendre_Hex_Grid
 
 
 class H8(HexaHedron):

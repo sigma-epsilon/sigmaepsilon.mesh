@@ -8,6 +8,7 @@ API Reference
     /api/api_space
     /api/api_topo
     /api/api_cells
+    /api/api_interpolator
     /api/api_recipes
     /api/api_utils
     

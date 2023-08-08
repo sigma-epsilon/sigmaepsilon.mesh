@@ -2,8 +2,8 @@
 import numpy as np
 
 from .polygon import Triangle
-from .cell import PolyCell3d
-from .utils.topology import compose_trmap
+from .cell3d import PolyCell3d
+from ...utils.topology import compose_trmap
 
 
 class PolyHedron(PolyCell3d):
