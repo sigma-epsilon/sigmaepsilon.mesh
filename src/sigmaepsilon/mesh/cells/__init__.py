@@ -19,7 +19,7 @@ from .w6 import W6
 from .w6 import W6 as Wedge
 from .w18 import W18
 
-from .base.interpolator import LagrangianCellInterpolator
+from .base.approximator import LagrangianCellApproximator
 
 __all__ = [
     "L2",
@@ -41,5 +41,5 @@ __all__ = [
     "W6",
     "Wedge",
     "W18",
-    "LagrangianCellInterpolator"
+    "LagrangianCellApproximator"
 ]

@@ -5,12 +5,12 @@ import numpy as np
 from numpy import ndarray
 
 from sigmaepsilon.math.linalg import generalized_inverse
-from ...utils.cells.interpolator import _interpolate_multi
+from ...utils.cells.approximator import _approximate_multi
 
-__all__ = ["LagrangianCellInterpolator"]
+__all__ = ["LagrangianCellApproximator"]
 
 
-def _interpolator(
+def _approximator(
     cls,
     *,
     x_source: Iterable = None,
@@ -50,7 +50,7 @@ def _interpolator(
         nP_target = shp_target.shape[0]
         result = np.zeros((nX, nP_target))
         # (nP_T x nNE) @ (nNE x nP_S) @ (nX, nP_S)
-        _interpolate_multi(shp_target @ shp_source_inverse, values_source, result)
+        _approximate_multi(shp_target @ shp_source_inverse, values_source, result)
         result = np.reshape(result, tuple(array_axes) + (nP_target,))
         result = np.moveaxis(result, -1, axis)
         values_source = np.moveaxis(values_source, -1, axis)
@@ -61,9 +61,9 @@ def _interpolator(
     return result
 
 
-class LagrangianCellInterpolator:
+class LagrangianCellApproximator:
     """
-    An interpolator for Lagrangian cells. It can be constructed directly or using
+    An approximator for Lagrangian cells. It can be constructed directly or using
     a cell class from the library.
 
     Parameters
@@ -81,12 +81,12 @@ class LagrangianCellInterpolator:
 
     Examples
     --------
-    Create an interpolator using 8-noded hexahedrons.
+    Create an approximator using 8-noded hexahedrons.
 
-    >>> from sigmaepsilon.mesh.cells import LagrangianCellInterpolator, H8
-    >>> interpolator = LagrangianCellInterpolator(H8)
+    >>> from sigmaepsilon.mesh.cells import LagrangianCellApproximator, H8
+    >>> approximator = LagrangianCellApproximator(H8)
 
-    The data to feed the interpolator:
+    The data to feed the approximator:
 
     >>> source_coordinates = H8.master_coordinates() / 2
     >>> source_values = [1, 2, 3, 4, 5, 6, 7, 8]
@@ -94,39 +94,39 @@ class LagrangianCellInterpolator:
 
     The desired data at the target locations:
 
-    >>> target_values = interpolator(
+    >>> target_values = approximator(
     ...     source=source_coordinates,
     ...     target=target_coordinates,
     ...     values=source_values
     ... )
 
-    This interpolator can also be created using the class diretly:
+    This approximator can also be created using the class diretly:
 
-    >>> interpolator = H8.interpolator()
+    >>> approximator = H8.approximator()
 
-    If you want to reuse the interpolator with the same set of source coordinates
-    many times, you can feed these points to the interpolator at instance creation:
+    If you want to reuse the approximator with the same set of source coordinates
+    many times, you can feed these points to the approximator at instance creation:
 
-    >>> interpolator = H8.interpolator(source_coordinates)
-    >>> interpolator = LagrangianCellInterpolator(H8, source_coordinates)
+    >>> approximator = H8.approximator(source_coordinates)
+    >>> approximator = LagrangianCellApproximator(H8, source_coordinates)
 
     Then, only source values and target coordinates have to be provided for
-    interpoaltion to happen (in fact, you will get an Exception of you provide
-    source coordinates both at creation and interpolation):
+    approximation to happen (in fact, you will get an Exception of you provide
+    source coordinates both at creation and approximator):
 
-    >>> target_values = interpolator(
+    >>> target_values = approximator(
     ...     target=target_coordinates,
     ...     values=source_values
     ... )
     
-    To interpolate multidimensional data, you have to carefully organize the
+    To approximator multidimensional data, you have to carefully organize the
     input values for utmost performance. The memory layout is optimal if the axis
     that goes along the input points is the last one:
     
-    >>> interpolator = H8.interpolator()
+    >>> approximator = H8.approximator()
     
     >>> source_values = np.random.rand(10, 2, 8)
-    >>> interpolator(
+    >>> approximator(
     ...     source=source_coordinates, 
     ...     values=source_values, 
     ...     target=target_coordinates[:3]
@@ -136,7 +136,7 @@ class LagrangianCellInterpolator:
     If it is not the last axis, you can use the 'axis' parameter:
     
     >>> source_values = np.random.rand(8, 2, 10)
-    >>> interpolator(
+    >>> approximator(
     ...     source=source_coordinates, 
     ...     values=source_values, 
     ...     target=target_coordinates[:3],
@@ -157,8 +157,8 @@ class LagrangianCellInterpolator:
         else:
             self._source_shp_inverse = None
 
-        self._interpolator = partial(
-            _interpolator, cell_class, shp_source_inverse=self._source_shp_inverse
+        self._approximator = partial(
+            _approximator, cell_class, shp_source_inverse=self._source_shp_inverse
         )
 
     def __call__(
@@ -170,9 +170,9 @@ class LagrangianCellInterpolator:
         axis: int = None,
     ) -> ndarray:
         if source is not None and self._source_shp_inverse is not None:
-            raise Exception("The interpolator is already fed with source coordinates.")
+            raise Exception("The approximator is already fed with source coordinates.")
 
-        return self._interpolator(
+        return self._approximator(
             x_source=source,
             x_target=target,
             values_source=values,
