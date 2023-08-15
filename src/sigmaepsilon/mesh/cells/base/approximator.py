@@ -1,4 +1,4 @@
-from typing import Iterable, Union, Any
+from typing import Iterable, Union, Any, Callable
 from functools import partial
 
 import numpy as np
@@ -118,32 +118,34 @@ class LagrangianCellApproximator:
     ...     target=target_coordinates,
     ...     values=source_values
     ... )
-    
+
     To approximator multidimensional data, you have to carefully organize the
     input values for utmost performance. The memory layout is optimal if the axis
     that goes along the input points is the last one:
-    
+
     >>> approximator = H8.approximator()
-    
+
     >>> source_values = np.random.rand(10, 2, 8)
     >>> approximator(
-    ...     source=source_coordinates, 
-    ...     values=source_values, 
+    ...     source=source_coordinates,
+    ...     values=source_values,
     ...     target=target_coordinates[:3]
     ... ).shape
     (10, 2, 3)
-    
+
     If it is not the last axis, you can use the 'axis' parameter:
-    
+
     >>> source_values = np.random.rand(8, 2, 10)
     >>> approximator(
-    ...     source=source_coordinates, 
-    ...     values=source_values, 
+    ...     source=source_coordinates,
+    ...     values=source_values,
     ...     target=target_coordinates[:3],
     ...     axis=0,
     ... ).shape
     (3, 2, 10)
     """
+
+    approximator_function: Callable = _approximator
 
     def __init__(self, cell_class: Any, x_source: Iterable = None):
         if not hasattr(cell_class, "shape_function_values"):
@@ -158,7 +160,9 @@ class LagrangianCellApproximator:
             self._source_shp_inverse = None
 
         self._approximator = partial(
-            _approximator, cell_class, shp_source_inverse=self._source_shp_inverse
+            self.approximator_function,
+            cell_class,
+            shp_source_inverse=self._source_shp_inverse,
         )
 
     def __call__(
