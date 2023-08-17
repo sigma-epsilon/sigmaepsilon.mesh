@@ -49,7 +49,7 @@ def _approximator(
         values_source = np.reshape(values_source, (nX, nP_source))
         nP_target = shp_target.shape[0]
         result = np.zeros((nX, nP_target))
-        # (nP_T x nNE) @ (nNE x nP_S) @ (nX, nP_S)
+        # (nP_T x nNE) @ (nNE x nP_S) @ (nX, nP_S) -> (nX, nP_T)
         _approximate_multi(shp_target @ shp_source_inverse, values_source, result)
         result = np.reshape(result, tuple(array_axes) + (nP_target,))
         result = np.moveaxis(result, -1, axis)
@@ -160,7 +160,7 @@ class LagrangianCellApproximator:
             self._source_shp_inverse = None
 
         self._approximator = partial(
-            self.approximator_function,
+            self.__class__.approximator_function,
             cell_class,
             shp_source_inverse=self._source_shp_inverse,
         )
