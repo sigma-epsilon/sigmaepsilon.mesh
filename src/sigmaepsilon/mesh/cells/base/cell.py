@@ -32,7 +32,7 @@ MapLike = Union[ndarray, MutableMapping]
 
 class PolyCell(CellData):
     """
-    A subclass of :class:`sigmaepsilon.mesh.celldata.CellData` as a base class
+    A subclass of :class:`~sigmaepsilon.mesh.celldata.CellData` as a base class
     for all kinds of geometrical entities.
     """
 
@@ -50,6 +50,36 @@ class PolyCell(CellData):
         if isinstance(i, ndarray):
             kwargs[self._dbkey_id_] = i
         super().__init__(*args, **kwargs)
+        
+    @classmethod
+    def generate_class(cls, **kwargs) -> "PolyCell":
+        """
+        A factory function that returns a custom 1d class.
+        
+        Parameters
+        ----------
+        **kwargs: doct, Optional
+            A dictionary of class attributes and their values.
+            
+        Example
+        -------
+        Define a custom 1d cell with 4 nodes:
+
+        >>> from sigmaepsilon.mesh.cells.base import PolyCell1d
+        >>> CustomClass = PolyCell1d.generate(NNODE=4)
+
+        This is equivalent to:
+
+        >>> class CustomClass(PolyCell1d):
+        ...     NNODE = 4
+        """
+        class CustomClass(cls):
+            ...
+
+        for key, value in kwargs.items():
+            setattr(CustomClass, key, value)
+
+        return CustomClass
 
     @classmethod
     def lcoords(cls) -> ndarray:
@@ -294,6 +324,8 @@ class PolyCell(CellData):
         numpy.ndarray
             An array of shape (nP, nNE, nD), where nP, nNE and nD are
             the number of evaluation points, nodes and spatial dimensions.
+            If 'jac' is provided, the result is of shape (nE, nP, nNE, nD),
+            where nE is the number of cells in the block.
         """
         if jac is None:
             pcoords = np.array(pcoords) if pcoords is not None else cls.lcoords()

@@ -1,4 +1,4 @@
-from typing import Union
+from typing import Union, Iterable
 from copy import copy, deepcopy
 from functools import partial
 
@@ -51,11 +51,7 @@ class CellData(CellDataBase):
         For every key and value pair where the value is a numpy array
         with a matching shape (has entries for all cells), the key
         is considered as a field and the value is added to the database.
-
-    See Also
-    --------
-    :class:`awkward.Array`
-    :class:`awkward.Record`
+        
     """
 
     _attr_map_ = {
@@ -290,7 +286,7 @@ class CellData(CellDataBase):
             name = self.__class__.__name__
             raise AttributeError(f"'{name}' object has no attribute called {attr}")
 
-    def set_nodal_distribution_factors(self, factors: ndarray, key: str = None):
+    def set_nodal_distribution_factors(self, factors: ndarray, key: str = None) -> None:
         """
         Sets nodal distribution factors.
 
@@ -350,7 +346,7 @@ class CellData(CellDataBase):
         return d
 
     @property
-    def fields(self):
+    def fields(self) -> Iterable[str]:
         """Returns the fields in the database object."""
         return self._wrapped.fields
 
@@ -400,7 +396,7 @@ class CellData(CellDataBase):
         self._wrapped[self._dbkey_frames_] = frames
 
     @property
-    def t(self):
+    def t(self) -> ndarray:
         """Returns the thicknesses of the cells."""
         return self._wrapped[self._dbkey_thickness_].to_numpy()
 
@@ -412,7 +408,7 @@ class CellData(CellDataBase):
         self._wrapped[self._dbkey_thickness_] = value
 
     @property
-    def A(self):
+    def A(self) -> ndarray:
         """Returns the thicknesses of the cells."""
         return self._wrapped[self._dbkey_areas_].to_numpy()
 
