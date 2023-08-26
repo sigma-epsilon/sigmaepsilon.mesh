@@ -1,7 +1,9 @@
-from typing import Union, Iterable
+from typing import Union, Iterable, Tuple, List
 
 import numpy as np
 from numpy import ndarray
+
+from sympy import symbols
 
 from sigmaepsilon.math import atleast1d
 from sigmaepsilon.math.utils import to_range_1d
@@ -19,7 +21,53 @@ from ...space import CartesianFrame
 class PolyCell1d(PolyCell):
     """Base class for 1d cells"""
 
-    NDIM = 1
+    NDIM: int = 1
+
+    @classmethod
+    def polybase(cls) -> Tuple[List]:
+        """
+        Retruns the polynomial base of the master element.
+
+        Returns
+        -------
+        list
+            A list of SymPy symbols.
+        list
+            A list of monomials.
+        """
+        if not isinstance(cls.NNODE, int):
+            raise ValueError(
+                "Attribute 'NNODE' of the cell must be set to a positive integer"
+            )
+        locvars = r = symbols("r", real=True)
+        monoms = [r**i for i in range(cls.NNODE)]
+        return [locvars], monoms
+
+    @classmethod
+    def lcoords(cls) -> ndarray:
+        """
+        Returns local coordinates of the cell.
+
+        Returns
+        -------
+        numpy.ndarray
+        """
+        if not isinstance(cls.NNODE, int):
+            raise ValueError(
+                "Attribute 'NNODE' of the cell must be set to a positive integer"
+            )
+        return np.linspace(-1.0, 1.0, cls.NNODE)
+
+    @classmethod
+    def lcenter(cls) -> ndarray:
+        """
+        Returns the local coordinates of the center of the cell.
+
+        Returns
+        -------
+        numpy.ndarray
+        """
+        return np.array([0.0])
 
     def lenth(self) -> float:
         """Returns the total length of the cells in the block."""
@@ -173,7 +221,7 @@ class PolyCell1d(PolyCell):
         *,
         rng: Iterable = None,
         jac: ndarray = None,
-        dshp: ndarray = None
+        dshp: ndarray = None,
     ) -> ndarray:
         """
         Evaluates shape function derivatives wrt. the master element or the local
@@ -203,6 +251,7 @@ class PolyCell1d(PolyCell):
             the number of evaluation points, nodes and spatial dimensions.
         """
         rng = np.array([-1, 1], dtype=float) if rng is None else np.array(rng)
-        pcoords = atleast1d(np.array(pcoords, dtype=float))
-        pcoords = to_range_1d(pcoords, source=rng, target=[-1, 1])
+        if pcoords is not None:
+            pcoords = atleast1d(np.array(pcoords, dtype=float))
+            pcoords = to_range_1d(pcoords, source=rng, target=[-1, 1])
         return super().shape_function_derivatives(pcoords, jac=jac, dshp=dshp)
