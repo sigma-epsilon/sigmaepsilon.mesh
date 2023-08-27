@@ -40,7 +40,7 @@ MapLike = Union[ndarray, MutableMapping]
 class PolyCell3d(PolyCell):
     """Base class for 3d cells"""
 
-    NDIM = 3
+    NDIM: int = 3
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

@@ -8,7 +8,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "sigmaepsilon.mesh"
-version = "1.0.0"
+version = "1.1.0"
 description = "A Python package to build, manipulate and analyze polygonal meshes."
 classifiers=[
         "Development Status :: 5 - Production/Stable",
@@ -43,7 +43,6 @@ where = ["src"]
 dependencies = { file = ["requirements.txt"] }
 optional-dependencies.test = { file = ["requirements-test.txt"] }
 optional-dependencies.dev = { file = ["requirements-dev.txt"] }
-optional-dependencies.devops = { file = ["requirements-devops.txt"] }
 optional-dependencies.docs = { file = ["docs/requirements.txt"] }
 
 [project.urls]

@@ -24,7 +24,7 @@ from ...utils.topology.topo import detach_mesh_bulk, rewire
 from ...utils import cell_center, cell_centers_bulk
 from ...topoarray import TopologyArray
 from ...space import CartesianFrame
-from .interpolator import LagrangianCellInterpolator
+from .approximator import LagrangianCellApproximator
 from ...config import __haspyvista__
 
 MapLike = Union[ndarray, MutableMapping]
@@ -32,7 +32,7 @@ MapLike = Union[ndarray, MutableMapping]
 
 class PolyCell(CellData):
     """
-    A subclass of :class:`sigmaepsilon.mesh.celldata.CellData` as a base class
+    A subclass of :class:`~sigmaepsilon.mesh.celldata.CellData` as a base class
     for all kinds of geometrical entities.
     """
 
@@ -50,6 +50,36 @@ class PolyCell(CellData):
         if isinstance(i, ndarray):
             kwargs[self._dbkey_id_] = i
         super().__init__(*args, **kwargs)
+        
+    @classmethod
+    def generate_class(cls, **kwargs) -> "PolyCell":
+        """
+        A factory function that returns a custom 1d class.
+        
+        Parameters
+        ----------
+        **kwargs: doct, Optional
+            A dictionary of class attributes and their values.
+            
+        Example
+        -------
+        Define a custom 1d cell with 4 nodes:
+
+        >>> from sigmaepsilon.mesh.cells.base import PolyCell1d
+        >>> CustomClass = PolyCell1d.generate(NNODE=4)
+
+        This is equivalent to:
+
+        >>> class CustomClass(PolyCell1d):
+        ...     NNODE = 4
+        """
+        class CustomClass(cls):
+            ...
+
+        for key, value in kwargs.items():
+            setattr(CustomClass, key, value)
+
+        return CustomClass
 
     @classmethod
     def lcoords(cls) -> ndarray:
@@ -294,6 +324,8 @@ class PolyCell(CellData):
         numpy.ndarray
             An array of shape (nP, nNE, nD), where nP, nNE and nD are
             the number of evaluation points, nodes and spatial dimensions.
+            If 'jac' is provided, the result is of shape (nE, nP, nNE, nD),
+            where nE is the number of cells in the block.
         """
         if jac is None:
             pcoords = np.array(pcoords) if pcoords is not None else cls.lcoords()
@@ -311,23 +343,23 @@ class PolyCell(CellData):
             return global_shape_function_derivatives(dshp, jac)
 
     @classmethod
-    def interpolator(cls, x: Iterable = None) -> LagrangianCellInterpolator:
+    def approximator(cls, x: Iterable = None) -> LagrangianCellApproximator:
         """
-        Returns a callable object that can be used to interpolate over
+        Returns a callable object that can be used to approximate over
         nodal values of one or more cells.
         
         Parameters
         ----------
         x: Iterable, Optional
-            The locations of known data. It can be fed into the returned interpolator
+            The locations of known data. It can be fed into the returned approximator
             function directly, but since the operation involves the inversion of a matrix
             related to these locations, it is a good idea to pre calculate it if you want
-            to reuse the interpolator with the same source coordinates.
+            to reuse the approximator with the same source coordinates.
             
         Returns
         -------
-        :class:`~sigmaepsilon.mesh.cells.base.interpolator.LagrangianCellInterpolator`
-            A callable interpolator class. Refer to its documentation for more examples.
+        :class:`~sigmaepsilon.mesh.cells.LagrangianCellApproximator`
+            A callable approximator class. Refer to its documentation for more examples.
         
         Notes
         -----
@@ -338,7 +370,7 @@ class PolyCell(CellData):
         
         See also
         --------
-        :class:`~sigmaepsilon.mesh.cells.LagrangianCellInterpolator`
+        :class:`~sigmaepsilon.mesh.cells.LagrangianCellApproximator`
         
         Examples
         --------
@@ -353,18 +385,18 @@ class PolyCell(CellData):
         we use 4-noded quadrilaterals:
         
         >>> from sigmaepsilon.mesh import Q4
-        >>> interpolator = Q4.interpolator()
-        >>> target_data = interpolator(source=source_location, values=source_data, target=target_location)
+        >>> approximator = Q4.approximator()
+        >>> target_data = approximator(source=source_location, values=source_data, target=target_location)
         
-        Here we provided 3 inputs to the interpolator. If we want to reuse the interpolator
-        with the same source locations, it is best to provide them when creating the interpolator.
+        Here we provided 3 inputs to the approximator. If we want to reuse the approximator
+        with the same source locations, it is best to provide them when creating the approximator.
         This saves some time for repeated evaluations.
         
         >>> from sigmaepsilon.mesh import Q4
-        >>> interpolator = Q4.interpolator(source_location)
-        >>> target_data = interpolator(values=source_data, target=target_location)
+        >>> approximator = Q4.approximator(source_location)
+        >>> target_data = approximator(values=source_data, target=target_location)
         """
-        return LagrangianCellInterpolator(cls, x)
+        return LagrangianCellApproximator(cls, x)
         
     def jacobian_matrix(
         self, *, pcoords: Iterable[float] = None, dshp: ndarray = None, **__

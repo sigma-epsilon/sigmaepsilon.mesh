@@ -714,10 +714,37 @@ def avg_cell_data(data: np.ndarray, topo: np.ndarray) -> ndarray:
 
 
 @njit(nogil=True, parallel=True, cache=__cache)
+def jacobian_matrix_single(dshp: ndarray, ecoords: ndarray) -> ndarray:
+    """
+    Returns Jacobian matrix of local to global transformation for for one cell and 
+    multiple evaluation pointsd.
+
+    Parameters
+    ----------
+    dshp: numpy.ndarray
+        A 3d numpy array of shape (nP, nNE, nD), where nP, nNE and nD
+        are the number of evaluation points, nodes and spatial dimensions.
+    ecoords: numpy.ndarray
+        A 2d numpy array of shape (nNE, nD), where nNE and nD
+        are the number of nodes and spatial dimensions.
+            
+    Returns
+    -------
+    numpy.ndarray
+        A 3d array of shape (nP, nD, nD).
+    """
+    nG, _, nD = dshp.shape
+    jac = np.zeros((nG, nD, nD), dtype=dshp.dtype)
+    for iG in prange(nG):
+        jac[iG] = dshp[iG].T @ ecoords
+    return jac
+
+
+@njit(nogil=True, parallel=True, cache=__cache)
 def jacobian_matrix_bulk(dshp: ndarray, ecoords: ndarray) -> ndarray:
     """
     Returns Jacobian matrices of local to global transformation
-    for several cells.
+    for several cells and evaluation points.
 
     Parameters
     ----------
@@ -731,7 +758,7 @@ def jacobian_matrix_bulk(dshp: ndarray, ecoords: ndarray) -> ndarray:
     Returns
     -------
     numpy.ndarray
-        A 4d array of shape (nE, nG, nD, nD).
+        A 4d array of shape (nE, nP, nD, nD).
     """
     nE = ecoords.shape[0]
     nG, _, nD = dshp.shape
@@ -741,30 +768,6 @@ def jacobian_matrix_bulk(dshp: ndarray, ecoords: ndarray) -> ndarray:
         for iE in prange(nE):
             jac[iE, iG] = d @ ecoords[iE]
     return jac
-
-
-@njit(nogil=True, parallel=True, cache=__cache)
-def jacobian_det_bulk_1d(jac: ndarray) -> ndarray:
-    """
-    Calculates Jacobian determinants for 1d cells.
-
-    Parameters
-    ----------
-    jac: numpy.ndarray
-        4d float array of shape (nE, nG, 1, 1) for an nE number of
-        elements and nG number of evaluation points.
-
-    Returns
-    -------
-    numpy.ndarray
-        A 2d array of shape (nE, nG) of jacobian determinants calculated
-        for each element and evaluation points.
-    """
-    nE, nG = jac.shape[:2]
-    res = np.zeros((nE, nG), dtype=jac.dtype)
-    for iE in prange(nE):
-        res[iE, :] = jac[iE, :, 0, 0]
-    return res
 
 
 @njit(nogil=True, parallel=True, cache=__cache)
@@ -794,6 +797,30 @@ def jacobian_matrix_bulk_1d(dshp: ndarray, ecoords: ndarray) -> ndarray:
     res = np.zeros((nE, nP, 1, 1), dtype=dshp.dtype)
     for iE in prange(nE):
         res[iE, :, 0, 0] = lengths[iE] / 2
+    return res
+
+
+@njit(nogil=True, parallel=True, cache=__cache)
+def jacobian_det_bulk_1d(jac: ndarray) -> ndarray:
+    """
+    Calculates Jacobian determinants for 1d cells.
+
+    Parameters
+    ----------
+    jac: numpy.ndarray
+        4d float array of shape (nE, nG, 1, 1) for an nE number of
+        elements and nG number of evaluation points.
+
+    Returns
+    -------
+    numpy.ndarray
+        A 2d array of shape (nE, nG) of jacobian determinants calculated
+        for each element and evaluation points.
+    """
+    nE, nG = jac.shape[:2]
+    res = np.zeros((nE, nG), dtype=jac.dtype)
+    for iE in prange(nE):
+        res[iE, :] = jac[iE, :, 0, 0]
     return res
 
 

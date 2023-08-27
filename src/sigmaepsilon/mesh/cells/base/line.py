@@ -9,8 +9,8 @@ class Line(PolyCell1d):
     Base class for linear 2-noded lines.
     """
 
-    NNODE = 2
-    vtkCellType = 3
+    NNODE: int  = 2
+    vtkCellType: int  = 3
 
     
 class QuadraticLine(PolyCell1d):
@@ -18,8 +18,8 @@ class QuadraticLine(PolyCell1d):
     Base class for quadratic 3-noded lines.
     """
 
-    NNODE = 3
-    vtkCellType = 21
+    NNODE: int  = 3
+    vtkCellType: int  = 21
 
 
 class NonlinearLine(PolyCell1d):
@@ -28,4 +28,4 @@ class NonlinearLine(PolyCell1d):
     """
 
     NNODE: int = None
-    vtkCellType = None
+    vtkCellType: int  = None

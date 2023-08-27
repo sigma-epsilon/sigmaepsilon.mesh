@@ -72,6 +72,10 @@ If you are a developer and want to install the library in development mode, the 
 >>> pip install "-e .[test, dev]"
 ```
 
+## Versioning
+
+The project follows the rules of [semantic versioning](https://semver.org/).
+
 ## How to contribute?
 
 Contributions are currently expected in any the following ways:
