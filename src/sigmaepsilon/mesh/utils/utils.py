@@ -716,7 +716,7 @@ def avg_cell_data(data: np.ndarray, topo: np.ndarray) -> ndarray:
 @njit(nogil=True, parallel=True, cache=__cache)
 def jacobian_matrix_single(dshp: ndarray, ecoords: ndarray) -> ndarray:
     """
-    Returns Jacobian matrix of local to global transformation for for one cell and 
+    Returns Jacobian matrix of local to global transformation for for one cell and
     multiple evaluation pointsd.
 
     Parameters
@@ -727,7 +727,7 @@ def jacobian_matrix_single(dshp: ndarray, ecoords: ndarray) -> ndarray:
     ecoords: numpy.ndarray
         A 2d numpy array of shape (nNE, nD), where nNE and nD
         are the number of nodes and spatial dimensions.
-            
+
     Returns
     -------
     numpy.ndarray

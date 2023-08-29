@@ -78,7 +78,7 @@ class LagrangianCellApproximator:
         it is a good idea to fed the instance with these coordinates at the time of
         instantiation. This way the expensive part of the calculation is only done once,
         and subsequent evaluations are faster. Default is None.
-        
+
     Notes
     -----
     Depending on the number of nodes of the element (hence the order of the approximation

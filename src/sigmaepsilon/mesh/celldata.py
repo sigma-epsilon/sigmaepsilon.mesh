@@ -51,7 +51,7 @@ class CellData(CellDataBase):
         For every key and value pair where the value is a numpy array
         with a matching shape (has entries for all cells), the key
         is considered as a field and the value is added to the database.
-        
+
     """
 
     _attr_map_ = {

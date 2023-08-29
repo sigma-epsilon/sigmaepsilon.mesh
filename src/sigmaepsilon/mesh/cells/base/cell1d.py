@@ -40,7 +40,7 @@ class PolyCell1d(PolyCell):
                 "Attribute 'NNODE' of the cell must be set to a positive integer"
             )
         locvars = r = symbols("r", real=True)
-        monoms = [r**i for i in range(cls.NNODE)]
+        monoms = [r ** i for i in range(cls.NNODE)]
         return [locvars], monoms
 
     @classmethod
