@@ -8,6 +8,7 @@
 [![PyPI](https://badge.fury.io/py/sigmaepsilon.mesh.svg)](https://pypi.org/project/sigmaepsilon.mesh)
 [![Python 3.7‒3.10](https://img.shields.io/badge/python-3.7%E2%80%923.10-blue)](https://www.python.org)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+[![Requirements Status](https://dependency-dash.repo-helper.uk/github/sigma-epsilon/sigmaepsilon.mesh/badge.svg)](https://dependency-dash.repo-helper.uk/github/sigma-epsilon/sigmaepsilon.mesh)
 
 The [sigmaepsilon.mesh](https://sigmaepsilon.mesh.readthedocs.io/en/latest/) library aims to provide the tools to build and analyse poligonal meshes with complex topologies. Meshes can be built like a dictionary, using arbitarily nested layouts and then be translated to other formats including [VTK](https://vtk.org/) and [PyVista](https://docs.pyvista.org/). For plotting, there is also support for [K3D](http://k3d-jupyter.org/), [Matplotlib](https://matplotlib.org/) and [Plotly](https://plotly.com/python/).
 
@@ -27,7 +28,7 @@ Here and there we also use [NetworkX](https://networkx.org/documentation/stable/
 * A customizable nodal distribution mechanism to effortlessly pass around data between points and cells.
 * Generation of *Pseudo Peripheral Nodes*, *Rooted Level Structures* and *Adjancency Matrices* for arbitrary polygonal meshes.
 * Symbolic shape function generation for arbitrarily structured Lagrangian cells in 1, 2 and 3 dimensions with an extendible interpolation and extrapolation mechanism.
-* Connections to popular third party libraries like `networkx`, `pandas`, `vtk`, `PyVista` and others.
+* Connections to popular third party libraries like `networkx`, `pandas`, `vtk`, `PyVista` and more.
 
 ## Projects using sigmaepsilon.mesh
 
