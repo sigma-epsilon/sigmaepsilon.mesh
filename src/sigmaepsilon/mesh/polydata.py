@@ -2,8 +2,8 @@ from copy import copy, deepcopy
 from typing import Union, Hashable, Collection, Iterable, Tuple, Any
 from collections import defaultdict
 import functools
-from functools import partial
 import warnings
+from contextlib import suppress
 
 from numpy import ndarray
 import numpy as np
@@ -296,8 +296,13 @@ class PolyData(PolyDataBase):
 
     def __copy__(self, memo=None):
         cls = type(self)
-        copy_function = copy if (memo is None) else partial(deepcopy, memo=memo)
         is_deep = memo is not None
+
+        if is_deep:
+            copy_function = lambda x: deepcopy(x, memo)
+        else:
+            copy_function = lambda x: x
+
         frame_cls = self._frame_class_
 
         # initialize result
@@ -460,6 +465,7 @@ class PolyData(PolyDataBase):
         Returns a dictionary that maps cell indices to blocks.
         """
         assert self.is_root(), "This must be called on the root object."
+
         if self._cid2bid is None:
             warnings.warn(
                 "Calling 'obj.lock(create_mappers=True)' creates additional"
@@ -471,11 +477,14 @@ class PolyData(PolyDataBase):
         else:
             cid2bid = self._cid2bid
             bid2b = self._bid2b
+
         if i is None:
             return {cid: bid2b[bid] for cid, bid in cid2bid.items()}
+
         cids = atleast1d(i)
         bids = [cid2bid[cid] for cid in cids]
         cid2b = {cid: bid2b[bid] for cid, bid in zip(cids, bids)}
+
         return cid2b
 
     def _create_mappers_(self) -> Tuple[dict, dict]:
@@ -518,6 +527,11 @@ class PolyData(PolyDataBase):
     def from_meshio(cls, mesh: MeshioMesh) -> "PolyData":
         """
         Returns a :class:`~sigmaepsilon.mesh.polydata.PolyData` instance from a :class:`meshio.Mesh` instance.
+
+        .. note::
+            See https://github.com/nschloe/meshio for formats supported by
+            ``meshio``. Be sure to install ``meshio`` with ``pip install
+            meshio`` if you wish to use it.
         """
         GlobalFrame = CartesianFrame(dim=3)
 
@@ -555,6 +569,11 @@ class PolyData(PolyDataBase):
         Returns a :class:`~sigmaepsilon.mesh.polydata.PolyData` instance from
         a :class:`pyvista.PolyData` or a :class:`pyvista.UnstructuredGrid`
         instance.
+
+        .. note::
+            See https://github.com/pyvista/pyvista for more examples with
+            ``pyvista``. Be sure to install ``pyvista`` with ``pip install
+            pyvista`` if you wish to use it.
 
         Example
         -------
@@ -903,7 +922,7 @@ class PolyData(PolyDataBase):
         See also
         --------
         :func:`blocks`
-        :class:`~sigmaepsilon.mesh.pointdata.PointData`
+        :class:`~sigmaepsilon.mesh.core.pointdata.PointData`
         """
         return filter(lambda i: i.pd is not None, self.blocks(*args, **kwargs))
 
@@ -1215,18 +1234,24 @@ class PolyData(PolyDataBase):
         source = self.source()
         coords = source.coords()
         frame = source.frame
+
         triangles = []
         for block in blocks:
             NDIM = block.celldata.Geometry.number_of_spatial_dimensions
             assert NDIM == 3, "This is only for 3d cells."
             triangles.append(block.cd.extract_surface(detach=False)[-1])
         triangles = np.vstack(triangles)
+
         if len(blocks) > 1:
             _, indices = np.unique(triangles, axis=0, return_index=True)
             triangles = triangles[indices]
+
+        frames = frames_of_surfaces(coords, triangles)
+
         pointtype = self.__class__._point_class_
         pd = pointtype(coords=coords, frame=frame)
-        cd = Triangle(topo=triangles, pointdata=pd)
+        cd = Triangle(topo=triangles, pointdata=pd, frames=frames)
+
         return self.__class__(pd, cd, frame=frame)
 
     def topology(
@@ -1836,18 +1861,22 @@ class PolyData(PolyDataBase):
             -------
             vtk.vtkUnstructuredGrid or vtk.vtkMultiBlockDataSet
             """
-            if not __hasvtk__:
+            if not __hasvtk__:  # pragma: no cover
                 raise ImportError("VTK must be installed for this!")
+
             ugrids = []
             for block, c, t, _ in self._detach_block_data_():
                 vtk_cell_id = block.celltype.Geometry.vtk_cell_id
                 ugrid = mesh_to_vtk(c, t, vtk_cell_id, deepcopy)
                 ugrids.append(ugrid)
+
             if multiblock:
                 mb = vtk.vtkMultiBlockDataSet()
                 mb.SetNumberOfBlocks(len(ugrids))
+
                 for i, ugrid in enumerate(ugrids):
                     mb.SetBlock(i, ugrid)
+
                 return mb
             else:
                 if len(ugrids) > 1:
@@ -1880,10 +1909,12 @@ class PolyData(PolyDataBase):
             -------
             pyvista.UnstructuredGrid or pyvista.MultiBlock
             """
-            if not __hasvtk__:
+            if not __hasvtk__:  # pragma: no cover
                 raise ImportError("VTK must be installed for this!")
-            if not __haspyvista__:
+
+            if not __haspyvista__:  # pragma: no cover
                 raise ImportError("PyVista must be installed for this!")
+
             ugrids = []
             data = []
             for block, c, t, d in self._detach_block_data_(scalars):
@@ -1891,16 +1922,19 @@ class PolyData(PolyDataBase):
                 ugrid = mesh_to_vtk(c, t, vtk_cell_id, deepcopy)
                 ugrids.append(ugrid)
                 data.append(d)
+
             if multiblock:
                 mb = vtk.vtkMultiBlockDataSet()
                 mb.SetNumberOfBlocks(len(ugrids))
+
                 for i, ugrid in enumerate(ugrids):
                     mb.SetBlock(i, ugrid)
+
                 mb = pv.wrap(mb)
-                try:
+
+                with suppress(AttributeError):
                     mb.wrap_nested()
-                except AttributeError:
-                    pass
+
                 return mb
             else:
                 if scalars is None:
@@ -1948,12 +1982,14 @@ class PolyData(PolyDataBase):
             :func:`k3d.lines`
             :func:`k3d.mesh`
             """
-            if not __hask3d__:
+            if not __hask3d__:  # pragma: no cover
                 raise ImportError(
                     "The python package 'k3d' must be installed for this."
                 )
+
             if scene is None:
                 scene = k3d.plot(menu_visibility=menu_visibility)
+
             source = self.source()
             coords = source.coords()
 
@@ -1970,14 +2006,18 @@ class PolyData(PolyDataBase):
                 params = copy(k3dparams)
                 config = b._get_config_(config_key)
                 params.update(config)
+
                 if "color" in params:
                     if isinstance(params["color"], str):
                         hexstr = mpl.colors.to_hex(params["color"])
                         params["color"] = int("0x" + hexstr[1:], 16)
+
                 if cmap is not None:
                     params["color_map"] = cmap
+
                 if NDIM == 1:
                     topo = b.cd.topology().to_numpy()
+
                     if isinstance(scalars, ndarray):
                         c, d, t = detach_mesh_data_bulk(coords, topo, scalars)
                         params["attribute"] = d
@@ -1986,19 +2026,23 @@ class PolyData(PolyDataBase):
                     else:
                         c, t = detach_mesh_bulk(coords, topo)
                         params["indices_type"] = "segment"
+
                     c = c.astype(np.float32)
                     t = t.astype(np.uint32)
                     scene += k3d.lines(c, t, **params)
                 elif NDIM == 2:
                     topo = b.cd.to_triangles()
+
                     if isinstance(scalars, ndarray):
                         c, d, t = detach_mesh_data_bulk(coords, topo, scalars)
                         params["attribute"] = d
                         params["color_range"] = color_range
                     else:
                         c, t = detach_mesh_bulk(coords, topo)
+
                     c = c.astype(np.float32)
                     t = t.astype(np.uint32)
+
                     if "side" in params:
                         if params["side"].lower() == "both":
                             params["side"] = "front"
@@ -2009,21 +2053,25 @@ class PolyData(PolyDataBase):
                             scene += k3d.mesh(c, t, **params)
                     else:
                         scene += k3d.mesh(c, t, **params)
+
                     if show_edges:
                         scene += k3d.mesh(c, t, wireframe=True, color=0)
                 elif NDIM == 3:
                     topo = b.surface().topology()
+
                     if isinstance(scalars, ndarray):
                         c, d, t = detach_mesh_data_bulk(coords, topo, scalars)
                         params["attribute"] = d
                         params["color_range"] = color_range
                     else:
                         c, t = detach_mesh_bulk(coords, topo)
+
                     c = c.astype(np.float32)
                     t = t.astype(np.uint32)
                     scene += k3d.mesh(c, t, **params)
                     if show_edges:
                         scene += k3d.mesh(c, t, wireframe=True, color=0)
+
             return scene
 
         def k3dplot(self, scene=None, *, menu_visibility: bool = True, **kwargs):
@@ -2148,9 +2196,11 @@ class PolyData(PolyDataBase):
             :func:`to_pv`
             :func:`to_vtk`
             """
-            if not __haspyvista__:
+            if not __haspyvista__:  # pragma: no cover
                 raise ImportError("You need to install `pyVista` for this.")
+
             polys = self.to_pv(deepcopy=deepcopy, multiblock=False, scalars=scalars)
+
             if isinstance(theme, str):
                 try:
                     new_theme_type = pv.themes._ALLOWED_THEMES[theme].value
@@ -2175,6 +2225,7 @@ class PolyData(PolyDataBase):
 
             if lighting is not None:
                 theme.lighting = lighting
+
             if edge_color is not None:
                 theme.edge_color = edge_color
 
