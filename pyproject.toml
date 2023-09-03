@@ -66,7 +66,7 @@ exclude_also = [
     "def __str__",
     "if self\\.debug",
 
-    # Don't complaint about numba jitted code
+    # Don't complain about numba jitted code
     "@njit",
     "@jit",
     "@guv",

@@ -60,7 +60,7 @@ jobs:
             python -m build
             python -m twine upload --skip-existing dist/*
 
-  test310-cov:  # This is the name of the job, feel free to change it to better match what you're trying to do!
+  test-cov-py310:  # This is the name of the job, feel free to change it to better match what you're trying to do!
     # These next lines defines a docker executors: https://circleci.com/docs/2.0/executor-types/
     # You can specify an image from dockerhub or use one of the convenience images from CircleCI's Developer Hub
     # A list of available CircleCI docker convenience images are available here: https://circleci.com/developer/images/image/cimg/python
@@ -81,7 +81,7 @@ jobs:
           command: pip install ".[test, dev]"
       - run:
           name: Run tests and generate coverage report
-          command: pytest --cov-report html --cov sigmaepsilon.mesh
+          command: python -m pytest --cov-report html --cov-config=.coveragerc --cov sigmaepsilon.mesh
       - run:
           name: List working directory contents
           command: ls -al
@@ -92,6 +92,10 @@ jobs:
       - store_artifacts:
           name: Store coverage report as artifact
           path: htmlcov
+      - store_test_results:
+          name: Store test results
+          path: test-results
+
 
   tox-test:  # This is the name of the job, feel free to change it to better match what you're trying to do!
     # These next lines defines a docker executors: https://circleci.com/docs/2.0/executor-types/
@@ -118,12 +122,12 @@ jobs:
 workflows:
   version: 2
 
-  main:  # This is the name of the workflow, feel free to change it to better match your workflow.
+  testing-and-coverage:  # This is the name of the workflow, feel free to change it to better match your workflow.
     # Inside the workflow, you define the jobs you want to run.
     # For more details on extending your workflow, see the configuration docs: https://circleci.com/docs/2.0/configuration-reference/#workflows
     jobs:
       #- tox-test
-      - test310-cov
+      - test-cov-py310
 
   build_test_publish:
     jobs:
