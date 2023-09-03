@@ -18,7 +18,6 @@ from .tet10 import TET10
 from .w6 import W6
 from .w6 import W6 as Wedge
 from .w18 import W18
-from ..cellapproximator import LagrangianCellApproximator
 
 __all__ = [
     "L2",
@@ -40,5 +39,4 @@ __all__ = [
     "W6",
     "Wedge",
     "W18",
-    "LagrangianCellApproximator",
 ]

@@ -53,7 +53,7 @@ from .utils.topology import (
     cells_at_nodes,
 )
 from .topoarray import TopologyArray
-from .pointdata import PointData
+from .core.pointdata import PointData
 from .core import CellData
 from .core.polydatabase import PolyDataBase
 from .core.cell import PolyCell
@@ -920,7 +920,7 @@ class PolyData(PolyDataBase):
         See also
         --------
         :func:`blocks`
-        :class:`~sigmaepsilon.mesh.celldata.CellData`
+        :class:`~sigmaepsilon.mesh.core.celldata.CellData`
         """
         return filter(lambda i: i.cd is not None, self.blocks(*args, **kwargs))
 

@@ -8,7 +8,7 @@ from .config import __hasplotly__
 
 if __hasplotly__:
     with suppress(ImportError):
-        from dewloosh.plotly import plot_lines_3d
+        from sigmaepsilon.plotting.plotly import plot_lines_3d
 
 
 __all__ = ["LineData"]

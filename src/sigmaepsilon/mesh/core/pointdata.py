@@ -11,9 +11,9 @@ from sigmaepsilon.math.linalg import ReferenceFrame as FrameLike
 from sigmaepsilon.math.logical import isboolarray
 from sigmaepsilon.math.linalg.sparse import csr_matrix
 
-from .space import CartesianFrame, PointCloud
-from .core import PointDataBase, PolyDataBase as PolyData
-from .utils import collect_nodal_data
+from ..space import CartesianFrame, PointCloud
+from . import PointDataBase, PolyDataBase as PolyData
+from ..utils import collect_nodal_data
 
 
 __all__ = ["PointData"]

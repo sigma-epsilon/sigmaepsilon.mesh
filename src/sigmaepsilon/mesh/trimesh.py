@@ -181,7 +181,7 @@ class TriMesh(PolyData):
     def to_triobj(self, *args, **kwargs):
         """
         Returns a triangulation object of a specified backend.
-        See :func:`~sigmaepsilon.mesh.tri.triang.triangulate` for the details.
+        See :func:`~sigmaepsilon.mesh.triang.triangulate` for the details.
 
         Note
         ----
