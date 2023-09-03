@@ -12,7 +12,7 @@ class L3(PolyCell):
     """
     3-Node line element.
     """
-    
+
     class Geometry(PolyCellGeometry1d):
         number_of_nodes = 3
         vtk_cell_id = 21

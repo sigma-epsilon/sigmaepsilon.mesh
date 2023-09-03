@@ -66,7 +66,7 @@ class CellData(CellDataBase):
         "t": "_t",  # thicknesses for 2d cells
         "activity": "_activity",  # activity of the cells
     }
-    
+
     def __init__(
         self,
         *args,
@@ -88,7 +88,7 @@ class CellData(CellDataBase):
         if len(fields) > 0:
             attr_map = self._attr_map_
             fields = {attr_map.get(k, k): v for k, v in fields.items()}
-        
+
         # cell indices
         if isinstance(i, ndarray):
             kwargs[self._dbkey_id_] = i

@@ -45,8 +45,9 @@ class H27(PolyCell):
         |    |   |
         0----8---1
     """
+
     label = "H27"
-    
+
     class Geometry(PolyCellGeometry3d):
         number_of_nodes = 27
         vtk_cell_id = 29
@@ -57,7 +58,7 @@ class H27(PolyCell):
         quadrature = {
             "full": Gauss_Legendre_Hex_Grid(3, 3, 3),
         }
-        
+
         @classmethod
         def polybase(cls) -> Tuple[List]:
             """

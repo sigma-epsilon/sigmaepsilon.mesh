@@ -20,8 +20,9 @@ class Q4(PolyCell):
     """
     Polygon class for 4-noded bilinear quadrilaterals.
     """
+
     label = "Q4"
-    
+
     class Geometry(PolyCellGeometry2d):
         number_of_nodes = 4
         vtk_cell_id = 9
@@ -32,7 +33,7 @@ class Q4(PolyCell):
         quadrature = {
             "full": Gauss_Legendre_Quad_4(),
         }
-        
+
         @classmethod
         def polybase(cls) -> Tuple[List]:
             """
@@ -70,10 +71,10 @@ class Q4(PolyCell):
             numpy.ndarray
             """
             return np.array([0.0, 0.0])
-        
+
         @classmethod
         def trimap(cls) -> ndarray:
             return np.array([[0, 1, 2], [0, 2, 3]], dtype=int)
-        
+
     def to_triangles(self) -> ndarray:
         return Q4_to_T3(None, self.topology().to_numpy())[1]

@@ -16,7 +16,7 @@ class L2(PolyCell):
     """
     2-Node line element.
     """
-    
+
     class Geometry(PolyCellGeometry1d):
         number_of_nodes = 2
         vtk_cell_id = 3

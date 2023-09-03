@@ -40,5 +40,5 @@ __all__ = [
     "W6",
     "Wedge",
     "W18",
-    "LagrangianCellApproximator"
+    "LagrangianCellApproximator",
 ]

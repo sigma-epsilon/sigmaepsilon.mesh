@@ -1640,7 +1640,9 @@ class PolyData(PolyDataBase):
     def areas(self, *args, **kwargs) -> ndarray:
         """Returns the areas."""
         blocks = self.cellblocks(*args, inclusive=True, **kwargs)
-        blocks2d = filter(lambda b: b.celltype.Geometry.number_of_spatial_dimensions < 3, blocks)
+        blocks2d = filter(
+            lambda b: b.celltype.Geometry.number_of_spatial_dimensions < 3, blocks
+        )
         amap = map(lambda b: b.celldata.areas(), blocks2d)
         return np.concatenate(list(amap))
 

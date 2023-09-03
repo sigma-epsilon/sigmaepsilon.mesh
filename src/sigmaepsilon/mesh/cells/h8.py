@@ -35,8 +35,9 @@ class H8(PolyCell):
         |  |
         0--1
     """
+
     label = "H8"
-    
+
     class Geometry(PolyCellGeometry3d):
         number_of_nodes = 8
         vtk_cell_id = 12
@@ -47,7 +48,7 @@ class H8(PolyCell):
         quadrature = {
             "full": Gauss_Legendre_Hex_Grid(2, 2, 2),
         }
-        
+
         @classmethod
         def polybase(cls) -> Tuple[List]:
             """
@@ -96,7 +97,7 @@ class H8(PolyCell):
             numpy.ndarray
             """
             return np.array([0.0, 0.0, 0.0])
-        
+
         @classmethod
         def tetmap(cls) -> np.ndarray:
             return np.array(

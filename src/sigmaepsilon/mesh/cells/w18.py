@@ -17,8 +17,9 @@ class W18(PolyCell):
     """
     Polyhedra class for 18-noded biquadratic wedges.
     """
+
     label = "W18"
-    
+
     class Geometry(PolyCellGeometry3d):
         number_of_nodes = 18
         vtk_cell_id = 32
@@ -90,7 +91,7 @@ class W18(PolyCell):
         @classmethod
         def master_center(cls) -> ndarray:
             return np.array([[1 / 3, 1 / 3, 0]])
-        
+
         @classmethod
         def tetmap(cls) -> np.ndarray:
             w18_to_w6 = np.array(

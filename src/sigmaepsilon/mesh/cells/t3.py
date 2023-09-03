@@ -21,8 +21,9 @@ class T3(PolyCell):
     """
     A class to handle 3-noded triangles.
     """
+
     label = "T3"
-    
+
     class Geometry(PolyCellGeometry2d):
         number_of_nodes = 3
         vtk_cell_id = 5
@@ -33,11 +34,11 @@ class T3(PolyCell):
         quadrature = {
             "full": Gauss_Legendre_Tri_1(),
         }
-        
+
         @classmethod
         def trimap(cls) -> ndarray:
             return np.array([[0, 1, 2]], dtype=int)
-        
+
         @classmethod
         def polybase(cls) -> Tuple[List]:
             """
@@ -75,10 +76,10 @@ class T3(PolyCell):
             numpy.ndarray
             """
             return np.array([[1 / 3, 1 / 3]])
-        
+
     def to_triangles(self) -> ndarray:
         return self.topology().to_numpy()
-    
+
     def areas(self, *args, **kwargs) -> ndarray:
         coords = self.container.source().coords()
         topo = self.topology().to_numpy()

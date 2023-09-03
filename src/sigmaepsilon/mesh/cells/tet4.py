@@ -19,8 +19,9 @@ class TET4(PolyCell):
     """
     4-node isoparametric hexahedron.
     """
+
     label = "TET4"
-    
+
     class Geometry(PolyCellGeometry3d):
         number_of_nodes = 4
         vtk_cell_id = 10
@@ -31,7 +32,7 @@ class TET4(PolyCell):
         quadrature = {
             "full": Gauss_Legendre_Tet_1(),
         }
-        
+
         @classmethod
         def polybase(cls) -> Tuple[List]:
             """
@@ -57,7 +58,7 @@ class TET4(PolyCell):
         @classmethod
         def master_center(cls) -> ndarray:
             return np.array([[1 / 3, 1 / 3, 1 / 3]])
-        
+
         @classmethod
         def tetmap(cls) -> ndarray:
             return np.array([[0, 1, 2, 3]], dtype=int)
@@ -68,4 +69,3 @@ class TET4(PolyCell):
             return tetra
         else:
             return tetra.reshape(len(tetra), 1, 4)
-        

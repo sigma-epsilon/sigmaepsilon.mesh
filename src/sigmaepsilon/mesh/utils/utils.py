@@ -30,7 +30,7 @@ def points_around(
     frmt: str = "dict",
     MT: bool = True,
     n_max: int = 10,
-)-> Union[JaggedArray, csr_matrix, dict]:
+) -> Union[JaggedArray, csr_matrix, dict]:
     """
     Returns neighbouring points for each entry in `points` that are
     closer than the distance `r_max`. The results are returned in

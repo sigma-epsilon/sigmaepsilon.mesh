@@ -41,7 +41,7 @@ class PolyCellGeometry(metaclass=ABCMeta_Weak):
     shape_function_derivative_evaluator: ClassVar[Optional[Callable]] = None
     monomial_evaluator: ClassVar[Optional[Callable]] = None
     quadrature: ClassVar[Optional[dict]] = None
-    
+
     @classmethod
     def generate_class(cls, **kwargs) -> "PolyCellGeometry":
         """
@@ -435,7 +435,7 @@ class PolyCellGeometry(metaclass=ABCMeta_Weak):
 
 class PolyCellGeometry1d(PolyCellGeometry):
     number_of_spatial_dimensions = 1
-    
+
     @classmethod
     def polybase(cls) -> Tuple[List]:
         """
@@ -455,7 +455,7 @@ class PolyCellGeometry1d(PolyCellGeometry):
         locvars = r = symbols("r", real=True)
         monoms = [r ** i for i in range(cls.number_of_nodes)]
         return [locvars], monoms
-    
+
     @classmethod
     def master_coordinates(cls) -> ndarray:
         """
@@ -470,7 +470,7 @@ class PolyCellGeometry1d(PolyCellGeometry):
                 "Attribute 'number_of_nodes' of the cell must be set to a positive integer"
             )
         return np.linspace(-1.0, 1.0, cls.number_of_nodes)
-    
+
     @classmethod
     def master_center(cls) -> ndarray:
         """
@@ -497,7 +497,7 @@ class PolyCellGeometry2d(PolyCellGeometry):
         numpy.ndarray
         """
         return cell_center_2d(cls.master_coordinates())
-    
+
     @classmethod
     def trimap(cls) -> Iterable:
         """

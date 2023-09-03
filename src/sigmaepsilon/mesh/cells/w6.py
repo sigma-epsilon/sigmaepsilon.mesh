@@ -15,8 +15,9 @@ class W6(PolyCell):
     """
     Polyhedra class for 6-noded trilinear wedges.
     """
+
     label = "W6"
-    
+
     class Geometry(PolyCellGeometry3d):
         number_of_nodes = 6
         vtk_cell_id = 13
@@ -57,7 +58,7 @@ class W6(PolyCell):
         @classmethod
         def master_center(cls) -> ndarray:
             return np.array([[1 / 3, 1 / 3, 0]])
-        
+
         @classmethod
         def tetmap(cls) -> np.ndarray:
             return np.array(

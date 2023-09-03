@@ -19,8 +19,9 @@ class Q9(PolyCell):
     """
     Polygon class for 9-noded biquadratic quadrilaterals.
     """
+
     label = "Q9"
-    
+
     class Geometry(PolyCellGeometry2d):
         number_of_nodes = 9
         vtk_cell_id = 28
@@ -91,7 +92,7 @@ class Q9(PolyCell):
             numpy.ndarray
             """
             return np.array([0.0, 0.0])
-        
+
         @classmethod
         def trimap(cls) -> ndarray:
             return np.array(
@@ -107,6 +108,6 @@ class Q9(PolyCell):
                 ],
                 dtype=int,
             )
-    
+
     def to_triangles(self) -> ndarray:
         return Q4_to_T3(*Q9_to_Q4(None, self.topology().to_numpy()))[1]

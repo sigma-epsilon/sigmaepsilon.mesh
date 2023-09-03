@@ -34,15 +34,15 @@ class ABCMeta_MeshCellData(ABCMeta_Weak):
                 if isinstance(vtk_cell_id, int):
                     vtk_to_celltype[vtk_cell_id] = cls
                     meshio_to_celltype[vtk_to_meshio_type[vtk_cell_id]] = cls
-            
+
         # merge database fields
         _attr_map_ = namespace.get("_attr_map_", {})
         for base in bases:
             _attr_map_.update(base.__dict__.get("_attr_map_", {}))
         cls._attr_map_ = _attr_map_
-        
+
         return cls
-        
+
 
 class ABC_MeshCellData(metaclass=ABCMeta_MeshCellData):
     """

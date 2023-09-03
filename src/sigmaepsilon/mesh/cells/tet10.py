@@ -17,8 +17,9 @@ class TET10(PolyCell):
     """
     10-node isoparametric hexahedron.
     """
+
     label = "TET10"
-    
+
     class Geometry(PolyCellGeometry3d):
         number_of_nodes = 10
         vtk_cell_id = 24
@@ -63,7 +64,7 @@ class TET10(PolyCell):
         @classmethod
         def master_center(cls) -> ndarray:
             return np.array([[1 / 3, 1 / 3, 1 / 3]])
-        
+
         @classmethod
         def tetmap(cls, subdivide: bool = True) -> np.ndarray:
             if subdivide:

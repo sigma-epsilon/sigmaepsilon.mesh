@@ -31,7 +31,7 @@ __all__ = [
     "grid",
     "Grid",
     "tetrahedralize",
-    "LagrangianCellApproximator"
+    "LagrangianCellApproximator",
 ]
 
 # _config = load_pyproject_config()

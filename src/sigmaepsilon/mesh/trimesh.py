@@ -65,17 +65,19 @@ class TriMesh(PolyData):
         6: T6,
     }
 
-    def __init__(self, *args, points=None, triangles=None, celltype:PolyCell=None, **kwargs):
+    def __init__(
+        self, *args, points=None, triangles=None, celltype: PolyCell = None, **kwargs
+    ):
         # parent class handles pointdata and celldata creation
         points = points if points is not None else kwargs.get("coords", None)
         triangles = triangles if triangles is not None else kwargs.get("topo", None)
-        
+
         if triangles is None:
             try:
                 points, triangles, _ = triangulate(*args, points=points, **kwargs)
             except Exception:
                 raise RuntimeError
-            
+
         if celltype is None and triangles is not None:
             if isinstance(triangles, np.ndarray):
                 nNode = triangles.shape[1]
@@ -85,12 +87,12 @@ class TriMesh(PolyData):
                     celltype = T6
             else:
                 raise NotImplementedError
-        
+
         NNODE = celltype.Geometry.number_of_nodes
-        
+
         if triangles.shape[1] == 3 and NNODE == 6:
             points, triangles = T3_to_T6(points, triangles)
-            
+
         assert triangles.shape[1] == NNODE
         super().__init__(*args, coords=points, topo=triangles, **kwargs)
 

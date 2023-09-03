@@ -22,8 +22,9 @@ class T6(PolyCell):
     """
     A class to handle 6-noded triangles.
     """
+
     label = "T6"
-    
+
     class Geometry(PolyCellGeometry2d):
         number_of_nodes = 6
         vtk_cell_id = 22
@@ -74,14 +75,14 @@ class T6(PolyCell):
             numpy.ndarray
             """
             return np.array([[1 / 3, 1 / 3]])
-        
+
         @classmethod
         def trimap(cls, subdivide: bool = True):
             if subdivide:
                 return np.array([[0, 3, 5], [3, 1, 4], [5, 4, 2], [5, 3, 4]], dtype=int)
             else:
                 return np.array([[0, 1, 2]], dtype=int)
-            
+
     def to_triangles(self) -> ndarray:
         return T6_to_T3(None, self.topology().to_numpy())[1]
 
@@ -98,7 +99,7 @@ class T6(PolyCell):
         ecoords = cells_coords(coords[:, :2], topo)
         qpos, qweight = self.Geometry.quadrature["full"]
         return areas_T6(ecoords, qpos, qweight)
-    
+
     @classmethod
     def from_TriMesh(cls, *args, coords=None, topo=None, **kwargs):
         from sigmaepsilon.mesh.trimesh import TriMesh
