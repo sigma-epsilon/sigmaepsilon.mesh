@@ -9,6 +9,7 @@ import sigmaepsilon.mesh
 from sigmaepsilon.mesh.cells import H8, L2, L3, Q4, Q9
 from sigmaepsilon.mesh.core import PolyCellGeometry1d
 
+
 def load_tests(loader, tests, ignore):  # pragma: no cover
     tests.addTests(doctest.DocTestSuite(sigmaepsilon.mesh.cells.base.approximator))
     return tests
@@ -121,7 +122,9 @@ class TestLagrangianCellApproximator(SigmaEpsilonTestCase):
         self.assertTrue(np.allclose(target_values_, source_values))
 
     def test_custom_approximator_1d(self):
-        Custom1dCell: PolyCellGeometry1d = PolyCellGeometry1d.generate_class(number_of_nodes=4)
+        Custom1dCell: PolyCellGeometry1d = PolyCellGeometry1d.generate_class(
+            number_of_nodes=4
+        )
 
         NNODE = Custom1dCell.number_of_nodes
 
