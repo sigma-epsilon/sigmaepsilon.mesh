@@ -64,7 +64,7 @@ exclude_also = [
     # Don't complain about missing debug-only code:
     "def __repr__",
     "def __str__",
-    "if self\.debug",
+    "if self\\.debug",
 
     # Don't complaint about numba jitted code
     "@njit",
