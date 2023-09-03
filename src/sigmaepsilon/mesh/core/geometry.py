@@ -5,6 +5,8 @@ from typing import (
     Iterable,
     Tuple,
     List,
+    Protocol,
+    runtime_checkable
 )
 from abc import abstractclassmethod
 
@@ -12,7 +14,6 @@ import numpy as np
 from numpy import ndarray
 from sympy import Matrix, lambdify, symbols
 
-from sigmaepsilon.core.meta import ABCMeta_Weak
 from sigmaepsilon.math import atleast1d, atleast2d, ascont
 from sigmaepsilon.math.utils import to_range_1d
 
@@ -23,19 +24,22 @@ from ..triang import triangulate
 
 
 __all__ = [
-    "PolyCellGeometry",
-    "PolyCellGeometry1d",
-    "PolyCellGeometry2d",
-    "PolyCellGeometry3d",
+    "PolyCellGeometryMixin",
+    "PolyCellGeometryMixin1d",
+    "PolyCellGeometryMixin2d",
+    "PolyCellGeometryMixin3d",
 ]
 
-
-class PolyCellGeometry(metaclass=ABCMeta_Weak):
+@runtime_checkable
+class PolyCellGeometryMixin(Protocol):
+    """
+    Protocol for Geometry mixin classes.
+    """
     number_of_nodes: ClassVar[int]
     number_of_spatial_dimensions: ClassVar[int]
     vtk_cell_id: ClassVar[Optional[int]] = None
     meshio_cell_id: ClassVar[Optional[str]] = None
-    boundary_class: ClassVar[Optional["PolyCellGeometry"]] = None
+    boundary_class: ClassVar[Optional["PolyCellGeometryMixin"]] = None
     shape_function_evaluator: ClassVar[Optional[Callable]] = None
     shape_function_matrix_evaluator: ClassVar[Optional[Callable]] = None
     shape_function_derivative_evaluator: ClassVar[Optional[Callable]] = None
@@ -43,7 +47,7 @@ class PolyCellGeometry(metaclass=ABCMeta_Weak):
     quadrature: ClassVar[Optional[dict]] = None
 
     @classmethod
-    def generate_class(cls, **kwargs) -> "PolyCellGeometry":
+    def generate_class(cls, **kwargs) -> "PolyCellGeometryMixin":
         """
         A factory function that returns a custom 1d class.
 
@@ -56,12 +60,12 @@ class PolyCellGeometry(metaclass=ABCMeta_Weak):
         -------
         Define a custom 1d cell with 4 nodes:
 
-        >>> from sigmaepsilon.mesh.cells.base import PolyCell1d
-        >>> CustomClass = PolyCell1d.generate(NNODE=4)
+        >>> from sigmaepsilon.mesh.core import PolyCellGeometry1d
+        >>> CustomClass = PolyCellGeometry1d.generate(number_of_nodes=4)
 
         This is equivalent to:
 
-        >>> class CustomClass(PolyCell1d):
+        >>> class CustomClass(PolyCellGeometry1d):
         ...     number_of_nodes = 4
         """
 
@@ -302,7 +306,7 @@ class PolyCellGeometry(metaclass=ABCMeta_Weak):
         Example
         -------
         >>> from sigmaepsilon.mesh.cells import H8
-        >>> shp, dshp, shpf, shpmf, dshpf = H8.generate_class_functions()
+        >>> shp, dshp, shpf, shpmf, dshpf = H8.Geometry.generate_class_functions()
 
         Here `shp` and `dshp` are simbolic matrices for shape functions and
         their first derivatives, `shpf`, `shpmf` and `dshpf` are functions for
@@ -392,7 +396,7 @@ class PolyCellGeometry(metaclass=ABCMeta_Weak):
 
         Returns
         -------
-        :class:`~sigmaepsilon.mesh.cells.LagrangianCellApproximator`
+        :class:`~sigmaepsilon.mesh.cellapproximator.LagrangianCellApproximator`
             A callable approximator class. Refer to its documentation for more examples.
 
         Notes
@@ -404,7 +408,7 @@ class PolyCellGeometry(metaclass=ABCMeta_Weak):
 
         See also
         --------
-        :class:`~sigmaepsilon.mesh.cells.LagrangianCellApproximator`
+        :class:`~sigmaepsilon.mesh.cellapproximator.LagrangianCellApproximator`
 
         Examples
         --------
@@ -419,7 +423,7 @@ class PolyCellGeometry(metaclass=ABCMeta_Weak):
         we use 4-noded quadrilaterals:
 
         >>> from sigmaepsilon.mesh import Q4
-        >>> approximator = Q4.approximator()
+        >>> approximator = Q4.Geometry.approximator()
         >>> target_data = approximator(source=source_location, values=source_data, target=target_location)
 
         Here we provided 3 inputs to the approximator. If we want to reuse the approximator
@@ -427,13 +431,13 @@ class PolyCellGeometry(metaclass=ABCMeta_Weak):
         This saves some time for repeated evaluations.
 
         >>> from sigmaepsilon.mesh import Q4
-        >>> approximator = Q4.approximator(source_location)
+        >>> approximator = Q4.Geometry.approximator(source_location)
         >>> target_data = approximator(values=source_data, target=target_location)
         """
         return LagrangianCellApproximator(cls, x)
 
 
-class PolyCellGeometry1d(PolyCellGeometry):
+class PolyCellGeometryMixin1d(PolyCellGeometryMixin):
     number_of_spatial_dimensions = 1
 
     @classmethod
@@ -483,7 +487,7 @@ class PolyCellGeometry1d(PolyCellGeometry):
         return np.array([0.0])
 
 
-class PolyCellGeometry2d(PolyCellGeometry):
+class PolyCellGeometryMixin2d(PolyCellGeometryMixin):
     number_of_spatial_dimensions = 2
 
     @classmethod
@@ -508,7 +512,7 @@ class PolyCellGeometry2d(PolyCellGeometry):
         return t
 
 
-class PolyCellGeometry3d(PolyCellGeometry):
+class PolyCellGeometryMixin3d(PolyCellGeometryMixin):
     number_of_spatial_dimensions = 3
 
     @classmethod
