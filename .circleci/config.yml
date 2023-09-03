@@ -7,7 +7,7 @@ orbs:
   # so you dont have to copy and paste it everywhere.
   # See the orb documentation here: https://circleci.com/developer/orbs/orb/circleci/python
   python: circleci/python@2.1.1
-  codecov: codecov/codecov@3
+  codecov: codecov/codecov@3.2.4
 
 jobs:
   build_test:
@@ -73,9 +73,7 @@ jobs:
     # Here we're making sure we use just use the system-wide pip. By default it uses the project root's requirements.txt.
     # Then run your tests!
     # CircleCI will report the results back to your VCS provider.
-    
-    working_directory: ~/project
-    
+        
     steps:
       - checkout
       - run:
@@ -83,14 +81,20 @@ jobs:
           command: pip install ".[test, dev]"
       - run:
           name: Run tests and generate coverage report
-          command: pytest --cov --cov-report html
+          command: |
+            $HOME/.local/bin/coverage run -m pytest
+            $HOME/.local/bin/coverage report
+            $HOME/.local/bin/coverage html  # open htmlcov/index.html in a browser
       - run:
           name: List working directory contents
+          command: ls -al
+      - run:
+          name: List home directory contents
           command: ls -al
       - codecov/upload
       - store_artifacts:
           name: Store coverage report as artifact
-          path: ~/project/htmlcov
+          path: htmlcov
 
   tox-test:  # This is the name of the job, feel free to change it to better match what you're trying to do!
     # These next lines defines a docker executors: https://circleci.com/docs/2.0/executor-types/
