@@ -5,7 +5,7 @@ from numpy import ndarray
 from sympy import symbols
 
 from ..core.cell import PolyCell
-from ..core.geometry import PolyCellGeometry2d
+from ..core.geometry import PolyCellGeometryMixin2d
 from ..utils.cells.numint import Gauss_Legendre_Tri_1
 from ..utils.cells.t3 import (
     shp_T3_multi,
@@ -24,7 +24,7 @@ class T3(PolyCell):
 
     label = "T3"
 
-    class Geometry(PolyCellGeometry2d):
+    class Geometry(PolyCellGeometryMixin2d):
         number_of_nodes = 3
         vtk_cell_id = 5
         shape_function_evaluator: shp_T3_multi

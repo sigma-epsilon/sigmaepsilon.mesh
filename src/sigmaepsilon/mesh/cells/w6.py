@@ -4,7 +4,7 @@ from numpy import ndarray
 from sympy import symbols
 
 from ..core.cell import PolyCell
-from ..core.geometry import PolyCellGeometry3d
+from ..core.geometry import PolyCellGeometryMixin3d
 from ..utils.cells.numint import Gauss_Legendre_Wedge_3x2
 from ..utils.cells.utils import volumes
 from ..utils.utils import cells_coords
@@ -18,7 +18,7 @@ class W6(PolyCell):
 
     label = "W6"
 
-    class Geometry(PolyCellGeometry3d):
+    class Geometry(PolyCellGeometryMixin3d):
         number_of_nodes = 6
         vtk_cell_id = 13
         monomial_evaluator: monoms_W6

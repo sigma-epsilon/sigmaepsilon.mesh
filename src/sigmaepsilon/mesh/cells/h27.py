@@ -6,7 +6,7 @@ import sympy as sy
 from sigmaepsilon.math.numint import gauss_points as gp
 
 from ..core.cell import PolyCell
-from ..core.geometry import PolyCellGeometry3d
+from ..core.geometry import PolyCellGeometryMixin3d
 from ..utils.utils import cells_coords
 from ..utils.cells.h27 import (
     shp_H27_multi,
@@ -48,7 +48,7 @@ class H27(PolyCell):
 
     label = "H27"
 
-    class Geometry(PolyCellGeometry3d):
+    class Geometry(PolyCellGeometryMixin3d):
         number_of_nodes = 27
         vtk_cell_id = 29
         shape_function_evaluator: shp_H27_multi
