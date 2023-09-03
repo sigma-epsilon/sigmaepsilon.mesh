@@ -21,7 +21,7 @@ def _get_shape_function_evaluator(cls: Any) -> Callable:
         raise TypeError(
             "Invalid type. The cell must be an instance of PolyCell"
             " or implement the PolyCellGeometry protocol."
-            )
+        )
 
 
 def _approximator(

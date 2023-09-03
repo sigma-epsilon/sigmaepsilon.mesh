@@ -6,7 +6,7 @@ from typing import (
     Tuple,
     List,
     Protocol,
-    runtime_checkable
+    runtime_checkable,
 )
 from abc import abstractclassmethod
 
@@ -30,11 +30,13 @@ __all__ = [
     "PolyCellGeometryMixin3d",
 ]
 
+
 @runtime_checkable
 class PolyCellGeometryMixin(Protocol):
     """
     Protocol for Geometry mixin classes.
     """
+
     number_of_nodes: ClassVar[int]
     number_of_spatial_dimensions: ClassVar[int]
     vtk_cell_id: ClassVar[Optional[int]] = None

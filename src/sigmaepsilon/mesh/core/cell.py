@@ -7,7 +7,11 @@ from sigmaepsilon.math import atleast1d, atleast2d, ascont
 from sigmaepsilon.math.linalg import ReferenceFrame as FrameLike
 from sigmaepsilon.math.utils import to_range_1d
 
-from .geometry import PolyCellGeometryMixin1d, PolyCellGeometryMixin2d, PolyCellGeometryMixin3d
+from .geometry import (
+    PolyCellGeometryMixin1d,
+    PolyCellGeometryMixin2d,
+    PolyCellGeometryMixin3d,
+)
 from ..space import PointCloud, CartesianFrame
 from . import CellData
 from ..utils.utils import (
@@ -60,7 +64,9 @@ class PolyCell(CellData):
     """
 
     label: ClassVar[Optional[str]] = None
-    Geometry: Union[PolyCellGeometryMixin1d, PolyCellGeometryMixin2d, PolyCellGeometryMixin3d] = None
+    Geometry: Union[
+        PolyCellGeometryMixin1d, PolyCellGeometryMixin2d, PolyCellGeometryMixin3d
+    ] = None
 
     def to_triangles(self: PolyCellGeometryMixin2d) -> ndarray:
         """

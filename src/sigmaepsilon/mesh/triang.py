@@ -102,7 +102,7 @@ def triangulate(
     if len(args) > 0:
         if _is_triobj(args[0]):
             triobj = args[0]
-            
+
     if triobj is not None:
         points, triangles = _get_triobj_data(triobj, *args, **kwargs)
     else:
@@ -112,16 +112,16 @@ def triangulate(
                 "Either a collection of points, or the size of a "
                 "rectangular domain must be provided!"
             )
-            
+
             if origo is None:
                 origo = (0, 0, 0)
             else:
                 if len(origo) == 2:
                     origo = origo + (0,)
-            
+
             if shape is None:
                 shape = (3, 3)
-            
+
             if isinstance(shape, int):
                 if random:
                     x = np.hstack(
@@ -136,7 +136,7 @@ def triangulate(
                     ]
                 else:
                     shape = (shape, shape)
-                    
+
             if points is None and isinstance(size, tuple):
                 x = np.linspace(-origo[0], size[0] - origo[0], num=shape[0])
                 y = np.linspace(-origo[1], size[1] - origo[1], num=shape[1])
@@ -172,11 +172,11 @@ def triangulate(
                 "other backends, only matplotlib."
             )
             triobj = tri.Triangulation(points[:, 0], points[:, 1], triangles=triangles)
-    
+
     if return_lines:
         edges, edgeIDs = unique_topo_data(edges_tri(triangles))
         return points, edges, triangles, edgeIDs, triobj
-    
+
     return points, triangles, triobj
 
 
@@ -195,9 +195,11 @@ def triobj_to_mpl(triobj, *args, **kwargs) -> tri.Triangulation:
         return triang
 
 
-def _get_triobj_data(obj:Any=None, *_, trim2d:bool=True, **__) -> Tuple[np.ndarray]:
+def _get_triobj_data(
+    obj: Any = None, *_, trim2d: bool = True, **__
+) -> Tuple[np.ndarray]:
     coords, topo = None, None
-    
+
     if isinstance(obj, spDelaunay):
         coords = obj.points
         topo = obj.simplices
@@ -219,10 +221,10 @@ def _get_triobj_data(obj:Any=None, *_, trim2d:bool=True, **__) -> Tuple[np.ndarr
                     triang.GetCellPoints(cellID, idlist)
                     n = idlist.GetNumberOfIds()
                     topo[cellID] = [idlist.GetId(i) for i in range(n)]
-    
+
     if coords is None or topo is None:
         raise RuntimeError("Failed to recognize a valid input.")
-    
+
     return coords, topo
 
 

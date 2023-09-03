@@ -54,7 +54,7 @@ except Exception:  # pragma: no cover
     __has_tetgen__ = False
 
 
-def load_pyproject_config():    # pragma: no cover
+def load_pyproject_config():  # pragma: no cover
     config_path = os.path.join(
         dirname(dirname(dirname(abspath(__file__)))), "pyproject.toml"
     )

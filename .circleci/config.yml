@@ -81,7 +81,9 @@ jobs:
           command: pip install ".[test, dev]"
       - run:
           name: Run tests and generate coverage report
-          command: python -m pytest --cov-report html --cov-config=.coveragerc --cov sigmaepsilon.mesh
+          command: |
+            chmod +x ./run_pytest_cov.sh
+            ./run_pytest_cov.sh
       - run:
           name: List working directory contents
           command: ls -al
