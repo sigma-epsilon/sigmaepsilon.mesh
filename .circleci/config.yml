@@ -83,7 +83,10 @@ jobs:
           command: pip install ".[test, dev]"
       - run:
           name: Run tests and generate coverage report
-          command: pytest --cov --cov-report html:htmlcov
+          command: |
+            coverage run -m pytest
+            coverage report
+            coverage html
       - run:
           name: List working directory contents
           command: ls -al
