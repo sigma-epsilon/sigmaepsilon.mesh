@@ -7,7 +7,7 @@ from sigmaepsilon.math import atleast1d, atleast2d, ascont
 from sigmaepsilon.math.linalg import ReferenceFrame as FrameLike
 from sigmaepsilon.math.utils import to_range_1d
 
-from .geometry import PolyCellGeometry1d, PolyCellGeometry2d, PolyCellGeometry3d
+from .geometry import PolyCellGeometryMixin1d, PolyCellGeometryMixin2d, PolyCellGeometryMixin3d
 from ..space import PointCloud, CartesianFrame
 from . import CellData
 from ..utils.utils import (
@@ -60,9 +60,9 @@ class PolyCell(CellData):
     """
 
     label: ClassVar[Optional[str]] = None
-    Geometry: Union[PolyCellGeometry1d, PolyCellGeometry2d, PolyCellGeometry3d] = None
+    Geometry: Union[PolyCellGeometryMixin1d, PolyCellGeometryMixin2d, PolyCellGeometryMixin3d] = None
 
-    def to_triangles(self: PolyCellGeometry2d) -> ndarray:
+    def to_triangles(self: PolyCellGeometryMixin2d) -> ndarray:
         """
         Returns the topology as a collection of T3 triangles.
         """
@@ -72,7 +72,7 @@ class PolyCell(CellData):
         else:
             raise NotImplementedError("This is only for 2d cells")
 
-    def to_tetrahedra(self: PolyCellGeometry3d, flatten: bool = True) -> ndarray:
+    def to_tetrahedra(self: PolyCellGeometryMixin3d, flatten: bool = True) -> ndarray:
         """
         Returns the topology as a collection of TET4 tetrahedra.
 
