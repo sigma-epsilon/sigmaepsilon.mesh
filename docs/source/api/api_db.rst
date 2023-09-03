@@ -22,10 +22,10 @@ Data Classes
 Mesh Classes
 ============
 
-.. autoclass:: sigmaepsilon.mesh.linedata.LineData
+.. autoclass:: sigmaepsilon.mesh.PolyData
     :members: 
 
-.. autoclass:: sigmaepsilon.mesh.PolyData
+.. autoclass:: sigmaepsilon.mesh.linedata.LineData
     :members: 
 
 .. autoclass:: sigmaepsilon.mesh.TriMesh

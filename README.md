@@ -72,6 +72,14 @@ If you are a developer and want to install the library in development mode, the 
 >>> pip install "-e .[test, dev]"
 ```
 
+## Testing and coverage
+
+The following command runs all tests and creates a html report in a folder named 'htmlcov':
+
+```console
+pytest --cov-report html --cov
+```
+
 ## Versioning
 
 The project follows the rules of [semantic versioning](https://semver.org/).
