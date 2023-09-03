@@ -2,7 +2,7 @@ from sigmaepsilon.core.meta import ABCMeta_Weak
 
 from meshio._vtk_common import vtk_to_meshio_type
 
-from .geometry import PolyCellGeometry
+from .geometry import PolyCellGeometryMixin
 from ..helpers import vtk_to_celltype, meshio_to_celltype
 
 
@@ -23,7 +23,7 @@ class ABCMeta_MeshCellData(ABCMeta_Weak):
         cls = super().__new__(metaclass, name, bases, namespace, *args, **kwargs)
 
         if namespace.get("Geometry", None):
-            if not issubclass(cls.Geometry, PolyCellGeometry):
+            if not isinstance(cls.Geometry, PolyCellGeometryMixin):
                 raise TypeError(
                     f"The attached geometry class {cls.Geometry} of {cls} "
                     "must be a subclass of PolyCellGeometry"
