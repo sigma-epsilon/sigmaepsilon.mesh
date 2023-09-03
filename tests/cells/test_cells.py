@@ -11,7 +11,9 @@ class TestGeneratedExpressions(unittest.TestCase):
         shpf = H8.Geometry.shape_function_values
         shpmf = H8.Geometry.shape_function_matrix
         dshpf = H8.Geometry.shape_function_derivatives
-        _shpf, _shpmf, _dshpf = H8.Geometry.generate_class_functions(return_symbolic=False)
+        _shpf, _shpmf, _dshpf = H8.Geometry.generate_class_functions(
+            return_symbolic=False
+        )
         self.assertTrue(np.all(np.isclose(_shpf(pcoords), shpf(pcoords))))
         self.assertTrue(np.all(np.isclose(_dshpf(pcoords), dshpf(pcoords))))
         self.assertTrue(np.all(np.isclose(_shpmf(pcoords), shpmf(pcoords))))
@@ -21,7 +23,9 @@ class TestGeneratedExpressions(unittest.TestCase):
         shpf = TET10.Geometry.shape_function_values
         shpmf = TET10.Geometry.shape_function_matrix
         dshpf = TET10.Geometry.shape_function_derivatives
-        _shpf, _shpmf, _dshpf = TET10.Geometry.generate_class_functions(return_symbolic=False)
+        _shpf, _shpmf, _dshpf = TET10.Geometry.generate_class_functions(
+            return_symbolic=False
+        )
         self.assertTrue(np.all(np.isclose(_shpf(pcoords), shpf(pcoords))))
         self.assertTrue(np.all(np.isclose(_dshpf(pcoords), dshpf(pcoords))))
         self.assertTrue(np.all(np.isclose(_shpmf(pcoords), shpmf(pcoords))))

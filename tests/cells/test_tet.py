@@ -43,14 +43,18 @@ class TestTet(unittest.TestCase):
 
     def test_shp_TET4(self):
         pcoords = TET4.Geometry.master_coordinates()
-        shpf, shpmf, dshpf = TET4.Geometry.generate_class_functions(return_symbolic=False)
+        shpf, shpmf, dshpf = TET4.Geometry.generate_class_functions(
+            return_symbolic=False
+        )
         shpf(pcoords)
         shpmf(pcoords)
         dshpf(pcoords)
 
     def test_shp_TET10(self):
         pcoords = TET10.Geometry.master_coordinates()
-        shpf, shpmf, dshpf = TET10.Geometry.generate_class_functions(return_symbolic=False)
+        shpf, shpmf, dshpf = TET10.Geometry.generate_class_functions(
+            return_symbolic=False
+        )
         shpf(pcoords)
         shpmf(pcoords)
         dshpf(pcoords)

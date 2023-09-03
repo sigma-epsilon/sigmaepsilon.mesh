@@ -26,7 +26,9 @@ class TestHex(unittest.TestCase):
         shpf = H8.Geometry.shape_function_values
         shpmf = H8.Geometry.shape_function_matrix
         dshpf = H8.Geometry.shape_function_derivatives
-        shpfH8, shpmfH8, dshpfH8 = H8.Geometry.generate_class_functions(return_symbolic=False)
+        shpfH8, shpmfH8, dshpfH8 = H8.Geometry.generate_class_functions(
+            return_symbolic=False
+        )
 
         self.assertTrue(np.all(np.isclose(shpfH8(pcoords), shpf(pcoords))))
         self.assertTrue(np.all(np.isclose(dshpfH8(pcoords), dshpf(pcoords))))
