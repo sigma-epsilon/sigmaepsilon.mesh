@@ -70,21 +70,21 @@ class TestPolyDataPlot(unittest.TestCase):
         mesh: PolyData = self.mesh
         
         mesh.plot(
-            notebook=True,
+            notebook=False,
             jupyter_backend="static",
             show_edges=True,
             theme="document",
         )
         
         mesh["surfaces", "Q4"].plot(
-            notebook=True,
+            notebook=False,
             jupyter_backend="static",
             show_edges=True,
             theme="document",
         )
         
         mesh["bodies", "H8"].surface().pvplot(
-            notebook=True,
+            notebook=False,
             jupyter_backend="static",
             show_edges=True,
             theme="document",
@@ -104,7 +104,7 @@ class TestPolyDataPlot(unittest.TestCase):
         mesh["bodies", "H8"].config["pyvista", "plot", "opacity"] = 1.0
         
         mesh.pvplot(
-            notebook=True,
+            notebook=False,
             jupyter_backend="static",
             cmap="plasma",
             window_size=(600, 400),
@@ -117,7 +117,7 @@ class TestPolyDataPlot(unittest.TestCase):
         mesh["surfaces", "Q4"].config["pyvista", "plot", "scalars"] = 2 * np.random.rand(ncTET4)
         mesh["surfaces", "Q4"].config["pyvista", "plot", "opacity"] = 1.0
         mesh.pvplot(
-            notebook=True,
+            notebook=False,
             jupyter_backend="static",
             window_size=(600, 400),
             config_key=["pyvista", "plot"],
@@ -127,7 +127,7 @@ class TestPolyDataPlot(unittest.TestCase):
         
         block = mesh.blocks_of_cells(2345)[2345]
         block.pvplot(
-            notebook=True,
+            notebook=False,
             jupyter_backend="static",
             window_size=(600, 400),
             config_key=["pyvista", "plot"],
