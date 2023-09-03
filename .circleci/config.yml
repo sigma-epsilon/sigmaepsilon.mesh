@@ -82,15 +82,15 @@ jobs:
       - run:
           name: Run tests and generate coverage report
           command: |
-            $HOME/.local/bin/coverage run -m pytest
-            $HOME/.local/bin/coverage report
-            $HOME/.local/bin/coverage html  # open htmlcov/index.html in a browser
+            coverage run -m pytest
+            coverage report
+            coverage html
       - run:
           name: List working directory contents
           command: ls -al
       - run:
           name: List home directory contents
-          command: ls -al
+          command: ls -a ~
       - codecov/upload
       - store_artifacts:
           name: Store coverage report as artifact
