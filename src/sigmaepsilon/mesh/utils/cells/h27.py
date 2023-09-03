@@ -9,7 +9,7 @@ __cache = True
 @njit(nogil=True, cache=__cache)
 def monoms_H27_single(x: ndarray) -> ndarray:
     r, s, t = x
-    return np.array(
+    res = np.array(
         [
             1,
             r,
@@ -41,6 +41,7 @@ def monoms_H27_single(x: ndarray) -> ndarray:
         ],
         dtype=x.dtype,
     )
+    return res
 
 
 @njit(nogil=True, parallel=True, cache=__cache)
@@ -76,7 +77,7 @@ def monoms_H27(x: ndarray) -> ndarray:
 @njit(nogil=True, cache=__cache)
 def shp_H27(pcoord):
     r, s, t = pcoord
-    return np.array(
+    res = np.array(
         [
             0.125 * r ** 2 * s ** 2 * t ** 2
             - 0.125 * r ** 2 * s ** 2 * t
@@ -296,6 +297,7 @@ def shp_H27(pcoord):
             + 1.0,
         ]
     )
+    return res
 
 
 @njit(nogil=True, parallel=True, cache=__cache)
@@ -329,7 +331,7 @@ def shape_function_matrix_H27_multi(pcoords: np.ndarray, ndof: int = 3):
 @njit(nogil=True, cache=__cache)
 def dshp_H27(pcoord):
     r, s, t = pcoord
-    return np.array(
+    res = np.array(
         [
             [
                 0.25 * r * s ** 2 * t ** 2
@@ -927,6 +929,7 @@ def dshp_H27(pcoord):
             ],
         ]
     )
+    return res
 
 
 @njit(nogil=True, parallel=True, cache=__cache)
