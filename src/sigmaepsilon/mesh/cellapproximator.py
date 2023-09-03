@@ -10,8 +10,22 @@ from .utils.cells.approximator import _approximate_multi
 __all__ = ["LagrangianCellApproximator"]
 
 
+def _get_shape_function_evaluator(cls: Any) -> Callable:
+    try:
+        if hasattr(cls, "Geometry"):
+            shp_fnc = cls.Geometry.shape_function_values
+        else:
+            shp_fnc = cls.shape_function_values
+        return shp_fnc
+    except AttributeError:
+        raise TypeError(
+            "Invalid type. The cell must be an instance of PolyCell"
+            " or implement the PolyCellGeometry protocol."
+            )
+
+
 def _approximator(
-    cls,
+    cls: Any,
     *,
     x_source: Iterable = None,
     shp_source_inverse: Iterable = None,
@@ -22,16 +36,18 @@ def _approximator(
     """
     Returns interpolated values from a set of known points and values.
     """
+    shp_fnc: Callable = _get_shape_function_evaluator(cls)
+
     if shp_source_inverse is None:
         assert isinstance(x_source, Iterable)
-        shp_source = cls.shape_function_values(x_source)  # (nP_source, nNE)
+        shp_source = shp_fnc(x_source)  # (nP_source, nNE)
         shp_source_inverse = generalized_inverse(shp_source)
 
     if not isinstance(values_source, ndarray):
         values_source = np.array(values_source)
 
     multi_dimensional = len(values_source.shape) > 1
-    shp_target = cls.shape_function_values(x_target)  # (nP_target, nNE)
+    shp_target = shp_fnc(x_target)  # (nP_target, nNE)
 
     if len(values_source.shape) > 1 and axis is None:
         axis = -1
@@ -157,13 +173,10 @@ class LagrangianCellApproximator:
     approximator_function: Callable = _approximator
 
     def __init__(self, cell_class: Any, x_source: Iterable = None):
-        if not hasattr(cell_class, "shape_function_values"):
-            raise TypeError("'cell_class' must be a cell class")
+        shp_fnc: Callable = _get_shape_function_evaluator(cell_class)
 
         if isinstance(x_source, Iterable):
-            shp_source = cell_class.shape_function_values(
-                np.array(x_source)
-            )  # (nP_source, nNE)
+            shp_source = shp_fnc(np.array(x_source))  # (nP_source, nNE)
             self._source_shp_inverse = generalized_inverse(shp_source)
         else:
             self._source_shp_inverse = None
