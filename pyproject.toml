@@ -49,6 +49,7 @@ optional-dependencies.docs = { file = ["docs/requirements.txt"] }
 Homepage = "https://github.com/sigma-epsilon/sigmaepsilon.mesh"
 
 [tool.coverage.run]
+branch = true
 omit = [
     "tests/*",
     "*__init__*",
@@ -60,8 +61,15 @@ exclude_also = [
     # Don't complain about missing debug-only code:
     "pragma: no cover",
 
+    # Don't complain about missing debug-only code:
+    "def __repr__",
+    "def __str__",
+    "if self\.debug",
+
     # Don't complaint about numba jitted code
     "@njit",
+    "@jit",
+    "@guv",
 
     # Don't complain if tests don't hit defensive assertion code:
     "raise AssertionError",
@@ -73,6 +81,8 @@ exclude_also = [
 
     # Don't complain about abstract methods, they aren't run:
     "@(abc\\.)?abstractmethod",
+    "@(abc\\.)?abstractproperty",
+    "@(abc\\.)?abstractclassmethod",
     ]
 
 ignore_errors = true

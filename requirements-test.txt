@@ -1,8 +1,8 @@
 pyvista
 tetgen
+coverage
 pytest
 pytest-cov
-coverage
 pandas
 pyarrow
 networkx>=3.0
