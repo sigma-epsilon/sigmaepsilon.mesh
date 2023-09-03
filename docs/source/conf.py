@@ -156,7 +156,30 @@ warnings.filterwarnings(
 
 html_theme = "pydata_sphinx_theme"
 
+html_theme_options = {
+    "show_prev_next": True,
+    "icon_links": [
+        {
+            "name": "GitHub",
+            "url": f"https://github.com/sigma-epsilon/{project}",
+            "icon": "fab fa-github",
+            "type": "fontawesome",
+        },
+        {
+            "name": "PyPi",
+            "url": f"https://pypi.org/project/{project}/",
+            "icon": "fas fa-box-open",
+            "type": "fontawesome",
+        },
+    ]
+}
+
+# Add any paths that contain custom static files (such as style sheets) here,
+# relative to this directory. They are copied after the builtin static files,
+# so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ["_static"]
+
+# -- nbsphinx configuration -------------------------------------------------
 
 # This is processed by Jinja2 and inserted before each notebook
 nbsphinx_prolog = r"""
