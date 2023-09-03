@@ -10,9 +10,11 @@ from sigmaepsilon.math import atleast2d, atleast3d, repeat
 from sigmaepsilon.math.linalg.sparse import csr_matrix
 from sigmaepsilon.math.linalg import ReferenceFrame
 
-from .base import PointDataBase, CellDataBase, PolyDataBase as PolyData
-from .akwrap import AwkwardLike
-from .utils import (
+from .pointdatabase import PointDataBase
+from .celldatabase import CellDataBase
+from .polydatabase import PolyDataBase as PolyData
+from .akwrapper import AwkwardLike
+from ..utils import (
     avg_cell_data,
     distribute_nodal_data_bulk,
     distribute_nodal_data_sparse,
@@ -47,11 +49,12 @@ class CellData(CellDataBase):
         Default is None.
     topo: numpy.ndarray, Optional
         2d integer array representing node indices. Default is None.
+    i: numpy.ndarray, Optional
+        The (global) indices of the cells. Default is None.
     **kwargs: dict, Optional
         For every key and value pair where the value is a numpy array
         with a matching shape (has entries for all cells), the key
         is considered as a field and the value is added to the database.
-
     """
 
     _attr_map_ = {
@@ -63,7 +66,7 @@ class CellData(CellDataBase):
         "t": "_t",  # thicknesses for 2d cells
         "activity": "_activity",  # activity of the cells
     }
-
+    
     def __init__(
         self,
         *args,
@@ -77,6 +80,7 @@ class CellData(CellDataBase):
         t: Union[ndarray, float] = None,
         db: AwkwardLike = None,
         container: PolyData = None,
+        i: ndarray = None,
         **kwargs,
     ):
         fields = {} if fields is None else fields
@@ -84,6 +88,10 @@ class CellData(CellDataBase):
         if len(fields) > 0:
             attr_map = self._attr_map_
             fields = {attr_map.get(k, k): v for k, v in fields.items()}
+        
+        # cell indices
+        if isinstance(i, ndarray):
+            kwargs[self._dbkey_id_] = i
 
         if db is not None:
             wrap = db

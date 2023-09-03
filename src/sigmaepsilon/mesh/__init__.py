@@ -14,7 +14,7 @@ from .triang import triangulate
 from .grid import grid, Grid
 from .tetrahedralize import tetrahedralize
 from .config import load_pyproject_config
-
+from .cellapproximator import LagrangianCellApproximator
 
 __all__ = [
     "PointCloud",
@@ -31,6 +31,7 @@ __all__ = [
     "grid",
     "Grid",
     "tetrahedralize",
+    "LagrangianCellApproximator"
 ]
 
 # _config = load_pyproject_config()

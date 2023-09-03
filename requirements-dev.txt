@@ -12,3 +12,4 @@ tetgen
 autopep8
 awkward
 pyarrow
+pygmsh

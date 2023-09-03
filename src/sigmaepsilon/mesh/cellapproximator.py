@@ -5,7 +5,7 @@ import numpy as np
 from numpy import ndarray
 
 from sigmaepsilon.math.linalg import generalized_inverse
-from ...utils.cells.approximator import _approximate_multi
+from .utils.cells.approximator import _approximate_multi
 
 __all__ = ["LagrangianCellApproximator"]
 
@@ -68,7 +68,7 @@ class LagrangianCellApproximator:
 
     Parameters
     ----------
-    cell_class: :class:`~sigmaepsilon.mesh.cells.base.cell.PolyCell`
+    cell_class: :class:`~sigmaepsilon.mesh.core.cell.PolyCell`
         A Lagrangian cell class that provides the batteries for interpolation.
         The capabilities of this class determines the nature and accuracy of the
         interpolation/extrapolation.
@@ -91,7 +91,8 @@ class LagrangianCellApproximator:
     --------
     Create an approximator using 8-noded hexahedrons.
 
-    >>> from sigmaepsilon.mesh.cells import LagrangianCellApproximator, H8
+    >>> from sigmaepsilon.mesh import LagrangianCellApproximator
+    >>> from sigmaepsilon.mesh.cells import H8
     >>> approximator = LagrangianCellApproximator(H8)
 
     The data to feed the approximator:
@@ -110,12 +111,12 @@ class LagrangianCellApproximator:
 
     This approximator can also be created using the class diretly:
 
-    >>> approximator = H8.approximator()
+    >>> approximator = H8.Geometry.approximator()
 
     If you want to reuse the approximator with the same set of source coordinates
     many times, you can feed these points to the approximator at instance creation:
 
-    >>> approximator = H8.approximator(source_coordinates)
+    >>> approximator = H8.Geometry.approximator(source_coordinates)
     >>> approximator = LagrangianCellApproximator(H8, source_coordinates)
 
     Then, only source values and target coordinates have to be provided for
@@ -131,7 +132,7 @@ class LagrangianCellApproximator:
     input values for utmost performance. The memory layout is optimal if the axis
     that goes along the input points is the last one:
 
-    >>> approximator = H8.approximator()
+    >>> approximator = H8.Geometry.approximator()
 
     >>> source_values = np.random.rand(10, 2, 8)
     >>> approximator(

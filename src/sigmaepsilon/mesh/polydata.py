@@ -17,7 +17,7 @@ from sigmaepsilon.math.linalg.sparse import csr_matrix
 from sigmaepsilon.math.linalg import Vector, ReferenceFrame as FrameLike
 from sigmaepsilon.math import atleast1d, minmax, repeat
 
-from .akwrap import AkWrapper
+from .core.akwrapper import AkWrapper
 from .utils.topology.topo import inds_to_invmap_as_dict, remap_topo_1d
 from .space import CartesianFrame, PointCloud
 from .utils.utils import (
@@ -54,9 +54,9 @@ from .utils.topology import (
 )
 from .topoarray import TopologyArray
 from .pointdata import PointData
-from .celldata import CellData
-from .base import PolyDataBase
-from .cells.base.cell import PolyCell
+from .core import CellData
+from .core.polydatabase import PolyDataBase
+from .core.cell import PolyCell
 from .helpers import meshio_to_celltype, vtk_to_celltype
 from .vtkutils import PolyData_to_mesh
 from .config import __hasvtk__, __haspyvista__, __hask3d__, __hasmatplotlib__
@@ -531,7 +531,7 @@ class PolyData(PolyDataBase):
             if celltype:
                 topo = np.array(cb.data, dtype=int)
 
-                NDIM = celltype.NDIM
+                NDIM = celltype.Geometry.number_of_spatial_dimensions
                 if NDIM == 1:
                     frames = frames_of_lines(coords, topo)
                 elif NDIM == 2:
@@ -570,7 +570,7 @@ class PolyData(PolyDataBase):
             elif isinstance(topo, np.ndarray):
                 assert isinstance(cls._cell_classes_, dict)
                 ct = cls._cell_classes_[topo.shape[-1]]
-                cells_dict = {ct.vtkCellType: topo}
+                cells_dict = {ct.Geometry.vtk_cell_id: topo}
         elif isinstance(pvobj, pv.UnstructuredGrid):
             coords = pvobj.points.astype(float)
             cells_dict = pvobj.cells_dict
@@ -590,9 +590,9 @@ class PolyData(PolyDataBase):
 
         for vtkid, vtktopo in cells_dict.items():
             if vtkid in vtk_to_celltype:
-                celltype = vtk_to_celltype[vtkid]
+                celltype: PolyCell = vtk_to_celltype[vtkid]
 
-                NDIM = celltype.NDIM
+                NDIM = celltype.Geometry.number_of_spatial_dimensions
                 if NDIM == 1:
                     frames = frames_of_lines(coords, vtktopo)
                 elif NDIM == 2:
@@ -1217,7 +1217,8 @@ class PolyData(PolyDataBase):
         frame = source.frame
         triangles = []
         for block in blocks:
-            assert block.celldata.NDIM == 3, "This is only for 3d cells."
+            NDIM = block.celldata.Geometry.number_of_spatial_dimensions
+            assert NDIM == 3, "This is only for 3d cells."
             triangles.append(block.cd.extract_surface(detach=False)[-1])
         triangles = np.vstack(triangles)
         if len(blocks) > 1:
@@ -1639,7 +1640,7 @@ class PolyData(PolyDataBase):
     def areas(self, *args, **kwargs) -> ndarray:
         """Returns the areas."""
         blocks = self.cellblocks(*args, inclusive=True, **kwargs)
-        blocks2d = filter(lambda b: b.celltype.NDIM < 3, blocks)
+        blocks2d = filter(lambda b: b.celltype.Geometry.number_of_spatial_dimensions < 3, blocks)
         amap = map(lambda b: b.celldata.areas(), blocks2d)
         return np.concatenate(list(amap))
 
@@ -1837,8 +1838,8 @@ class PolyData(PolyDataBase):
                 raise ImportError("VTK must be installed for this!")
             ugrids = []
             for block, c, t, _ in self._detach_block_data_():
-                vtkct = block.celltype.vtkCellType
-                ugrid = mesh_to_vtk(c, t, vtkct, deepcopy)
+                vtk_cell_id = block.celltype.Geometry.vtk_cell_id
+                ugrid = mesh_to_vtk(c, t, vtk_cell_id, deepcopy)
                 ugrids.append(ugrid)
             if multiblock:
                 mb = vtk.vtkMultiBlockDataSet()
@@ -1884,8 +1885,8 @@ class PolyData(PolyDataBase):
             ugrids = []
             data = []
             for block, c, t, d in self._detach_block_data_(scalars):
-                vtkct = block.celltype.vtkCellType
-                ugrid = mesh_to_vtk(c, t, vtkct, deepcopy)
+                vtk_cell_id = block.celltype.Geometry.vtk_cell_id
+                ugrid = mesh_to_vtk(c, t, vtk_cell_id, deepcopy)
                 ugrids.append(ugrid)
                 data.append(d)
             if multiblock:
@@ -1963,6 +1964,7 @@ class PolyData(PolyDataBase):
                 config_key = self.__class__._k3d_config_key_
 
             for b in self.cellblocks(inclusive=True, deep=deep):
+                NDIM = b.celltype.Geometry.number_of_spatial_dimensions
                 params = copy(k3dparams)
                 config = b._get_config_(config_key)
                 params.update(config)
@@ -1972,7 +1974,7 @@ class PolyData(PolyDataBase):
                         params["color"] = int("0x" + hexstr[1:], 16)
                 if cmap is not None:
                     params["color_map"] = cmap
-                if b.celltype.NDIM == 1:
+                if NDIM == 1:
                     topo = b.cd.topology().to_numpy()
                     if isinstance(scalars, ndarray):
                         c, d, t = detach_mesh_data_bulk(coords, topo, scalars)
@@ -1985,7 +1987,7 @@ class PolyData(PolyDataBase):
                     c = c.astype(np.float32)
                     t = t.astype(np.uint32)
                     scene += k3d.lines(c, t, **params)
-                elif b.celltype.NDIM == 2:
+                elif NDIM == 2:
                     topo = b.cd.to_triangles()
                     if isinstance(scalars, ndarray):
                         c, d, t = detach_mesh_data_bulk(coords, topo, scalars)
@@ -2007,7 +2009,7 @@ class PolyData(PolyDataBase):
                         scene += k3d.mesh(c, t, **params)
                     if show_edges:
                         scene += k3d.mesh(c, t, wireframe=True, color=0)
-                elif b.celltype.NDIM == 3:
+                elif NDIM == 3:
                     topo = b.surface().topology()
                     if isinstance(scalars, ndarray):
                         c, d, t = detach_mesh_data_bulk(coords, topo, scalars)
@@ -2197,6 +2199,7 @@ class PolyData(PolyDataBase):
                 config_key = self.__class__._pv_config_key_
 
             for block, poly, has_data in zip(blocks, polys, blocks_have_data):
+                NDIM = block.cd.Geometry.number_of_spatial_dimensions
                 params = copy(pvparams)
                 config = block._get_config_(config_key)
                 if has_data:
@@ -2204,7 +2207,7 @@ class PolyData(PolyDataBase):
                 params.update(config)
                 if cmap is not None:
                     params["cmap"] = cmap
-                if block.cd.NDIM > 1:
+                if NDIM > 1:
                     params["show_edges"] = show_edges
                 if isinstance(show_scalar_bar, bool):
                     params["show_scalar_bar"] = show_scalar_bar

@@ -12,7 +12,7 @@ from sigmaepsilon.math.logical import isboolarray
 from sigmaepsilon.math.linalg.sparse import csr_matrix
 
 from .space import CartesianFrame, PointCloud
-from .base import PointDataBase, PolyDataBase as PolyData
+from .core import PointDataBase, PolyDataBase as PolyData
 from .utils import collect_nodal_data
 
 

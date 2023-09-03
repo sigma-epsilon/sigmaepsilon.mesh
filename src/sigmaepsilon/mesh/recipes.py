@@ -143,7 +143,7 @@ def cylinder(
         radius = np.array([0, radius])
     elif not isinstance(radius, ndarray):
         radius = np.array(radius)
-    etype = celltype.__label__ if etype is None else etype
+    etype = celltype.label if etype is None else etype
     if voxelize:
         if isinstance(size[0], int):
             size_ = (radius[1] - radius[0]) / size[0]

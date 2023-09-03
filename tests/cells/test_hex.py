@@ -22,11 +22,11 @@ class TestHex(unittest.TestCase):
 
         self.assertTrue(test_H8_volume(1.0, 1.0, 1.0, 2, 2, 2))
 
-        pcoords = H8.lcoords()
-        shpf = H8.shape_function_values
-        shpmf = H8.shape_function_matrix
-        dshpf = H8.shape_function_derivatives
-        shpfH8, shpmfH8, dshpfH8 = H8.generate_class_functions(return_symbolic=False)
+        pcoords = H8.Geometry.master_coordinates()
+        shpf = H8.Geometry.shape_function_values
+        shpmf = H8.Geometry.shape_function_matrix
+        dshpf = H8.Geometry.shape_function_derivatives
+        shpfH8, shpmfH8, dshpfH8 = H8.Geometry.generate_class_functions(return_symbolic=False)
 
         self.assertTrue(np.all(np.isclose(shpfH8(pcoords), shpf(pcoords))))
         self.assertTrue(np.all(np.isclose(dshpfH8(pcoords), dshpf(pcoords))))
@@ -47,8 +47,8 @@ class TestHex(unittest.TestCase):
         mesh = PolyData(pd, cd, frame=frame)
 
         jac = cd.jacobian_matrix()
-        pcoords = H8.lcoords()
-        gdshp = H8.shape_function_derivatives(pcoords[:2], jac=jac)
+        pcoords = H8.Geometry.master_coordinates()
+        gdshp = H8.Geometry.shape_function_derivatives(pcoords[:2], jac=jac)
 
         self.assertTrue(gdshp.shape, (topo.shape[0], 2, topo.shape[1], 3))
 
@@ -67,11 +67,11 @@ class TestHex(unittest.TestCase):
 
         self.assertTrue(test_H27_volume(1.0, 1.0, 1.0, 2, 2, 2))
 
-        pcoords = H27.lcoords()
-        shpf = H27.shape_function_values
-        shpmf = H27.shape_function_matrix
-        dshpf = H27.shape_function_derivatives
-        shpfH27, shpmfH27, dshpfH27 = H27.generate_class_functions(
+        pcoords = H27.Geometry.master_coordinates()
+        shpf = H27.Geometry.shape_function_values
+        shpmf = H27.Geometry.shape_function_matrix
+        dshpf = H27.Geometry.shape_function_derivatives
+        shpfH27, shpmfH27, dshpfH27 = H27.Geometry.generate_class_functions(
             return_symbolic=False
         )
 
@@ -94,8 +94,8 @@ class TestHex(unittest.TestCase):
         mesh = PolyData(pd, cd, frame=frame)
 
         jac = cd.jacobian_matrix()
-        pcoords = H27.lcoords()
-        gdshp = H27.shape_function_derivatives(pcoords[:2], jac=jac)
+        pcoords = H27.Geometry.master_coordinates()
+        gdshp = H27.Geometry.shape_function_derivatives(pcoords[:2], jac=jac)
 
         self.assertTrue(gdshp.shape, (topo.shape[0], 2, topo.shape[1], 3))
 

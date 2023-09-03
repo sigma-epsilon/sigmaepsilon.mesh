@@ -1,4 +1,5 @@
 from typing import Iterable, Union, Any
+
 import numpy as np
 from numpy import ndarray
 import awkward as ak
@@ -20,14 +21,18 @@ class AkWrapper(Wrapper):
     def __init__(self, *args, wrap=None, fields=None, **kwargs):
         fields = {} if fields is None else fields
         assert isinstance(fields, dict)
+
         if wrap is None and (len(kwargs) + len(fields)) > 0:
             for k, v in kwargs.items():
                 if isinstance(v, np.ndarray):
                     fields[k] = v
+
             if len(fields) > 0:
                 wrap = ak.zip(fields, depth_limit=1)
+
         if len(kwargs) > 0:
             [kwargs.pop(k, None) for k in fields.keys()]
+
         super().__init__(*args, wrap=wrap, **kwargs)
 
     @property
@@ -166,17 +171,23 @@ class AkWrapper(Wrapper):
         """
         db = self.db
         res = None
+
         if fields is None:
             fields = []
+
         fields.extend(args)
+
         if len(fields) == 0:
             fields = db.fields
+
         res = {}
+
         for f in fields:
             if f in db.fields:
                 res[f] = db[f]
             else:
                 raise KeyError(f"Field {f} not found.")
+
         return res
 
     def to_list(self, *args, fields: Iterable[str] = None) -> list:
@@ -194,9 +205,11 @@ class AkWrapper(Wrapper):
         """
         db = self.db
         res = None
+
         if fields is None:
             if len(args) > 0:
                 fields = []
+
         if isinstance(fields, Iterable):
             fields.extend(args)
             db_ = {}
@@ -205,6 +218,7 @@ class AkWrapper(Wrapper):
                     db_[f] = db[f]
                 else:
                     raise KeyError(f"Field {f} not found.")
+
             res = AkWrapper(fields=db_).to_list()
         else:
             res = db.to_list()
@@ -221,8 +235,10 @@ class AkWrapper(Wrapper):
     def __getattr__(self, attr):
         if attr in self.__class__._attr_map_:
             attr = self.__class__._attr_map_[attr]
+
         if attr in self.__dict__:
             return getattr(self, attr)
+
         try:
             return getattr(self._wrapped, attr)
         except Exception:
