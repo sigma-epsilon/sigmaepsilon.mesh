@@ -2,14 +2,14 @@ from .celldata import CellData
 from .cell import PolyCell
 from .pointdatabase import PointDataBase
 from .polydatabase import PolyDataBase
-from .geometry import PolyCellGeometry1d, PolyCellGeometry2d, PolyCellGeometry3d
+from .geometry import PolyCellGeometryMixin1d, PolyCellGeometryMixin2d, PolyCellGeometryMixin3d
 
 __all__ = [
     "CellData",
     "PolyCell",
     "PointDataBase",
     "PolyDataBase",
-    "PolyCellGeometry1d",
-    "PolyCellGeometry2d",
-    "PolyCellGeometry3d",
+    "PolyCellGeometryMixin1d",
+    "PolyCellGeometryMixin2d",
+    "PolyCellGeometryMixin3d",
 ]
