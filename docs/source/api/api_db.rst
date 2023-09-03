@@ -13,10 +13,10 @@ data and general numba and gpu support.
 Data Classes
 ============
 
-.. autoclass:: sigmaepsilon.mesh.pointdata.PointData
+.. autoclass:: sigmaepsilon.mesh.core.pointdata.PointData
     :members:
 
-.. autoclass:: sigmaepsilon.mesh.celldata.CellData
+.. autoclass:: sigmaepsilon.mesh.core.celldata.CellData
     :members:
 
 Mesh Classes

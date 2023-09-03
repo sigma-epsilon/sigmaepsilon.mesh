@@ -10,5 +10,6 @@ API Reference
     /api/api_cells
     /api/api_interpolator
     /api/api_recipes
+    /api/api_triangulate
     /api/api_utils
     

@@ -16,5 +16,5 @@ tetgen
 matplotlib
 plotly
 k3d
-dewloosh.mpl
+sigmaepsilon.plotting.mpl
 setuptools>=65.5.1 # not directly required, pinned by Snyk to avoid a vulnerability

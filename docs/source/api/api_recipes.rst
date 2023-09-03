@@ -17,5 +17,5 @@ Recipes
 Downloadable examples
 =====================
 
-.. automodule:: sigmaepsilon.mesh.examples
+.. automodule:: sigmaepsilon.mesh.downloads
     :members:
