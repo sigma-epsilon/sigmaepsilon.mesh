@@ -74,6 +74,7 @@ class TestPolyDataPlot(unittest.TestCase):
             jupyter_backend="static",
             show_edges=True,
             theme="document",
+            return_plotter=True
         )
         
         mesh["surfaces", "Q4"].plot(
@@ -81,6 +82,7 @@ class TestPolyDataPlot(unittest.TestCase):
             jupyter_backend="static",
             show_edges=True,
             theme="document",
+            return_plotter=True
         )
         
         mesh["bodies", "H8"].surface().pvplot(
@@ -88,6 +90,7 @@ class TestPolyDataPlot(unittest.TestCase):
             jupyter_backend="static",
             show_edges=True,
             theme="document",
+            return_plotter=True
         )
         
         # plotting with data
@@ -110,6 +113,7 @@ class TestPolyDataPlot(unittest.TestCase):
             window_size=(600, 400),
             config_key=["pyvista", "plot"],
             theme="document",
+            return_plotter=True
         )
         
         mesh["bodies", "H8"].config["pyvista", "plot", "scalars"] = np.random.rand(self.tH8.shape[0])
@@ -123,6 +127,7 @@ class TestPolyDataPlot(unittest.TestCase):
             config_key=["pyvista", "plot"],
             cmap="plasma",
             theme="document",
+            return_plotter=True
         )
         
         block = mesh.blocks_of_cells(2345)[2345]
@@ -133,6 +138,7 @@ class TestPolyDataPlot(unittest.TestCase):
             config_key=["pyvista", "plot"],
             cmap="jet",
             theme="document",
+            return_plotter=True
         )
     
     def test_k3d(self):
