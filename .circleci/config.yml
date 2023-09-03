@@ -83,11 +83,14 @@ jobs:
           command: pip install ".[test, dev]"
       - run:
           name: Run tests and generate coverage report
-          command: pytest --cov-report html --cov
+          command: pytest --cov --cov-report html:htmlcov
+      - run:
+          name: List working directory contents
+          command: ls -al
       #- codecov/upload
       - store_artifacts:
           name: Store coverage report as artifact
-          path: ~/project/htmlcov
+          path: htmlcov
 
   tox-test:  # This is the name of the job, feel free to change it to better match what you're trying to do!
     # These next lines defines a docker executors: https://circleci.com/docs/2.0/executor-types/
