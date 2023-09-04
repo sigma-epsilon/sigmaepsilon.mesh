@@ -1,4 +1,6 @@
-import importlib.metadata
+from os.path import dirname, abspath
+
+from sigmaepsilon.core.config import find_pyproject_toml, load_pyproject_config
 
 from .space import PointCloud
 from .space import CartesianFrame
@@ -13,7 +15,6 @@ from .tetmesh import TetMesh
 from .triang import triangulate
 from .grid import grid, Grid
 from .tetrahedralize import tetrahedralize
-from .config import load_pyproject_config
 from .cellapproximator import LagrangianCellApproximator
 
 __all__ = [
@@ -34,8 +35,9 @@ __all__ = [
     "LagrangianCellApproximator",
 ]
 
-# _config = load_pyproject_config()
+pyproject_toml_path = find_pyproject_toml(dirname(abspath(__file__)), 10)
+project_config = load_pyproject_config(filepath=pyproject_toml_path, section="project")
 
-__pkg_name__ = "sigmaepsilon.mesh"
-__version__ = importlib.metadata.version(__pkg_name__)
-__description__ = "A Python package to build, manipulate and analyze polygonal meshes."
+__pkg_name__ = project_config["name"]
+__version__ = project_config["version"]
+__description__ = project_config["description"]
