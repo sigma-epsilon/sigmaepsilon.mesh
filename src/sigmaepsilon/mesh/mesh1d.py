@@ -47,7 +47,7 @@ def mesh1d_uniform(
     coords: ndarray,
     topo: ndarray,
     eshape: ndarray,
-    *args,
+    *,
     N: int = 2,
     refZ=None,
     return_frames=False,

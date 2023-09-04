@@ -57,7 +57,7 @@ class AkWrapper(Wrapper):
         ----------
         *args: tuple, Optional
             Positional arguments to specify fields.
-        fields : Iterable[str], Optional
+        fields: Iterable[str], Optional
             Valid field names to include in the parquet files.
         **kwargs: dict, Optional
             Keyword arguments forwarded to :func:`awkward.to_dataframe`.
@@ -79,9 +79,9 @@ class AkWrapper(Wrapper):
         ----------
         *args: tuple, Optional
             Positional arguments to specify fields.
-        path : str
+        path: str
             Path of the file being created.
-        fields : Iterable[str], Optional
+        fields: Iterable[str], Optional
             Valid field names to include in the parquet files.
         **kwargs: dict, Optional
             Keyword arguments forwarded to :func:`awkward.to_parquet`.
@@ -117,9 +117,9 @@ class AkWrapper(Wrapper):
         ----------
         *args: tuple, Optional
             Positional arguments to specify fields.
-        fields : Iterable[str], Optional
+        fields: Iterable[str], Optional
             Valid field names to include in the returned objects.
-        asarray : bool, Optional
+        asarray: bool, Optional
             If True, the database is turned onto an Awkward Array before
             saving to file. Default is False.
         """
@@ -136,7 +136,7 @@ class AkWrapper(Wrapper):
         ----------
         *args: tuple, Optional
             Positional arguments to specify fields.
-        fields : Iterable[str], Optional
+        fields: Iterable[str], Optional
             Valid field names to include in the returned objects.
         """
         ldb = self.to_list(*args, fields=fields)
@@ -150,7 +150,7 @@ class AkWrapper(Wrapper):
         ----------
         *args: tuple, Optional
             Positional arguments to specify fields.
-        fields : Iterable[str], Optional
+        fields: Iterable[str], Optional
             Valid field names to include in the returned objects.
         """
         d = self.to_dict(*args, fields=fields)
@@ -165,7 +165,7 @@ class AkWrapper(Wrapper):
         ----------
         *args: tuple, Optional
             Positional arguments to specify fields.
-        fields : Iterable[str], Optional
+        fields: Iterable[str], Optional
             A list of keys that might identify data in a database.
             Default is None.
         """
@@ -199,7 +199,7 @@ class AkWrapper(Wrapper):
         ----------
         *args: tuple, Optional
             Positional arguments to specify fields.
-        fields : Iterable[str], Optional
+        fields: Iterable[str], Optional
             A list of keys that might identify data in a database.
             Default is None.
         """

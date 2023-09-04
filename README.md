@@ -74,13 +74,28 @@ If you are a developer and want to install the library in development mode, the 
 >>> pip install "-e .[test, dev]"
 ```
 
+### Checking your installation
+
+You should be able to import sigmaepsilon.mesh from the Python prompt:
+
+```console
+$ python
+Python 3.8.10 (tags/v3.8.10:3d8993a, May  3 2021, 11:48:03) [MSC v.1928 64 bit (AMD64)] on win32
+Type "help", "copyright", "credits" or "license" for more information.
+>>> import sigmaepsilon.mesh
+>>> sigmaepsilon.mesh.__version__
+'1.1.0'
+```
+
 ## Testing and coverage
 
-The following command runs all tests and creates a html report in a folder named 'htmlcov':
+The following command runs all tests and creates a html report in a folder named `htmlcov` (the settings are governed by the `.coveragerc` file):
 
 ```console
 python -m pytest --cov-report html --cov-config=.coveragerc --cov sigmaepsilon.mesh
 ```
+
+Open `htmlcov/index.html` to see the results.
 
 ## Versioning
 

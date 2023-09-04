@@ -4,10 +4,9 @@ from numpy import ndarray
 
 from ..topoarray import TopologyArray
 from .akwrapper import AkWrapper
-from .metacelldata import ABC_MeshCellData
 
 
-class CellDataBase(AkWrapper, ABC_MeshCellData):
+class CellDataBase(AkWrapper):
     """
     Base class for CellData objects.
     """
@@ -37,10 +36,6 @@ class CellDataBase(AkWrapper, ABC_MeshCellData):
         """Ought to return a single measure for a collection of cells."""
         ...
 
-    def to_triangles(self, *args, **kwargs) -> ndarray:
+    def to_simplices(self, *args, **kwargs) -> ndarray:
         """Ought to return a triangular representation of the mesh."""
-        raise NotImplementedError
-
-    def to_tetrahedra(self, *args, **kwargs) -> ndarray:
-        """Ought to return a tetrahedral representation of the mesh."""
         raise NotImplementedError

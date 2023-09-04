@@ -7,13 +7,13 @@ from sigmaepsilon.math import atleast1d, atleast2d, ascont
 from sigmaepsilon.math.linalg import ReferenceFrame as FrameLike
 from sigmaepsilon.math.utils import to_range_1d
 
+from .celldata import CellData
 from .geometry import (
     PolyCellGeometryMixin1d,
     PolyCellGeometryMixin2d,
     PolyCellGeometryMixin3d,
 )
 from ..space import PointCloud, CartesianFrame
-from . import CellData
 from ..utils.utils import (
     jacobian_matrix_bulk,
     jacobian_matrix_bulk_1d,

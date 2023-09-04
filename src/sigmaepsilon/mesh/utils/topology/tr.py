@@ -8,6 +8,7 @@ try:
     from collections.abc import Iterable
 except ImportError:
     from collections import Iterable
+
 from numpy import ndarray, newaxis
 from concurrent.futures import ThreadPoolExecutor
 

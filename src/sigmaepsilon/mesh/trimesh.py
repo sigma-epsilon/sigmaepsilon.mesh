@@ -2,7 +2,7 @@ import numpy as np
 
 from sigmaepsilon.math import ascont
 
-from .core.cell import PolyCell
+from .cells.cell import PolyCell
 from .polydata import PolyData
 from .cells import T3, T6, TET4
 from .utils.space import frames_of_surfaces, is_planar_surface as is_planar

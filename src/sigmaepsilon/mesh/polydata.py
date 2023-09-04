@@ -53,10 +53,10 @@ from .utils.topology import (
     cells_at_nodes,
 )
 from .topoarray import TopologyArray
-from .core.pointdata import PointData
-from .core import CellData
+from .pointdata import PointData
+from .cells import CellData
 from .core.polydatabase import PolyDataBase
-from .core.cell import PolyCell
+from .cells.cell import PolyCell
 from .helpers import meshio_to_celltype, vtk_to_celltype
 from .vtkutils import PolyData_to_mesh
 from .config import __hasvtk__, __haspyvista__, __hask3d__, __hasmatplotlib__
@@ -77,7 +77,7 @@ if __haspyvista__:
     from pyvista import themes
 
     pyVistaLike = Union[pv.PolyData, pv.PointGrid, pv.UnstructuredGrid]
-else:
+else:  # pragma: no cover
     pyVistaLike = NoneType
 
 
@@ -176,7 +176,7 @@ class PolyData(PolyDataBase):
         *args,
         coords: ndarray = None,
         topo: ndarray = None,
-        celltype=None,
+        celltype: PolyCell = None,
         frame: FrameLike = None,
         newaxis: int = 2,
         cell_fields: dict = None,
@@ -2069,6 +2069,7 @@ class PolyData(PolyDataBase):
                     c = c.astype(np.float32)
                     t = t.astype(np.uint32)
                     scene += k3d.mesh(c, t, **params)
+
                     if show_edges:
                         scene += k3d.mesh(c, t, wireframe=True, color=0)
 

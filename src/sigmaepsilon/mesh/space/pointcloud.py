@@ -1,5 +1,6 @@
 import operator
 from typing import Union, Iterable
+from contextlib import suppress
 
 from numba import njit, prange
 from numba.core import types as nbtypes, cgutils
@@ -38,23 +39,28 @@ VectorLike = Union[Point, Vector, ndarray]
 
 
 @njit(nogil=True, parallel=True, cache=__cache)
-def show_coords(dcm: np.ndarray, coords: np.ndarray):
+def show_coords(dcm: ndarray, coords: ndarray) -> ndarray:
     res = np.zeros_like(coords)
     for i in prange(coords.shape[0]):
         res[i] = dcm @ coords[i, :]
     return res
 
 
-def dcoords(coords, v):
+def dcoords(coords: ndarray, v: ndarray) -> ndarray:
     res = np.zeros_like(coords)
-    res[:, 0] = v[0]
-    res[:, 1] = v[1]
-    try:
-        res[:, 2] = v[2]
-    except IndexError:
-        pass
-    finally:
-        return res
+    if len(res.shape) == 1:
+        with suppress(FileNotFoundError):
+            res[0] = v[0]
+            res[1] = v[1]
+            res[2] = v[2]
+    elif len(res.shape) == 2:
+        with suppress(FileNotFoundError):
+            res[:, 0] = v[0]
+            res[:, 1] = v[1]
+            res[:, 2] = v[2]
+    else:  # pragma: no cover
+        raise ValueError("Only 1 and 2 dimensional arrays are supported here.")
+    return res
 
 
 class PointCloud(Vector):

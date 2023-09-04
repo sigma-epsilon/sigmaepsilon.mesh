@@ -1,12 +1,15 @@
 # -*- coding: utf-8 -*-
+from typing import Tuple
+
 import numpy as np
+from numpy import ndarray
 from numba import njit
 
 __cache = True
 
 
 @njit(nogil=True, cache=__cache)
-def edges_Q4(quads: np.ndarray):
+def edges_Q4(quads: ndarray) -> ndarray:
     nE = len(quads)
     edges = np.zeros((nE, 4, 2), dtype=quads.dtype)
     edges[:, 0, 0] = quads[:, 0]
@@ -20,16 +23,16 @@ def edges_Q4(quads: np.ndarray):
     return edges
 
 
-def edgeIds_T3():
+def edgeIds_T3() -> ndarray:
     return np.array([[0, 1], [1, 2], [2, 0]], dtype=int)
 
 
-def edgeIds_TET4():
+def edgeIds_TET4() -> ndarray:
     return np.array([[0, 1], [1, 2], [2, 0], [0, 3], [1, 3], [2, 3]], dtype=int)
 
 
 @njit(nogil=True, cache=__cache)
-def edges_TET4(topo: np.ndarray):
+def edges_TET4(topo: ndarray) -> ndarray:
     nE = len(topo)
     edges = np.zeros((nE, 6, 2), dtype=topo.dtype)
     edges[:, 0, 0] = topo[:, 0]
@@ -48,7 +51,7 @@ def edges_TET4(topo: np.ndarray):
 
 
 @njit(nogil=True, cache=__cache)
-def faces_TET4(topo: np.ndarray):
+def faces_TET4(topo: ndarray) -> ndarray:
     nE = len(topo)
     faces = np.zeros((nE, 4, 3), dtype=topo.dtype)
     faces[:, 0, 0] = topo[:, 0]
@@ -66,7 +69,7 @@ def faces_TET4(topo: np.ndarray):
     return faces
 
 
-def edgeIds_H8():
+def edgeIds_H8() -> ndarray:
     return np.array(
         [
             [0, 1],
@@ -87,7 +90,7 @@ def edgeIds_H8():
 
 
 @njit(nogil=True, cache=__cache)
-def edges_H8(topo: np.ndarray):
+def edges_H8(topo: ndarray) -> ndarray:
     nE = len(topo)
     edges = np.zeros((nE, 12, 2), dtype=topo.dtype)
     edges[:, 0, 0] = topo[:, 0]
@@ -118,7 +121,7 @@ def edges_H8(topo: np.ndarray):
 
 
 @njit(nogil=True, cache=__cache)
-def faces_H8(topo: np.ndarray):
+def faces_H8(topo: ndarray) -> ndarray:
     nE = len(topo)
     faces = np.zeros((nE, 6, 4), dtype=topo.dtype)
     faces[:, 0, 0] = topo[:, 0]
@@ -149,7 +152,7 @@ def faces_H8(topo: np.ndarray):
 
 
 @njit(nogil=True, cache=__cache)
-def edges_W6(topo: np.ndarray):
+def edges_W6(topo: ndarray) -> ndarray:
     nE = len(topo)
     edges = np.zeros((nE, 9, 2), dtype=topo.dtype)
     edges[:, 0, 0] = topo[:, 0]
@@ -174,14 +177,14 @@ def edges_W6(topo: np.ndarray):
 
 
 @njit(nogil=True, cache=__cache)
-def faces_W6(topo: np.ndarray):
+def faces_W6(topo: ndarray) -> Tuple[ndarray, ndarray]:
     nE = len(topo)
 
     faces2 = np.zeros((nE, 2, 3), dtype=topo.dtype)
     faces2[:, 0, 0] = topo[:, 0]
     faces2[:, 0, 1] = topo[:, 2]
     faces2[:, 0, 2] = topo[:, 1]
-    faces2[:, 1, 3] = topo[:, 3]
+    faces2[:, 1, 2] = topo[:, 3]
     faces2[:, 1, 0] = topo[:, 4]
     faces2[:, 1, 1] = topo[:, 5]
 

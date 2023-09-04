@@ -3,8 +3,8 @@ import numpy as np
 from numpy import ndarray
 from sympy import symbols
 
-from ..core.cell import PolyCell
-from ..core.geometry import PolyCellGeometryMixin3d
+from .cell import PolyCell
+from .geometry import PolyCellGeometryMixin3d
 from ..utils.cells.tet10 import (
     monoms_TET10,
 )

@@ -16,8 +16,8 @@ class TestMeshAnalysis(unittest.TestCase):
             direction=(0.0, 0.0, 1.0),
             radius=np.linspace(d / 2, a / 2, 15),
             height=h,
-            theta_resolution=100,
-            z_resolution=40,
+            theta_resolution=4,
+            z_resolution=4,
         )
         pd = PolyData.from_pv(cyl)
         pd.nodal_adjacency(frmt="scipy-csr")

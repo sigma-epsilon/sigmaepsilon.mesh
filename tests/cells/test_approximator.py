@@ -7,7 +7,7 @@ from sigmaepsilon.core.testing import SigmaEpsilonTestCase
 from sigmaepsilon.math.utils import to_range_1d
 import sigmaepsilon.mesh
 from sigmaepsilon.mesh.cells import H8, L2, L3, Q4, Q9
-from sigmaepsilon.mesh.core import PolyCellGeometryMixin1d
+from sigmaepsilon.mesh.cells import PolyCellGeometryMixin1d
 
 
 def load_tests(loader, tests, ignore):  # pragma: no cover

@@ -2,7 +2,7 @@ from typing import Union
 import numpy as np
 from numpy import ndarray
 
-from .core.pointdata import PointData
+from .pointdata import PointData
 from .grid import grid
 from .polydata import PolyData
 from .trimesh import TriMesh

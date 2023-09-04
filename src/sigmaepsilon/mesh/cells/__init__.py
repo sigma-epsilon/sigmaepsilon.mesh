@@ -1,4 +1,12 @@
 # -*- coding: utf-8 -*-
+from .cell import PolyCell
+from .celldata import CellData
+from .geometry import (
+    PolyCellGeometryMixin1d,
+    PolyCellGeometryMixin2d,
+    PolyCellGeometryMixin3d,
+)
+
 from .l2 import L2
 from .l2 import L2 as Line
 from .l3 import L3
@@ -20,6 +28,11 @@ from .w6 import W6 as Wedge
 from .w18 import W18
 
 __all__ = [
+    "PolyCell",
+    "CellData",
+    "PolyCellGeometryMixin1d",
+    "PolyCellGeometryMixin2d",
+    "PolyCellGeometryMixin3d",
     "L2",
     "Line",
     "L3",

@@ -1,6 +1,5 @@
 [run]
 branch = False
-omit = */utils/*
 
 [report]
 # Regexes for lines to exclude from consideration
@@ -25,11 +24,6 @@ exclude_lines =
     @(abc\.)?abstractmethod
     @(abc\.)?abstractproperty
     
-    # Don't complain about numba jitted code
-    @njit
-    @jit
-    @guv
-
 ignore_errors = True
 
 [html]

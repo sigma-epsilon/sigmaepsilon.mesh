@@ -1,6 +1,5 @@
 from typing import Union, Iterable
-from copy import copy, deepcopy
-from functools import partial
+from copy import deepcopy
 
 import numpy as np
 from numpy import ndarray
@@ -11,9 +10,9 @@ from sigmaepsilon.math.linalg import ReferenceFrame as FrameLike
 from sigmaepsilon.math.logical import isboolarray
 from sigmaepsilon.math.linalg.sparse import csr_matrix
 
-from ..space import CartesianFrame, PointCloud
-from . import PointDataBase, PolyDataBase as PolyData
-from ..utils import collect_nodal_data
+from .space import CartesianFrame, PointCloud
+from .core import PointDataBase, PolyDataBase as PolyData
+from .utils import collect_nodal_data
 
 
 __all__ = ["PointData"]
@@ -116,8 +115,12 @@ class PointData(PointDataBase):
 
     def __copy__(self, memo=None):
         cls = type(self)
-        copy_function = copy if (memo is None) else partial(deepcopy, memo=memo)
         is_deep = memo is not None
+
+        if is_deep:
+            copy_function = lambda x: deepcopy(x, memo)
+        else:
+            copy_function = lambda x: x
 
         db = copy_function(self.db)
         f = self.frame

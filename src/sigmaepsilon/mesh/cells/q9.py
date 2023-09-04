@@ -3,8 +3,8 @@ import numpy as np
 from numpy import ndarray
 from sympy import symbols
 
-from ..core.cell import PolyCell
-from ..core.geometry import PolyCellGeometryMixin2d
+from .cell import PolyCell
+from .geometry import PolyCellGeometryMixin2d
 from ..utils.cells.q9 import (
     shp_Q9_multi,
     dshp_Q9_multi,

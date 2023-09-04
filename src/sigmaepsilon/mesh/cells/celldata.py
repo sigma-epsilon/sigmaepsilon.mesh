@@ -1,6 +1,5 @@
 from typing import Union, Iterable
-from copy import copy, deepcopy
-from functools import partial
+from copy import deepcopy
 
 import numpy as np
 from numpy import ndarray
@@ -10,10 +9,11 @@ from sigmaepsilon.math import atleast2d, atleast3d, repeat
 from sigmaepsilon.math.linalg.sparse import csr_matrix
 from sigmaepsilon.math.linalg import ReferenceFrame
 
-from .pointdatabase import PointDataBase
-from .celldatabase import CellDataBase
-from .polydatabase import PolyDataBase as PolyData
-from .akwrapper import AwkwardLike
+from .meta import ABC_MeshCellData
+from ..core.pointdatabase import PointDataBase
+from ..core.celldatabase import CellDataBase
+from ..core.polydatabase import PolyDataBase as PolyData
+from ..core.akwrapper import AwkwardLike
 from ..utils import (
     avg_cell_data,
     distribute_nodal_data_bulk,
@@ -21,7 +21,7 @@ from ..utils import (
 )
 
 
-class CellData(CellDataBase):
+class CellData(CellDataBase, ABC_MeshCellData):
     """
     A class to handle data related to the cells of a polygonal mesh.
 
@@ -144,8 +144,12 @@ class CellData(CellDataBase):
 
     def __copy__(self, memo=None):
         cls = type(self)
-        copy_function = copy if (memo is None) else partial(deepcopy, memo=memo)
         is_deep = memo is not None
+
+        if is_deep:
+            copy_function = lambda x: deepcopy(x, memo)
+        else:
+            copy_function = lambda x: x
 
         db = copy_function(self.db)
 
@@ -249,7 +253,7 @@ class CellData(CellDataBase):
         return self._container
 
     @container.setter
-    def container(self, value: PolyData):
+    def container(self, value: PolyData) -> None:
         """Sets the container of the block."""
         assert isinstance(value, PolyData)
         self._container = value
