@@ -1,8 +1,14 @@
-import unittest
+import unittest, doctest
 
 import numpy as np
 
+import sigmaepsilon.mesh.indexmanager
 from sigmaepsilon.mesh.indexmanager import IndexManager
+
+
+def load_tests(loader, tests, ignore):  # pragma: no cover
+    tests.addTests(doctest.DocTestSuite(sigmaepsilon.mesh.indexmanager))
+    return tests
 
 
 class TestIndexManager(unittest.TestCase):
@@ -13,7 +19,7 @@ class TestIndexManager(unittest.TestCase):
         im.recycle(0)
         self.assertEqual(im.generate(1), 0)
         self.assertEqual(im.generate_np(1), 2)
-    
+
     def test_multi(self):
         im = IndexManager()
         self.assertEqual(im.generate(5), list(range(5)))
@@ -25,4 +31,3 @@ class TestIndexManager(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
-        
