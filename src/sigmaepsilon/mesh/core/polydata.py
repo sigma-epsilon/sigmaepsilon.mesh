@@ -1,20 +1,24 @@
-from abc import abstractmethod
+from abc import abstractmethod, abstractproperty
 from typing import Union, Iterable
 
 from numpy import ndarray
 
-from linkeddeepdict import LinkedDeepDict
 from sigmaepsilon.math.linalg.sparse import csr_matrix
 
 from ..topoarray import TopologyArray
-from .pointdatabase import PointDataBase
-from .celldatabase import CellDataBase
+from .pointdata import PointDataBase
+from .celldata import CellDataBase
 
 
-class PolyDataBase(LinkedDeepDict):
+class PolyDataBase:
     """
     Base class for PolyData objects.
     """
+    
+    @abstractproperty
+    def frame(self) -> ndarray:
+        """Ought to return a frame of reference."""
+        ...
 
     @abstractmethod
     def source(self, *args, **kwargs) -> "PolyDataBase":
@@ -52,3 +56,4 @@ class PolyDataBase(LinkedDeepDict):
         Ought to return PolyData blocks with attached CellData.
         """
         ...
+        

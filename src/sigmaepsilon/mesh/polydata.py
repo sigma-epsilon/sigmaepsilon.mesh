@@ -17,7 +17,8 @@ from sigmaepsilon.math.linalg.sparse import csr_matrix
 from sigmaepsilon.math.linalg import Vector, ReferenceFrame as FrameLike
 from sigmaepsilon.math import atleast1d, minmax, repeat
 
-from .core.akwrapper import AkWrapper
+from .indexmanager import IndexManager
+from .akwrapper import AkWrapper
 from .utils.topology.topo import inds_to_invmap_as_dict, remap_topo_1d
 from .space import CartesianFrame, PointCloud
 from .utils.utils import (
@@ -55,7 +56,7 @@ from .utils.topology import (
 from .topoarray import TopologyArray
 from .pointdata import PointData
 from .cells import CellData
-from .core.polydatabase import PolyDataBase
+from .core.polydata import PolyDataBase
 from .cells.cell import PolyCell
 from .helpers import meshio_to_celltype, vtk_to_celltype
 from .vtkutils import PolyData_to_mesh
@@ -86,7 +87,7 @@ VectorLike = Union[Vector, ndarray]
 __all__ = ["PolyData"]
 
 
-class PolyData(PolyDataBase):
+class PolyData(DeepDict, PolyDataBase):
     """
     A class to handle complex polygonal meshes.
 
@@ -2336,49 +2337,3 @@ class PolyData(PolyDataBase):
 
     def __repr__(self):
         return "PolyData(%s)" % (dict.__repr__(self))
-
-
-class IndexManager(object):
-    """
-    Manages and index set by generating and recycling indices
-    of a set of points or cells.
-    """
-
-    def __init__(self, start=0):
-        self.queue = []
-        self.next = start
-
-    def generate_np(self, n: int = 1) -> Union[int, ndarray]:
-        if n == 1:
-            return self.generate(1)
-        else:
-            return np.array(self.generate(n))
-
-    def generate(self, n: int = 1) -> Union[int, ndarray]:
-        nQ = len(self.queue)
-        if nQ > 0:
-            if n == 1:
-                res = self.queue.pop()
-            else:
-                if nQ >= n:
-                    res = self.queue[:n]
-                    del self.queue[:n]
-                else:
-                    res = copy(self.queue)
-                    res.extend(range(self.next, self.next + n - nQ))
-                    self.queue = []
-                self.next += n - nQ
-        else:
-            if n == 1:
-                res = self.next
-            else:
-                res = list(range(self.next, self.next + n))
-            self.next += n
-        return res
-
-    def recycle(self, *args):
-        for a in args:
-            if isinstance(a, Iterable):
-                self.queue.extend(a)
-            else:
-                self.queue.append(a)

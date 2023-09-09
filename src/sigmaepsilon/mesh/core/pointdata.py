@@ -1,11 +1,10 @@
+
 from abc import abstractproperty
 
 from numpy import ndarray
 
-from .akwrapper import AkWrapper
 
-
-class PointDataBase(AkWrapper):
+class PointDataBase:
     """
     Base class for PointData objects.
     """

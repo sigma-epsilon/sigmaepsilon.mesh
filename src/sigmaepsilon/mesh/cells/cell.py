@@ -1,4 +1,12 @@
-from typing import Union, MutableMapping, Iterable, Tuple, Any, ClassVar, Optional
+from typing import (
+    Union,
+    MutableMapping,
+    Iterable,
+    Tuple,
+    Any,
+    ClassVar,
+    Optional,
+)
 
 import numpy as np
 from numpy import ndarray
@@ -7,9 +15,11 @@ from sigmaepsilon.math import atleast1d, atleast2d, ascont
 from sigmaepsilon.math.linalg import ReferenceFrame as FrameLike
 from sigmaepsilon.math.utils import to_range_1d
 
+from ..core.polydata import PolyDataBase
+from ..core.pointdata import PointDataBase
 from .celldata import CellData
 from .geometry import (
-    PolyCellGeometryMixin1d,
+    PolyCellGeometryMixin,
     PolyCellGeometryMixin2d,
     PolyCellGeometryMixin3d,
 )
@@ -57,16 +67,14 @@ if __haspyvista__:
 MapLike = Union[ndarray, MutableMapping]
 
 
-class PolyCell(CellData):
+class PolyCell(CellData[PolyDataBase, PointDataBase]):
     """
     A subclass of :class:`~sigmaepsilon.mesh.celldata.CellData` as a base class
     for all cell containers.
     """
 
     label: ClassVar[Optional[str]] = None
-    Geometry: Union[
-        PolyCellGeometryMixin1d, PolyCellGeometryMixin2d, PolyCellGeometryMixin3d
-    ] = None
+    Geometry: PolyCellGeometryMixin = None
 
     def to_triangles(self: PolyCellGeometryMixin2d) -> ndarray:
         """

@@ -1,4 +1,4 @@
-from typing import Union, Iterable
+from typing import Union, Iterable, Generic, TypeVar
 from copy import deepcopy
 
 import numpy as np
@@ -10,18 +10,22 @@ from sigmaepsilon.math.linalg.sparse import csr_matrix
 from sigmaepsilon.math.linalg import ReferenceFrame
 
 from .meta import ABC_MeshCellData
-from ..core.pointdatabase import PointDataBase
-from ..core.celldatabase import CellDataBase
-from ..core.polydatabase import PolyDataBase as PolyData
-from ..core.akwrapper import AwkwardLike
+from ..akwrapper import AkWrapper
+from ..core import PolyDataBase, PointDataBase, CellDataBase
+from ..akwrapper import AwkwardLike
 from ..utils import (
     avg_cell_data,
     distribute_nodal_data_bulk,
     distribute_nodal_data_sparse,
 )
 
+PointDataLike = TypeVar("PointDataLike", bound=PointDataBase)
+PolyDataLike = TypeVar("PolyDataLike", bound=PolyDataBase)
 
-class CellData(CellDataBase, ABC_MeshCellData):
+
+class CellData(
+    Generic[PolyDataLike, PointDataLike], AkWrapper, CellDataBase, ABC_MeshCellData
+):
     """
     A class to handle data related to the cells of a polygonal mesh.
 
@@ -70,7 +74,7 @@ class CellData(CellDataBase, ABC_MeshCellData):
     def __init__(
         self,
         *args,
-        pointdata: PointDataBase = None,
+        pointdata: PointDataLike = None,
         wrap: AwkwardLike = None,
         topo: ndarray = None,
         fields: dict = None,
@@ -79,7 +83,7 @@ class CellData(CellDataBase, ABC_MeshCellData):
         areas: Union[ndarray, float] = None,
         t: Union[ndarray, float] = None,
         db: AwkwardLike = None,
-        container: PolyData = None,
+        container: PolyDataLike = None,
         i: ndarray = None,
         **kwargs,
     ):
@@ -139,10 +143,10 @@ class CellData(CellDataBase, ABC_MeshCellData):
             if areas is not None:
                 self.A = areas
 
-    def __deepcopy__(self, memo):
+    def __deepcopy__(self, memo: dict) -> "CellData":
         return self.__copy__(memo)
 
-    def __copy__(self, memo=None):
+    def __copy__(self, memo: dict = None) -> "CellData":
         cls = type(self)
         is_deep = memo is not None
 
@@ -217,7 +221,7 @@ class CellData(CellDataBase, ABC_MeshCellData):
         return self._dbkey_areas_ in self._wrapped.fields
 
     @property
-    def pointdata(self) -> PointDataBase:
+    def pointdata(self) -> PointDataLike:
         """
         Returns the attached point database. This is what
         the topology of the cells are referring to.
@@ -225,7 +229,7 @@ class CellData(CellDataBase, ABC_MeshCellData):
         return self._pointdata
 
     @pointdata.setter
-    def pointdata(self, value: PointDataBase):
+    def pointdata(self, value: PointDataLike):
         """
         Sets the attached point database. This is what
         the topology of the cells are referring to.
@@ -235,7 +239,7 @@ class CellData(CellDataBase, ABC_MeshCellData):
         self._pointdata = value
 
     @property
-    def pd(self) -> PointDataBase:
+    def pd(self) -> PointDataLike:
         """
         Returns the attached point database. This is what
         the topology of the cells are referring to.
@@ -243,22 +247,22 @@ class CellData(CellDataBase, ABC_MeshCellData):
         return self.pointdata
 
     @pd.setter
-    def pd(self, value: PointDataBase):
+    def pd(self, value: PointDataLike):
         """Sets the attached pointdata."""
         self.pointdata = value
 
     @property
-    def container(self) -> PolyData:
+    def container(self) -> PolyDataLike:
         """Returns the container object of the block."""
         return self._container
 
     @container.setter
-    def container(self, value: PolyData) -> None:
+    def container(self, value: PolyDataLike) -> None:
         """Sets the container of the block."""
-        assert isinstance(value, PolyData)
+        assert isinstance(value, PolyDataBase)
         self._container = value
 
-    def root(self) -> PolyData:
+    def root(self) -> PolyDataLike:
         """
         Returns the top level container of the model the block is
         the part of.
@@ -266,7 +270,7 @@ class CellData(CellDataBase, ABC_MeshCellData):
         c = self.container
         return None if c is None else c.root()
 
-    def source(self) -> PolyData:
+    def source(self) -> PolyDataLike:
         """
         Retruns the source of the cells. This is the PolyData block
         that stores the PointData object the topology of the cells

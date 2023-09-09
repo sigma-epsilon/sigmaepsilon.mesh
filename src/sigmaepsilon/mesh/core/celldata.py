@@ -3,10 +3,9 @@ from abc import abstractmethod, abstractproperty
 from numpy import ndarray
 
 from ..topoarray import TopologyArray
-from .akwrapper import AkWrapper
 
 
-class CellDataBase(AkWrapper):
+class CellDataBase:
     """
     Base class for CellData objects.
     """

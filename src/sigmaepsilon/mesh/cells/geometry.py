@@ -8,7 +8,6 @@ from typing import (
     Protocol,
     runtime_checkable,
 )
-from abc import abstractclassmethod
 
 import numpy as np
 from numpy import ndarray
@@ -79,7 +78,7 @@ class PolyCellGeometryMixin(Protocol):
 
         return CustomClass
 
-    @abstractclassmethod
+    @classmethod
     def master_coordinates(cls) -> ndarray:
         """
         Returns the coordinates of the master element.
