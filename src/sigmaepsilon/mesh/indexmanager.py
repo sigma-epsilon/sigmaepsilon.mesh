@@ -1,4 +1,4 @@
-from typing import Union, Iterable
+from typing import Union, Iterable, List
 from copy import copy
 
 import numpy as np
@@ -21,7 +21,7 @@ class IndexManager:
         else:
             return np.array(self.generate(n))
 
-    def generate(self, n: int = 1) -> Union[int, ndarray]:
+    def generate(self, n: int = 1) -> Union[int, List[int]]:
         nQ = len(self.queue)
         if nQ > 0:
             if n == 1:
@@ -43,7 +43,7 @@ class IndexManager:
             self.next += n
         return res
 
-    def recycle(self, *args):
+    def recycle(self, *args) -> None:
         for a in args:
             if isinstance(a, Iterable):
                 self.queue.extend(a)
