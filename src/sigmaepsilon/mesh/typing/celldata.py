@@ -2,10 +2,22 @@ from abc import abstractmethod, abstractproperty
 
 from numpy import ndarray
 
+from sigmaepsilon.core.meta import ABCMeta_Weak
 from ..topoarray import TopologyArray
 
+__all__ = ["CellDataBase"]
 
-class CellDataBase:
+
+class ABC(metaclass=ABCMeta_Weak):
+    """
+    Helper class that provides a standard way to create an ABC using
+    inheritance.
+    """
+
+    __slots__ = ()
+
+
+class CellDataBase(ABC):
     """
     Base class for CellData objects.
     """

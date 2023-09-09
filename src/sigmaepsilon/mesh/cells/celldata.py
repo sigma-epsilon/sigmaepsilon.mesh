@@ -11,7 +11,7 @@ from sigmaepsilon.math.linalg import ReferenceFrame
 
 from .meta import ABC_MeshCellData
 from ..akwrapper import AkWrapper
-from ..core import PolyDataBase, PointDataBase, CellDataBase
+from ..typing import PolyDataBase, PointDataBase, CellDataBase
 from ..akwrapper import AwkwardLike
 from ..utils import (
     avg_cell_data,

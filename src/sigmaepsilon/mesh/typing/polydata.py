@@ -3,6 +3,7 @@ from typing import Union, Iterable, Generic, TypeVar
 
 from numpy import ndarray
 
+from sigmaepsilon.core.meta import ABCMeta_Weak
 from sigmaepsilon.math.linalg.sparse import csr_matrix
 
 from ..topoarray import TopologyArray
@@ -15,7 +16,16 @@ CD = TypeVar("CD", bound=CellDataBase)
 __all__ = ["PolyDataBase"]
 
 
-class PolyDataBase(Generic[PD, CD]):
+class ABC(metaclass=ABCMeta_Weak):
+    """
+    Helper class that provides a standard way to create an ABC using
+    inheritance.
+    """
+
+    __slots__ = ()
+
+
+class PolyDataBase(Generic[PD, CD], ABC):
     """
     Base class for PolyData objects.
     """

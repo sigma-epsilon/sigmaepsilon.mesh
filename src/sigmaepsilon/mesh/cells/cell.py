@@ -15,8 +15,8 @@ from sigmaepsilon.math import atleast1d, atleast2d, ascont
 from sigmaepsilon.math.linalg import ReferenceFrame as FrameLike
 from sigmaepsilon.math.utils import to_range_1d
 
-from ..core.polydata import PolyDataBase
-from ..core.pointdata import PointDataBase
+from ..typing.polydata import PolyDataBase
+from ..typing.pointdata import PointDataBase
 from .celldata import CellData
 from .geometry import (
     PolyCellGeometryMixin,

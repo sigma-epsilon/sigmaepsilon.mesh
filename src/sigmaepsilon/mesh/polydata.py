@@ -56,7 +56,7 @@ from .utils.topology import (
 from .topoarray import TopologyArray
 from .pointdata import PointData
 from .cells import CellData
-from .core.polydata import PolyDataBase
+from .typing.polydata import PolyDataBase
 from .cells.cell import PolyCell
 from .helpers import meshio_to_celltype, vtk_to_celltype
 from .vtkutils import PolyData_to_mesh

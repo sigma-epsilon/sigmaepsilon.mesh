@@ -12,7 +12,7 @@ from sigmaepsilon.math.linalg.sparse import csr_matrix
 
 from .akwrapper import AkWrapper
 from .space import CartesianFrame, PointCloud
-from .core import PolyDataBase, PointDataBase
+from .typing import PolyDataBase, PointDataBase
 from .utils import collect_nodal_data
 
 
