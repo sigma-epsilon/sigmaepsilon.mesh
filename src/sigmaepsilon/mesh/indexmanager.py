@@ -49,4 +49,3 @@ class IndexManager:
                 self.queue.extend(a)
             else:
                 self.queue.append(a)
-                
