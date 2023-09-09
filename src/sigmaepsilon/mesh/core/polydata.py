@@ -1,5 +1,5 @@
 from abc import abstractmethod, abstractproperty
-from typing import Union, Iterable
+from typing import Union, Iterable, Generic, TypeVar
 
 from numpy import ndarray
 
@@ -9,12 +9,17 @@ from ..topoarray import TopologyArray
 from .pointdata import PointDataBase
 from .celldata import CellDataBase
 
+PD = TypeVar("PD", bound=PointDataBase)
+CD = TypeVar("CD", bound=CellDataBase)
 
-class PolyDataBase:
+__all__ = ["PolyDataBase"]
+
+
+class PolyDataBase(Generic[PD, CD]):
     """
     Base class for PolyData objects.
     """
-    
+
     @abstractproperty
     def frame(self) -> ndarray:
         """Ought to return a frame of reference."""
@@ -44,16 +49,15 @@ class PolyDataBase:
         ...
 
     @abstractmethod
-    def pointblocks(self) -> Iterable[PointDataBase]:
+    def pointblocks(self) -> Iterable[PD]:
         """
         Ought to return PolyData blocks with attached PointData.
         """
         ...
 
     @abstractmethod
-    def cellblocks(self) -> Iterable[CellDataBase]:
+    def cellblocks(self) -> Iterable[CD]:
         """
         Ought to return PolyData blocks with attached CellData.
         """
         ...
-        

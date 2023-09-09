@@ -1,5 +1,5 @@
 from copy import copy, deepcopy
-from typing import Union, Hashable, Collection, Iterable, Tuple, Any
+from typing import Union, Hashable, Collection, Iterable, Tuple, Any, Generic, TypeVar
 from collections import defaultdict
 import functools
 import warnings
@@ -86,8 +86,11 @@ VectorLike = Union[Vector, ndarray]
 
 __all__ = ["PolyData"]
 
+PD = TypeVar("PD", bound=PointData)
+CD = TypeVar("CD", bound=CellData)
 
-class PolyData(DeepDict, PolyDataBase):
+
+class PolyData(Generic[PD, CD], PolyDataBase[PD, CD], DeepDict):
     """
     A class to handle complex polygonal meshes.
 
@@ -365,9 +368,15 @@ class PolyData(DeepDict, PolyDataBase):
         return result
 
     def copy(self) -> "PolyData":
+        """
+        Returns a shallow copy.
+        """
         return copy(self)
 
     def deepcopy(self) -> "PolyData":
+        """
+        Returns a deep copy.
+        """
         return deepcopy(self)
 
     def __getitem__(self, key) -> "PolyData":

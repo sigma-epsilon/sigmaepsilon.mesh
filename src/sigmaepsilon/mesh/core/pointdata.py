@@ -1,4 +1,3 @@
-
 from abc import abstractproperty
 
 from numpy import ndarray
