@@ -68,7 +68,7 @@ def generate_mesh(
 
 
 def get_section(
-    shape, *args, mesh_params: dict = None, material: Material = None, **section_params
+    shape, *, mesh_params: dict = None, material: Material = None, **section_params
 ) -> Section:
     """
     Returns a :class:`sectionproperties.analysis.section.Section` instance.
@@ -126,37 +126,44 @@ def get_section(
     elif shape == "RS":
         keys = ["d", "b"]
         params = getallfromkwargs(keys, **section_params)
-        geom = RS(material=material, **params)
-        ms = section_params["t"]
+        params_dict = {k:v for k, v in zip(keys, params)}
+        geom = RS(material=material, **params_dict)
+        ms = min(params)
     elif shape == "RHS":
-        keys = ["d", "b", "t", "n_out", "n_r"]
+        keys = ["d", "b", "t", "r_out", "n_r"]
         params = getallfromkwargs(keys, **section_params)
-        geom = RHS(material=material, **params)
+        params_dict = {k:v for k, v in zip(keys, params)}
+        geom = RHS(material=material, **params_dict)
         ms = section_params["t"]
     elif shape == "I":
         keys = ["d", "b", "t_f", "t_w", "r", "n_r"]
         params = getallfromkwargs(keys, **section_params)
-        geom = i_section(material=material, **params)
+        params_dict = {k:v for k, v in zip(keys, params)}
+        geom = i_section(material=material, **params_dict)
         ms = min(section_params["t_f"], section_params["t_w"])
     elif shape == "TFI":
         keys = ["d", "b", "t_f", "t_w", "r_r", "r_f", "alpha", "n_r"]
         params = getallfromkwargs(keys, **section_params)
-        geom = TFI(material=material, **params)
+        params_dict = {k:v for k, v in zip(keys, params)}
+        geom = TFI(material=material, **params_dict)
         ms = min(section_params["t_f"], section_params["t_w"])
     elif shape == "PFC":
         keys = ["d", "b", "t_f", "t_w", "r", "n_r"]
         params = getallfromkwargs(keys, **section_params)
-        geom = PFC(material=material, **params)
+        params_dict = {k:v for k, v in zip(keys, params)}
+        geom = PFC(material=material, **params_dict)
         ms = min(section_params["t_f"], section_params["t_w"])
     elif shape == "TFC":
         keys = ["d", "b", "t_f", "t_w", "r_r", "r_f", "alpha", "n_r"]
         params = getallfromkwargs(keys, **section_params)
-        geom = TFC(material=material, **params)
+        params_dict = {k:v for k, v in zip(keys, params)}
+        geom = TFC(material=material, **params_dict)
         ms = min(section_params["t_f"], section_params["t_w"])
     elif shape == "T":
         keys = ["d", "b", "t_f", "t_w", "r", "n_r"]
         params = getallfromkwargs(keys, **section_params)
-        geom = tee_section(material=material, **params)
+        params_dict = {k:v for k, v in zip(keys, params)}
+        geom = tee_section(material=material, **params_dict)
         ms = min(section_params["t_f"], section_params["t_w"])
     else:
         raise NotImplementedError(
@@ -170,7 +177,7 @@ def get_section(
         assert isinstance(mesh_params, dict)
         geom = generate_mesh(geom, **mesh_params)
         return Section(geom)
-    raise RuntimeError("Unable to get section.")
+    raise RuntimeError("Unable to get section.")  # pragma: no cover
 
 
 class LineSection(Wrapper):
@@ -207,7 +214,7 @@ class LineSection(Wrapper):
 
     Examples
     --------
-    >>> from sigmaepsilon.mesh.section import LineSection
+    >>> from sigmaepsilon.mesh.section import LineSection, get_section
     >>> section = LineSection(get_section('CHS', d=1.0, t=0.1, n=64))
 
     or simply provide the shape as the first argument and everything
@@ -249,7 +256,7 @@ class LineSection(Wrapper):
                         wrap = get_section(
                             shape, mesh_params=mesh_params, material=material, **kwargs
                         )
-            except Exception:
+            except Exception:  # pragma: no cover
                 raise RuntimeError("Invalid input.")
         super().__init__(*args, wrap=wrap, **kwargs)
         self.props = None
