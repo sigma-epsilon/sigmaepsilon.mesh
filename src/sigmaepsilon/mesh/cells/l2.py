@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from .cell import PolyCell
+from .base import PolyCell
 from ..typing.geometry import PolyCellGeometryMixin1d
 from ..utils.cells.l2 import (
     shp_L2_multi,

@@ -3,7 +3,7 @@ import numpy as np
 from numpy import ndarray
 from sympy import symbols
 
-from .cell import PolyCell
+from .base import PolyCell
 from ..typing.geometry import PolyCellGeometryMixin3d
 from ..utils.cells.numint import Gauss_Legendre_Wedge_3x2
 from ..utils.cells.utils import volumes

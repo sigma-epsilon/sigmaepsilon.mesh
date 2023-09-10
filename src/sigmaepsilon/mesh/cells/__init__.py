@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from .cell import PolyCell
+from .base import PolyCell
 from ..data.celldata import CellData
 from ..typing.geometry import (
     PolyCellGeometryMixin1d,

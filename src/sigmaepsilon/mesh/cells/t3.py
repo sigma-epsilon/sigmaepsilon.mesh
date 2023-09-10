@@ -4,7 +4,7 @@ import numpy as np
 from numpy import ndarray
 from sympy import symbols
 
-from .cell import PolyCell
+from .base import PolyCell
 from ..typing.geometry import PolyCellGeometryMixin2d
 from ..utils.cells.numint import Gauss_Legendre_Tri_1
 from ..utils.cells.t3 import (
