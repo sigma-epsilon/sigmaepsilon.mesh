@@ -1209,7 +1209,7 @@ class PolyData(Generic[PD, CD], PolyDataType[PD, CD], DeepDict):
         return_inds: bool, Optional
             Returns the indices of the points. Default is False.
         from_cells: bool, Optional
-            If there is no pointdata attaached to the current block, the
+            If there is no pointdata attached to the current block, the
             points of the sublevels of the mesh can be gathered from cell
             information. Default is False.
 
