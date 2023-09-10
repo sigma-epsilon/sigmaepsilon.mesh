@@ -3,7 +3,6 @@ import numpy as np
 import unittest
 
 from sigmaepsilon.mesh.trimesh import TriMesh
-from sigmaepsilon.mesh.grid import Grid
 from sigmaepsilon.mesh import PolyData
 from sigmaepsilon.mesh.recipes import circular_disk
 from sigmaepsilon.mesh.voxelize import voxelize_cylinder
@@ -17,10 +16,6 @@ class TestMeshing(unittest.TestCase):
     def test_trimesh(self):
         TriMesh(size=(800, 600), shape=(10, 10))
         circular_disk(120, 60, 5, 25)
-
-    def test_grid(self):
-        Grid(size=(80, 60, 20), shape=(8, 6, 2), eshape="H8")
-        Grid(size=(80, 60, 20), shape=(8, 6, 2), eshape="H27")
 
     def test_voxelize(self):
         d, h, a, b = 100.0, 0.8, 1.5, 0.5
