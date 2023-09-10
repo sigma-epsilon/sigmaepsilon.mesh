@@ -145,7 +145,7 @@ class TestPolyDataPlot(unittest.TestCase):
             theme="document",
             return_plotter=True,
         )
-        
+
         block.pvplot(
             notebook=False,
             jupyter_backend="static",
@@ -155,7 +155,7 @@ class TestPolyDataPlot(unittest.TestCase):
             theme="dark",
             return_plotter=True,
         )
-        
+
         block.pvplot(
             notebook=False,
             jupyter_backend="static",
@@ -165,7 +165,7 @@ class TestPolyDataPlot(unittest.TestCase):
             theme="bw",
             return_plotter=True,
         )
-        
+
         block.pvplot(
             notebook=False,
             jupyter_backend="static",
@@ -175,7 +175,7 @@ class TestPolyDataPlot(unittest.TestCase):
             theme=themes.DefaultTheme(),
             return_plotter=True,
         )
-        
+
         block.pvplot(
             notebook=False,
             jupyter_backend="static",
@@ -209,7 +209,13 @@ class TestPolyDataPlot(unittest.TestCase):
         scalars = mesh.pd.pull("scalars")
 
         cmap = matplotlib_color_maps.Jet
-        _ = mesh.plot(backend="k3d", scalars=scalars, menu_visibility=False, cmap=cmap, notebook=True)
+        _ = mesh.plot(
+            backend="k3d",
+            scalars=scalars,
+            menu_visibility=False,
+            cmap=cmap,
+            notebook=True,
+        )
 
 
 if __name__ == "__main__":

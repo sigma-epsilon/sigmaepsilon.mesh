@@ -10,7 +10,6 @@ from sigmaepsilon.mesh.utils.space import frames_of_lines
 
 
 class TestScenario3(unittest.TestCase):
-
     def test_scenario_3(self):
         size = 10, 10, 5
         shape = 10, 10, 5
@@ -57,7 +56,7 @@ class TestScenario3(unittest.TestCase):
         # finalize the mesh and lock the layout
         mesh.to_standard_form()
         mesh.lock(create_mappers=True)
-        
+
         # plot with PyVista
         mesh.plot(
             notebook=False,
@@ -66,11 +65,11 @@ class TestScenario3(unittest.TestCase):
             show_edges=True,
             window_size=(600, 480),
             theme="document",
-            return_plotter=True
+            return_plotter=True,
         )
-        
+
         # --------------- DATA FROM CELLS TO POINTS ---------------------
-        
+
         scalars_TET4 = 100 * np.random.rand(len(cdTET4))
         cdTET4.db["scalars"] = scalars_TET4
 
@@ -81,7 +80,7 @@ class TestScenario3(unittest.TestCase):
         cdL2.db["scalars"] = scalars_L2
         mesh["line"].config["B", "render_lines_as_tubes"] = True
         mesh["line"].config["B", "line_width"] = 3
-        
+
         mesh.plot(
             notebook=False,
             jupyter_backend="static",
@@ -91,13 +90,13 @@ class TestScenario3(unittest.TestCase):
             window_size=(600, 480),
             scalars="scalars",
             theme="document",
-            return_plotter=True
+            return_plotter=True,
         )
-        
+
         scalars = mesh.pd.pull("scalars")  # or simply pd.pull('scalars')
         self.assertEqual(scalars.shape, (726,))
         self.assertEqual(mesh.coords().shape, (726, 3))
-        
+
         mesh.plot(
             notebook=False,
             jupyter_backend="static",
@@ -107,20 +106,20 @@ class TestScenario3(unittest.TestCase):
             scalars=scalars,
             cmap="plasma",
             theme="document",
-            return_plotter=True
+            return_plotter=True,
         )
-        
+
         # --------------- DATA FROM POINTS TO CELLS ---------------------
-        
+
         scalars_on_points = 100 * np.random.rand(len(coords))
         mesh.pd.db["scalars"] = scalars_on_points
-        
+
         hex_data = mesh["hex"].cd.pull("scalars")
         self.assertEqual(hex_data.shape, (125, 8, 1))
         self.assertEqual(mesh["hex"].topology().shape, (125, 8))
-        
+
         # ------------- CUSTOMIZING THE DISTRIBUTION MECHANISM ----------------
-        
+
         cdTET4.db["scalars"] = np.full(len(cdTET4), -100)
         cdH8.db["scalars"] = np.full(len(cdH8), 100)
         cdL2.db["scalars"] = np.full(len(cdL2), 0)
@@ -133,9 +132,9 @@ class TestScenario3(unittest.TestCase):
             window_size=(600, 480),
             scalars="scalars",
             theme="document",
-            return_plotter=True
+            return_plotter=True,
         )
-        
+
         scalars = mesh.pd.pull("scalars")
         mesh.plot(
             notebook=False,
@@ -146,9 +145,9 @@ class TestScenario3(unittest.TestCase):
             scalars=scalars,
             cmap="jet",
             theme="document",
-            return_plotter=True
+            return_plotter=True,
         )
-        
+
         v = mesh.volumes()
         idH8 = mesh["hex"].cd.id  # cell indices of hexahedra
         v[idH8] *= 5  # 500% of original weight
@@ -163,7 +162,7 @@ class TestScenario3(unittest.TestCase):
             scalars=scalars,
             cmap="jet",
             theme="document",
-            return_plotter=True
+            return_plotter=True,
         )
 
 

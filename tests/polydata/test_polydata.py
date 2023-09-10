@@ -29,7 +29,7 @@ class TestPolyDataMultiBlock(SigmaEpsilonTestCase):
         mesh.lock(create_mappers=True)
         mesh.to_standard_form(inplace=True)
         self.mesh = mesh
-        
+
     def test_misc(self):
         mesh: PolyData = self.mesh
         aT3 = mesh["tri"].area()
@@ -48,38 +48,38 @@ class TestPolyDataMultiBlock(SigmaEpsilonTestCase):
             np.all(np.isclose(mesh["grids", "H8"].center(), [50.0, 50.0, 10.0]))
         )
         self.assertTrue(mesh.topology().is_jagged())
-        
+
         self.assertIsInstance(mesh.index_of_closest_point([0, 0, 0]), int)
         self.assertIsInstance(mesh.index_of_furthest_point([0, 0, 0]), int)
         self.assertIsInstance(mesh.index_of_closest_cell([0, 0, 0]), int)
         self.assertIsInstance(mesh.index_of_furthest_cell([0, 0, 0]), int)
-        
+
         self.assertIsInstance(mesh.point_fields, Iterable)
         self.assertIsInstance(mesh.cell_fields, Iterable)
-        
+
         self.assertIsInstance(mesh["grids", "Q4"].frames, np.ndarray)
         mesh["grids", "Q4"].frames = mesh["grids", "Q4"].frames
-    
+
     def test_coordinates(self):
         mesh: PolyData = self.mesh
         self.assertIsInstance(mesh.coords(), np.ndarray)
         coords, _ = mesh.coords(return_inds=True)
         mesh.bounds()
         self.mesh["grids", "Q4"].cells_coords()
-        
+
         nP = self.mesh.number_of_points()
         self.assertEqual(nP, coords.shape[0])
-    
+
     def test_topology(self):
         mesh: PolyData = self.mesh
         self.assertTrue(mesh.topology().is_jagged())
         self.assertIsInstance(mesh["grids", "Q4"].topology(), np.ndarray)
-        
+
         topo, _ = mesh.topology(return_inds=True)
         mesh.cell_indices()
         mesh["grids", "Q4"].topology(return_inds=True)
         mesh["grids", "Q4"].cell_indices()
-        
+
         nE = self.mesh.number_of_cells()
         self.assertEqual(nE, topo.shape[0])
 
@@ -106,49 +106,54 @@ class TestPolyDataMultiBlock(SigmaEpsilonTestCase):
         self.assertIsNot(mesh.pd, mesh_copy.pd)
         for block, block_copy in zip(mesh.cellblocks(), mesh_copy.cellblocks()):
             self.assertIsNot(block.cd, block_copy.cd)
-            
+
     def test_nodal_distribution_factors(self):
         ndf = self.mesh.nodal_distribution_factors()
         self.assertTrue(np.isclose(ndf.data.min(), 0.125))
         self.assertTrue(np.isclose(ndf.data.max(), 1.0))
         self.mesh.nodal_distribution_factors(weights="uniform")
-    
+
     def test_lock(self):
         self.mesh.lock()
         self.mesh.unlock()
         self.mesh.lock(create_mappers=True)
-    
+
     def test_nummrg(self):
         self.mesh.nummrg()
-        
+
     def test_detach(self):
         self.mesh["grids", "Q4"].detach()
         self.mesh["grids", "H8"].detach(nummrg=True)
         self.mesh["grids"].detach(nummrg=True)
-        
+
     def test_to_vtk(self):
         self.mesh.to_vtk()
         self.mesh.to_vtk(multiblock=True)
-        
+
     def test_to_pv(self):
         self.mesh.to_pv()
         self.mesh.to_pv(multiblock=True)
-        
+
     def test_delete(self):
-        def foo(): del self.mesh["grids", "Q4"]
+        def foo():
+            del self.mesh["grids", "Q4"]
+
         self.assertFailsProperly(RuntimeError, foo)
         self.mesh.unlock()
         # FIXME this should go also as del self.mesh["grids", "Q4"]
         del self.mesh["grids"]["Q4"]
-        self.mesh.lock() 
-        def boo(): self.mesh["grids", "Q4"]
+        self.mesh.lock()
+
+        def boo():
+            self.mesh["grids", "Q4"]
+
         self.assertFailsProperly(KeyError, boo)
-        
+
     def test_centers(self):
         self.mesh.centers()
         target = CartesianFrame(dim=3)
         self.mesh.centers(target=target)
-        
+
     def test_adjacency(self):
         self.mesh.nodal_adjacency()
         self.mesh.cells_at_nodes()
