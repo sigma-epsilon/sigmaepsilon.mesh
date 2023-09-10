@@ -11,8 +11,8 @@ from scipy.sparse import spmatrix
 import awkward as ak
 from meshio import Mesh as MeshioMesh
 
-from sigmaepsilon.core.warning import SigmaEpsilonPerformanceWarning
 from linkeddeepdict import DeepDict
+from sigmaepsilon.core.warning import SigmaEpsilonPerformanceWarning
 from sigmaepsilon.math.linalg.sparse import csr_matrix
 from sigmaepsilon.math.linalg import Vector, ReferenceFrame as FrameLike
 from sigmaepsilon.math import atleast1d, minmax, repeat
