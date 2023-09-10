@@ -4,8 +4,8 @@ from sigmaepsilon.core.config import find_pyproject_toml, load_pyproject_config
 
 from .space import PointCloud, CartesianFrame
 from .data.polydata import PolyData, PointData
-from .linedata import LineData
-from .linedata import LineData as PolyData1d
+from .data.linedata import LineData
+from .data.linedata import LineData as PolyData1d
 from .utils import k_nearest_neighbours as KNN
 from .topoarray import TopologyArray
 from .trimesh import TriMesh
