@@ -49,12 +49,12 @@ def show_coords(dcm: ndarray, coords: ndarray) -> ndarray:
 def dcoords(coords: ndarray, v: ndarray) -> ndarray:
     res = np.zeros_like(coords)
     if len(res.shape) == 1:
-        with suppress(FileNotFoundError):
+        with suppress(IndexError):
             res[0] = v[0]
             res[1] = v[1]
             res[2] = v[2]
     elif len(res.shape) == 2:
-        with suppress(FileNotFoundError):
+        with suppress(IndexError):
             res[:, 0] = v[0]
             res[:, 1] = v[1]
             res[:, 2] = v[2]
