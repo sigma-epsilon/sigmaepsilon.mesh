@@ -126,43 +126,43 @@ def get_section(
     elif shape == "RS":
         keys = ["d", "b"]
         params = getallfromkwargs(keys, **section_params)
-        params_dict = {k:v for k, v in zip(keys, params)}
+        params_dict = {k: v for k, v in zip(keys, params)}
         geom = RS(material=material, **params_dict)
         ms = min(params)
     elif shape == "RHS":
         keys = ["d", "b", "t", "r_out", "n_r"]
         params = getallfromkwargs(keys, **section_params)
-        params_dict = {k:v for k, v in zip(keys, params)}
+        params_dict = {k: v for k, v in zip(keys, params)}
         geom = RHS(material=material, **params_dict)
         ms = section_params["t"]
     elif shape == "I":
         keys = ["d", "b", "t_f", "t_w", "r", "n_r"]
         params = getallfromkwargs(keys, **section_params)
-        params_dict = {k:v for k, v in zip(keys, params)}
+        params_dict = {k: v for k, v in zip(keys, params)}
         geom = i_section(material=material, **params_dict)
         ms = min(section_params["t_f"], section_params["t_w"])
     elif shape == "TFI":
         keys = ["d", "b", "t_f", "t_w", "r_r", "r_f", "alpha", "n_r"]
         params = getallfromkwargs(keys, **section_params)
-        params_dict = {k:v for k, v in zip(keys, params)}
+        params_dict = {k: v for k, v in zip(keys, params)}
         geom = TFI(material=material, **params_dict)
         ms = min(section_params["t_f"], section_params["t_w"])
     elif shape == "PFC":
         keys = ["d", "b", "t_f", "t_w", "r", "n_r"]
         params = getallfromkwargs(keys, **section_params)
-        params_dict = {k:v for k, v in zip(keys, params)}
+        params_dict = {k: v for k, v in zip(keys, params)}
         geom = PFC(material=material, **params_dict)
         ms = min(section_params["t_f"], section_params["t_w"])
     elif shape == "TFC":
         keys = ["d", "b", "t_f", "t_w", "r_r", "r_f", "alpha", "n_r"]
         params = getallfromkwargs(keys, **section_params)
-        params_dict = {k:v for k, v in zip(keys, params)}
+        params_dict = {k: v for k, v in zip(keys, params)}
         geom = TFC(material=material, **params_dict)
         ms = min(section_params["t_f"], section_params["t_w"])
     elif shape == "T":
         keys = ["d", "b", "t_f", "t_w", "r", "n_r"]
         params = getallfromkwargs(keys, **section_params)
-        params_dict = {k:v for k, v in zip(keys, params)}
+        params_dict = {k: v for k, v in zip(keys, params)}
         geom = tee_section(material=material, **params_dict)
         ms = min(section_params["t_f"], section_params["t_w"])
     else:

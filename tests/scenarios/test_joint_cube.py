@@ -29,7 +29,7 @@ class TestJointCube(unittest.TestCase):
             yield_strength=250,
             color="grey",
         )
-        
+
         database = LinkedDeepDict(
             {
                 "left": {
@@ -51,11 +51,11 @@ class TestJointCube(unittest.TestCase):
                 },
             }
         )
-        
+
         Lx = Ly = Lz = 220.0
         points_per_edge = 25
         mesh_size = Lx / (points_per_edge - 1)  # largest length of an edge
-        
+
         points = []  # sink for points, it gets filled up in this block
         frames = {}  # sink for face frames, it gets filled up in this block
 
@@ -119,11 +119,9 @@ class TestJointCube(unittest.TestCase):
             "top": [4, 5, 6, 7],
         }
 
-
         def cof(id):
             """center of face"""
             return center_of_points(corner_coords[corners_of_faces[id]])
-
 
         # face frames
         frames = {}
@@ -135,26 +133,28 @@ class TestJointCube(unittest.TestCase):
             cof("left")
         )
 
-        frames["back"] = GlobalFrame.orient_new("Body", [0, 0, np.pi], "XYZ").move(cof("back"))
-
-        frames["right"] = GlobalFrame.orient_new("Body", [0, 0, -np.pi / 2], "XYZ").move(
-            cof("right")
+        frames["back"] = GlobalFrame.orient_new("Body", [0, 0, np.pi], "XYZ").move(
+            cof("back")
         )
+
+        frames["right"] = GlobalFrame.orient_new(
+            "Body", [0, 0, -np.pi / 2], "XYZ"
+        ).move(cof("right"))
 
         frames["top"] = GlobalFrame.orient_new("Body", [0, -np.pi / 2, 0], "XYZ").move(
             cof("top")
         )
 
-        frames["bottom"] = GlobalFrame.orient_new("Body", [0, np.pi / 2, 0], "XYZ").move(
-            cof("bottom")
-        )
-        
+        frames["bottom"] = GlobalFrame.orient_new(
+            "Body", [0, np.pi / 2, 0], "XYZ"
+        ).move(cof("bottom"))
+
         coords_grid, topo_grid = grid(
             size=(Lx * 0.99, Ly * 0.99), shape=(N, N), eshape="Q4", centralize=True
         )
         Grid = PolyData(coords=coords_grid, topo=topo_grid, frame=GlobalFrame)
         grid_centers = Grid.centers()[:, :2]
-        
+
         for face in frames:
             f_frame = frames[face]
             # collect points on corners and edges and their global indices
@@ -193,10 +193,12 @@ class TestJointCube(unittest.TestCase):
 
                 n_section_nodes = f_coords.shape[0]
                 f_topo = np.array(f_section.mesh["triangles"].tolist())[:, :3]
-                f_inds = get_points_inside_triangles(f_coords, f_topo, grid_centers).astype(
-                    bool
+                f_inds = get_points_inside_triangles(
+                    f_coords, f_topo, grid_centers
+                ).astype(bool)
+                f_coords = np.vstack(
+                    [f_coords_base[:, 1:], f_coords, grid_centers[~f_inds]]
                 )
-                f_coords = np.vstack([f_coords_base[:, 1:], f_coords, grid_centers[~f_inds]])
                 f_coords, f_topo, _ = triangulate(points=f_coords)
             else:
                 f_coords = np.vstack([f_coords_base[:, 1:], grid_centers])
@@ -222,7 +224,7 @@ class TestJointCube(unittest.TestCase):
             if face not in database:
                 database[face] = {}
             database[face]["topo"] = f_topo
-            
+
         cubepoints = np.vstack(points)
         cube = PolyData(coords=cubepoints, frame=GlobalFrame)
         for face in frames:
