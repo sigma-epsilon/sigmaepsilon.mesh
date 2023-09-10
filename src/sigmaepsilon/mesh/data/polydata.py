@@ -17,8 +17,9 @@ from sigmaepsilon.math.linalg.sparse import csr_matrix
 from sigmaepsilon.math.linalg import Vector, ReferenceFrame as FrameLike
 from sigmaepsilon.math import atleast1d, minmax, repeat
 
-from ..indexmanager import IndexManager
 from .akwrapper import AkWrapper
+from .pointdata import PointData
+from ..indexmanager import IndexManager
 from ..utils.topology.topo import inds_to_invmap_as_dict, remap_topo_1d
 from ..space import CartesianFrame, PointCloud
 from ..utils.utils import (
@@ -54,7 +55,6 @@ from ..utils.topology import (
     cells_at_nodes,
 )
 from ..topoarray import TopologyArray
-from .pointdata import PointData
 from ..cells import CellData
 from ..typing.polydata import PolyDataType
 from ..cells.cell import PolyCell
