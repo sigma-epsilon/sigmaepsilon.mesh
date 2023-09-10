@@ -1290,18 +1290,14 @@ class PolyData(Generic[PD, CD], PolyDataType[PD, CD], DeepDict):
         needs_jagged = not np.all(widths == widths[0])
         if jagged or needs_jagged:
             topo = np.vstack(topo)
-            if return_inds:
-                inds = list(map(lambda i: i.celldata.id, blocks))
-                return topo, np.concatenate(inds)
-            else:
-                return topo
         else:
             topo = np.vstack([t.to_numpy() for t in topo])
-            if return_inds:
-                inds = list(map(lambda i: i.celldata.id, blocks))
-                return topo, np.concatenate(inds)
-            else:
-                return topo
+
+        if return_inds:
+            inds = list(map(lambda i: i.celldata.id, blocks))
+            return topo, np.concatenate(inds)
+        else:
+            return topo
 
     def cell_indices(self) -> ndarray:
         """
@@ -1697,23 +1693,23 @@ class PolyData(Generic[PD, CD], PolyDataType[PD, CD], DeepDict):
 
     def index_of_closest_point(self, target: Iterable) -> int:
         """Returns the index of the closest point to a target."""
-        return index_of_closest_point(self.coords(), target)
+        return index_of_closest_point(self.coords(), np.array(target, dtype=float))
 
     def index_of_furthest_point(self, target: Iterable) -> int:
         """
         Returns the index of the furthest point to a target.
         """
-        return index_of_furthest_point(self.coords(), target)
+        return index_of_furthest_point(self.coords(), np.array(target, dtype=float))
 
     def index_of_closest_cell(self, target: Iterable) -> int:
         """Returns the index of the closest cell to a target."""
-        return index_of_closest_point(self.centers(), target)
+        return index_of_closest_point(self.centers(), np.array(target, dtype=float))
 
     def index_of_furthest_cell(self, target: Iterable) -> int:
         """
         Returns the index of the furthest cell to a target.
         """
-        return index_of_furthest_point(self.centers(), target)
+        return index_of_furthest_point(self.centers(), np.array(target, dtype=float))
 
     def nodal_distribution_factors(
         self, weights: Union[str, ndarray] = "volume"
@@ -1757,7 +1753,7 @@ class PolyData(Generic[PD, CD], PolyDataType[PD, CD], DeepDict):
             if weights == "volume":
                 weights = self.volumes()
             elif weights == "uniform":
-                weights = np.ones(len(topo), dtype=float)
+                weights = np.ones(topo.shape[0], dtype=float)
         assert isinstance(weights, ndarray), "'weights' must be a NumPy array!"
         assert len(weights) == topo.shape[0], (
             "Mismatch in shape. The weights must have the same number of "
