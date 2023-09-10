@@ -50,19 +50,19 @@ class TestPolyData(unittest.TestCase):
         mesh.deepcopy()
         mesh.nummrg()
         mesh["grids", "Q4"].detach()
-        
+
     def test_copy(self):
         gridparams = {
             "size": (1, 1),
             "shape": (4, 4),
             "eshape": (2, 2),
-            "path": [0, 2, 3, 1]
+            "path": [0, 2, 3, 1],
         }
         coords, topo = grid(**gridparams)
 
         # the `grid` function creates a 2d mesh in the x-y plane,
         # but we want a 3d mesh, with zero values for the z axis.
-        coords = np.pad(coords, ((0, 0), (0, 1)), mode='constant')
+        coords = np.pad(coords, ((0, 0), (0, 1)), mode="constant")
 
         frame = CartesianFrame(dim=3)
 
@@ -71,26 +71,26 @@ class TestPolyData(unittest.TestCase):
 
         mesh = PolyData(pd, cd)
         mesh_copy = mesh.copy()
-        
+
         # Check if the copied object is not the same object as the original
         self.assertIsNot(mesh, mesh_copy)
-        
+
         # Check if the data attributes are the same (shallow copy)
         self.assertIs(mesh.pd, mesh_copy.pd)
         self.assertIs(mesh.cd, mesh_copy.cd)
-    
+
     def test_deepcopy(self):
         gridparams = {
             "size": (1, 1),
             "shape": (4, 4),
             "eshape": (2, 2),
-            "path": [0, 2, 3, 1]
+            "path": [0, 2, 3, 1],
         }
         coords, topo = grid(**gridparams)
 
         # the `grid` function creates a 2d mesh in the x-y plane,
         # but we want a 3d mesh, with zero values for the z axis.
-        coords = np.pad(coords, ((0, 0), (0, 1)), mode='constant')
+        coords = np.pad(coords, ((0, 0), (0, 1)), mode="constant")
 
         frame = CartesianFrame(dim=3)
 
@@ -99,14 +99,14 @@ class TestPolyData(unittest.TestCase):
 
         mesh = PolyData(pd, cd)
         mesh_copy = mesh.deepcopy()
-        
+
         # Check if the copied object is not the same object as the original
         self.assertIsNot(mesh, mesh_copy)
-        
+
         # Check if the data attributes are the same (shallow copy)
         self.assertIsNot(mesh.pd, mesh_copy.pd)
         self.assertIsNot(mesh.cd, mesh_copy.cd)
-        
+
     def test_surface(self):
         gridparams = {
             "size": (1, 1, 1),
@@ -114,7 +114,7 @@ class TestPolyData(unittest.TestCase):
             "eshape": "H8",
         }
         coords, topo = grid(**gridparams)
-        
+
         frame = CartesianFrame(dim=3)
 
         pd = PointData(coords=coords, frame=frame)
@@ -124,24 +124,23 @@ class TestPolyData(unittest.TestCase):
         surface = mesh.surface()
         surface_area = surface.area()
         self.assertTrue(np.isclose(surface_area, 6.0))
-        
+
 
 class TestPolyDataRead(unittest.TestCase):
-    
     def test_read_from_pv(self):
         mesh = examples.download_cow_head()
         _ = PolyData.from_pv(mesh)
-        
+
         filename = examples.planefile
         _ = PolyData.read(filename)
-        
+
     def test_read_from_meshio(self):
         mesh = pv.read(examples.antfile)
-        pv.save_meshio('mymesh.inp', mesh)
-        mesh = meshio.read('mymesh.inp')
+        pv.save_meshio("mymesh.inp", mesh)
+        mesh = meshio.read("mymesh.inp")
         mesh = PolyData.from_meshio(mesh)
-        os.remove('mymesh.inp')
-        
+        os.remove("mymesh.inp")
+
 
 if __name__ == "__main__":
     unittest.main()

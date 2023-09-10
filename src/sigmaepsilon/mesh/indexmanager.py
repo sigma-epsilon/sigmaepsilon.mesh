@@ -8,7 +8,7 @@ from numpy import ndarray
 class IndexManager:
     """
     Manages and index set by generating and recycling indices.
-    
+
     Examples
     --------
     >>> from sigmaepsilon.mesh.indexmanager import IndexManager
@@ -32,7 +32,7 @@ class IndexManager:
     array([5, 6])
     """
 
-    def __init__(self, start:int=0):
+    def __init__(self, start: int = 0):
         self.queue = []
         self.next = start
 

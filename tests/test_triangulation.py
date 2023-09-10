@@ -11,6 +11,7 @@ from sigmaepsilon.mesh.triang import (
     _is_triobj,
 )
 
+
 def load_tests(loader, tests, ignore):  # pragma: no cover
     tests.addTests(doctest.DocTestSuite(sigmaepsilon.mesh.triang))
     return tests
@@ -57,33 +58,29 @@ class TestTriangulate(unittest.TestCase):
         coords, topo = _get_triobj_data(triobj)
         triobj = triobj_to_mpl(triobj)
         self.assertTrue(isinstance(triobj, triobj_mpl))
-        
+
     def test__is_triobj(self):
         self.assertFalse(_is_triobj(None))
         self.assertFalse(_is_triobj(0))
         self.assertFalse(_is_triobj("0"))
-        
+
     def test_triangulate_random(self):
         coords, topo, triobj = triangulate(
             size=(800, 600), shape=10, backend="mpl", random=True
         )
         self.assertTrue(_is_triobj(triobj))
-        
+
     def test_triangulate_origo(self):
         coords, topo, triobj = triangulate(
             size=(800, 600), shape=10, origo=(0, 0), random=True
         )
         self.assertTrue(_is_triobj(triobj))
-        
+
     def test_triangulate_shape(self):
-        coords, topo, triobj = triangulate(
-            size=(800, 600), shape=10, origo=(0, 0)
-        )
+        coords, topo, triobj = triangulate(size=(800, 600), shape=10, origo=(0, 0))
         self.assertTrue(_is_triobj(triobj))
-        
-        coords, topo, triobj = triangulate(
-            size=(800, 600), shape=None, origo=(0, 0)
-        )
+
+        coords, topo, triobj = triangulate(size=(800, 600), shape=None, origo=(0, 0))
         self.assertTrue(_is_triobj(triobj))
 
 

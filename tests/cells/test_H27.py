@@ -21,10 +21,10 @@ class TestH27(unittest.TestCase):
     def test_H27_utils(self):
         shp = monoms_H27(np.array([0.0, 0.0, 0.0])).shape
         self.assertEqual(shp, (27,))
-        
+
         shp = monoms_H27(np.array([[0.0, 0.0, 0.0], [0.0, 0.0, 0.0]])).shape
         self.assertEqual(shp, (2, 27))
-        
+
         shp = monoms_H27(np.zeros((2, 27, 3), dtype=float)).shape
         self.assertEqual(shp, (2, 27, 27))
 

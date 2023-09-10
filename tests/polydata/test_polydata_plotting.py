@@ -59,40 +59,40 @@ class TestPolyDataPlot(unittest.TestCase):
 
         mesh.to_standard_form()
         mesh.lock(create_mappers=True)
-        
+
         self.cdL2 = cdL2
         self.cdQ4 = cdQ4
         self.cdH8 = cdH8
         self.tH8 = tH8
-        self.mesh=mesh
-    
+        self.mesh = mesh
+
     def test_pyvista(self):
         mesh: PolyData = self.mesh
-        
+
         mesh.plot(
             notebook=False,
             jupyter_backend="static",
             show_edges=True,
             theme="document",
-            return_plotter=True
+            return_plotter=True,
         )
-        
+
         mesh["surfaces", "Q4"].plot(
             notebook=False,
             jupyter_backend="static",
             show_edges=True,
             theme="document",
-            return_plotter=True
+            return_plotter=True,
         )
-        
+
         mesh["bodies", "H8"].surface().pvplot(
             notebook=False,
             jupyter_backend="static",
             show_edges=True,
             theme="document",
-            return_plotter=True
+            return_plotter=True,
         )
-        
+
         # plotting with data
         mesh["lines", "L2"].config["pyvista", "plot", "color"] = "red"
         mesh["lines", "L2"].config["pyvista", "plot", "line_width"] = 1.5
@@ -105,7 +105,7 @@ class TestPolyDataPlot(unittest.TestCase):
         mesh["bodies", "H8"].config["pyvista", "plot", "show_edges"] = True
         mesh["bodies", "H8"].config["pyvista", "plot", "color"] = "cyan"
         mesh["bodies", "H8"].config["pyvista", "plot", "opacity"] = 1.0
-        
+
         mesh.pvplot(
             notebook=False,
             jupyter_backend="static",
@@ -113,12 +113,16 @@ class TestPolyDataPlot(unittest.TestCase):
             window_size=(600, 400),
             config_key=["pyvista", "plot"],
             theme="document",
-            return_plotter=True
+            return_plotter=True,
         )
-        
-        mesh["bodies", "H8"].config["pyvista", "plot", "scalars"] = np.random.rand(self.tH8.shape[0])
+
+        mesh["bodies", "H8"].config["pyvista", "plot", "scalars"] = np.random.rand(
+            self.tH8.shape[0]
+        )
         ncTET4 = mesh["surfaces", "Q4"].coords(from_cells=True).shape[0]
-        mesh["surfaces", "Q4"].config["pyvista", "plot", "scalars"] = 2 * np.random.rand(ncTET4)
+        mesh["surfaces", "Q4"].config[
+            "pyvista", "plot", "scalars"
+        ] = 2 * np.random.rand(ncTET4)
         mesh["surfaces", "Q4"].config["pyvista", "plot", "opacity"] = 1.0
         mesh.pvplot(
             notebook=False,
@@ -127,9 +131,9 @@ class TestPolyDataPlot(unittest.TestCase):
             config_key=["pyvista", "plot"],
             cmap="plasma",
             theme="document",
-            return_plotter=True
+            return_plotter=True,
         )
-        
+
         block = mesh.blocks_of_cells(2345)[2345]
         block.pvplot(
             notebook=False,
@@ -138,12 +142,12 @@ class TestPolyDataPlot(unittest.TestCase):
             config_key=["pyvista", "plot"],
             cmap="jet",
             theme="document",
-            return_plotter=True
+            return_plotter=True,
         )
-    
+
     def test_k3d(self):
         mesh: PolyData = self.mesh
-        
+
         mesh["lines", "L2"].config["k3d", "plot", "color"] = "red"
         mesh["lines", "L2"].config["k3d", "plot", "width"] = 0.2
 
@@ -152,17 +156,20 @@ class TestPolyDataPlot(unittest.TestCase):
 
         mesh["bodies", "H8"].config["k3d", "plot", "color"] = "cyan"
         mesh["bodies", "H8"].config["k3d", "plot", "opacity"] = 1.0
-        
-        plot = mesh["lines", "L2"].k3dplot(config_key=["k3d", "plot"], menu_visibility=False)
+
+        plot = mesh["lines", "L2"].k3dplot(
+            config_key=["k3d", "plot"], menu_visibility=False
+        )
         plot = mesh.k3dplot(config_key=["k3d", "plot"], menu_visibility=False)
-        
+
         mesh["lines", "L2"].cd.db["scalars"] = 100 * np.random.rand(len(self.cdL2))
         mesh["surfaces", "Q4"].cd.db["scalars"] = 100 * np.random.rand(len(self.cdQ4))
         mesh["bodies", "H8"].cd.db["scalars"] = 100 * np.random.rand(len(self.cdH8))
         scalars = mesh.pd.pull("scalars")
-        
+
         cmap = matplotlib_color_maps.Jet
         plot = mesh.k3dplot(scalars=scalars, menu_visibility=False, cmap=cmap)
+
 
 if __name__ == "__main__":
     unittest.main()
