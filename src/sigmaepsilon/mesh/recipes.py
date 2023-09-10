@@ -2,9 +2,9 @@ from typing import Union
 import numpy as np
 from numpy import ndarray
 
-from .pointdata import PointData
+from .data.pointdata import PointData
 from .grid import grid
-from .polydata import PolyData
+from .data.polydata import PolyData
 from .trimesh import TriMesh
 from .cells import H8, H27, TET4, TET10, T3, W6, W18
 from .space import CartesianFrame
@@ -15,7 +15,7 @@ from .extrude import extrude_T3_TET4, extrude_T3_W6
 from .voxelize import voxelize_cylinder
 
 
-def circular_helix(a=None, b=None, *args, slope=None, pitch=None):
+def circular_helix(a=None, b=None, *, slope=None, pitch=None):
     """
     Returns the function :math:`f(t) = [a \cdot cos(t), a \cdot sin(t), b \cdot t]`,
     which describes a circular helix of radius a and slope a/b (or pitch 2πb).

@@ -6,10 +6,10 @@ from .geometry import PolyCellGeometryMixin
 from ..helpers import vtk_to_celltype, meshio_to_celltype
 
 
-__all__ = ["ABCMeta_MeshCellData", "ABC_MeshCellData"]
+__all__ = ["ABCMeta_PolyCell", "ABC_PolyCell"]
 
 
-class ABCMeta_MeshCellData(ABCMeta_Weak):
+class ABCMeta_PolyCell(ABCMeta_Weak):
     """
     Meta class for PointData and CellData classes.
 
@@ -23,7 +23,7 @@ class ABCMeta_MeshCellData(ABCMeta_Weak):
         cls = super().__new__(metaclass, name, bases, namespace, *args, **kwargs)
 
         if namespace.get("Geometry", None):
-            if not isinstance(cls.Geometry, PolyCellGeometryMixin):
+            if not issubclass(cls.Geometry, PolyCellGeometryMixin):
                 raise TypeError(
                     f"The attached geometry class {cls.Geometry} of {cls} "
                     "must be a subclass of PolyCellGeometry"
@@ -44,7 +44,7 @@ class ABCMeta_MeshCellData(ABCMeta_Weak):
         return cls
 
 
-class ABC_MeshCellData(metaclass=ABCMeta_MeshCellData):
+class ABC_PolyCell(metaclass=ABCMeta_PolyCell):
     """
     Helper class that provides a standard way to create an ABC using
     inheritance.

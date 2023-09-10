@@ -2,12 +2,10 @@ from os.path import dirname, abspath
 
 from sigmaepsilon.core.config import find_pyproject_toml, load_pyproject_config
 
-from .space import PointCloud
-from .space import CartesianFrame
-from .polydata import PolyData
+from .space import PointCloud, CartesianFrame
+from .data.polydata import PolyData, PointData
 from .linedata import LineData
 from .linedata import LineData as PolyData1d
-from .pointdata import PointData
 from .utils import k_nearest_neighbours as KNN
 from .topoarray import TopologyArray
 from .trimesh import TriMesh

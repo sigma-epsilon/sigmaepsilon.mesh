@@ -15,13 +15,11 @@ from sigmaepsilon.math import atleast1d, atleast2d, ascont
 from sigmaepsilon.math.linalg import ReferenceFrame as FrameLike
 from sigmaepsilon.math.utils import to_range_1d
 
-from ..typing.polydata import PolyDataBase
-from ..typing.pointdata import PointDataBase
-from .celldata import CellData
-from .geometry import (
+from ..typing.polydata import PolyDataType
+from ..typing.pointdata import PointDataType
+from ..data.celldata import CellData
+from ..typing.geometry import (
     PolyCellGeometryMixin,
-    PolyCellGeometryMixin2d,
-    PolyCellGeometryMixin3d,
 )
 from ..space import PointCloud, CartesianFrame
 from ..utils.utils import (
@@ -67,7 +65,7 @@ if __haspyvista__:
 MapLike = Union[ndarray, MutableMapping]
 
 
-class PolyCell(CellData[PolyDataBase, PointDataBase]):
+class PolyCell(CellData[PolyDataType, PointDataType]):
     """
     A subclass of :class:`~sigmaepsilon.mesh.celldata.CellData` as a base class
     for all cell containers.
@@ -76,7 +74,7 @@ class PolyCell(CellData[PolyDataBase, PointDataBase]):
     label: ClassVar[Optional[str]] = None
     Geometry: PolyCellGeometryMixin = None
 
-    def to_triangles(self: PolyCellGeometryMixin2d) -> ndarray:
+    def to_triangles(self) -> ndarray:
         """
         Returns the topology as a collection of T3 triangles.
         """
@@ -86,7 +84,7 @@ class PolyCell(CellData[PolyDataBase, PointDataBase]):
         else:
             raise NotImplementedError("This is only for 2d cells")
 
-    def to_tetrahedra(self: PolyCellGeometryMixin3d, flatten: bool = True) -> ndarray:
+    def to_tetrahedra(self, flatten: bool = True) -> ndarray:
         """
         Returns the topology as a collection of TET4 tetrahedra.
 

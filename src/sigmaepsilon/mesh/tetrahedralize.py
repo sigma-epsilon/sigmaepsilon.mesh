@@ -1,7 +1,7 @@
 import numpy as np
 
-from .polydata import PolyData
-from .pointdata import PointData
+from .data.polydata import PolyData
+from .data.pointdata import PointData
 from .cells import TET4, TET10
 from .utils.topology.tr import TET4_to_TET10
 from .config import __has_tetgen__

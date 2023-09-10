@@ -7,13 +7,13 @@ from sigmaepsilon.core.meta import ABCMeta_Weak
 from sigmaepsilon.math.linalg.sparse import csr_matrix
 
 from ..topoarray import TopologyArray
-from .pointdata import PointDataBase
-from .celldata import CellDataBase
+from .pointdata import PointDataType
+from .celldata import CellDataType
 
-PD = TypeVar("PD", bound=PointDataBase)
-CD = TypeVar("CD", bound=CellDataBase)
+PD = TypeVar("PD", bound=PointDataType)
+CD = TypeVar("CD", bound=CellDataType)
 
-__all__ = ["PolyDataBase"]
+__all__ = ["PolyDataType"]
 
 
 class ABC(metaclass=ABCMeta_Weak):
@@ -21,11 +21,10 @@ class ABC(metaclass=ABCMeta_Weak):
     Helper class that provides a standard way to create an ABC using
     inheritance.
     """
-
     __slots__ = ()
 
 
-class PolyDataBase(Generic[PD, CD], ABC):
+class PolyDataType(Generic[PD, CD], ABC):
     """
     Base class for PolyData objects.
     """
@@ -36,7 +35,7 @@ class PolyDataBase(Generic[PD, CD], ABC):
         ...
 
     @abstractmethod
-    def source(self, *args, **kwargs) -> "PolyDataBase":
+    def source(self, *args, **kwargs) -> "PolyDataType":
         """Ought to return the object that holds onto point data."""
         ...
 

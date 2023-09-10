@@ -5,14 +5,14 @@ from typing import (
     Iterable,
     Tuple,
     List,
-    Protocol,
-    runtime_checkable,
 )
+from abc import abstractclassmethod
 
 import numpy as np
 from numpy import ndarray
 from sympy import Matrix, lambdify, symbols
 
+from sigmaepsilon.core.meta import ABCMeta_Weak
 from sigmaepsilon.math import atleast1d, atleast2d, ascont
 from sigmaepsilon.math.utils import to_range_1d
 
@@ -29,9 +29,15 @@ __all__ = [
     "PolyCellGeometryMixin3d",
 ]
 
+class ABC(metaclass=ABCMeta_Weak):
+    """
+    Helper class that provides a standard way to create an ABC using
+    inheritance.
+    """
+    __slots__ = ()
 
-@runtime_checkable
-class PolyCellGeometryMixin(Protocol):
+
+class PolyCellGeometryMixin(ABC):
     """
     Protocol for Geometry mixin classes.
     """
@@ -78,7 +84,7 @@ class PolyCellGeometryMixin(Protocol):
 
         return CustomClass
 
-    @classmethod
+    @abstractclassmethod
     def master_coordinates(cls) -> ndarray:
         """
         Returns the coordinates of the master element.
@@ -507,7 +513,7 @@ class PolyCellGeometryMixin2d(PolyCellGeometryMixin):
     def trimap(cls) -> Iterable:
         """
         Returns a mapper to transform topology and other data to
-        a collection of T3 triangles.
+        a collection of triangular simplices.
         """
         _, t, _ = triangulate(points=cls.master_coordinates())
         return t
@@ -520,6 +526,6 @@ class PolyCellGeometryMixin3d(PolyCellGeometryMixin):
     def tetmap(cls) -> Iterable:
         """
         Returns a mapper to transform topology and other data to
-        a collection of T3 triangles.
+        a collection of tetrahedral simplices.
         """
         raise NotImplementedError

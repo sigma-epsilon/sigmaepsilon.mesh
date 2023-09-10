@@ -4,7 +4,7 @@ from numpy import ndarray
 from sympy import symbols
 
 from .cell import PolyCell
-from .geometry import PolyCellGeometryMixin3d
+from ..typing.geometry import PolyCellGeometryMixin3d
 from ..utils.cells.tet10 import (
     monoms_TET10,
 )

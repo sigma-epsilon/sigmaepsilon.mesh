@@ -4,7 +4,7 @@ from numpy import ndarray
 
 from sigmaepsilon.core.meta import ABCMeta_Weak
 
-__all__ = ["PointDataBase"]
+__all__ = ["PointDataType"]
 
 
 class ABC(metaclass=ABCMeta_Weak):
@@ -12,11 +12,10 @@ class ABC(metaclass=ABCMeta_Weak):
     Helper class that provides a standard way to create an ABC using
     inheritance.
     """
-
     __slots__ = ()
 
 
-class PointDataBase(ABC):
+class PointDataType(ABC):
     """
     Base class for PointData objects.
     """

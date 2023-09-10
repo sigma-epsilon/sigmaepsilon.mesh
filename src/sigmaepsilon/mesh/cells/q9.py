@@ -4,7 +4,7 @@ from numpy import ndarray
 from sympy import symbols
 
 from .cell import PolyCell
-from .geometry import PolyCellGeometryMixin2d
+from ..typing.geometry import PolyCellGeometryMixin2d
 from ..utils.cells.q9 import (
     shp_Q9_multi,
     dshp_Q9_multi,

@@ -51,7 +51,7 @@ def mesh1d_uniform(
     N: int = 2,
     refZ=None,
     return_frames=False,
-    **kwargs
+    **__
 ):
     """
     Returns the representation of a uniform 1d mesh as a tuple of numpy arrays.

@@ -9,23 +9,20 @@ from sigmaepsilon.math import atleast2d, atleast3d, repeat
 from sigmaepsilon.math.linalg.sparse import csr_matrix
 from sigmaepsilon.math.linalg import ReferenceFrame
 
-from .meta import ABC_MeshCellData
-from ..akwrapper import AkWrapper
-from ..typing import PolyDataBase, PointDataBase, CellDataBase
-from ..akwrapper import AwkwardLike
+from .akwrapper import AkWrapper
+from ..typing import PolyDataType, PointDataType, CellDataType
+from .akwrapper import AwkwardLike
 from ..utils import (
     avg_cell_data,
     distribute_nodal_data_bulk,
     distribute_nodal_data_sparse,
 )
 
-PointDataLike = TypeVar("PointDataLike", bound=PointDataBase)
-PolyDataLike = TypeVar("PolyDataLike", bound=PolyDataBase)
+PointDataLike = TypeVar("PointDataLike", bound=PointDataType)
+PolyDataLike = TypeVar("PolyDataLike", bound=PolyDataType)
 
 
-class CellData(
-    Generic[PolyDataLike, PointDataLike], AkWrapper, CellDataBase, ABC_MeshCellData
-):
+class CellData(Generic[PolyDataLike, PointDataLike], AkWrapper, CellDataType):
     """
     A class to handle data related to the cells of a polygonal mesh.
 
@@ -235,7 +232,8 @@ class CellData(
         the topology of the cells are referring to.
         """
         if value is not None:
-            assert isinstance(value, PointDataBase)
+            if not isinstance(value, PointDataType):
+                raise TypeError("'value' must be a PointData instance")
         self._pointdata = value
 
     @property
@@ -259,7 +257,8 @@ class CellData(
     @container.setter
     def container(self, value: PolyDataLike) -> None:
         """Sets the container of the block."""
-        assert isinstance(value, PolyDataBase)
+        if not isinstance(value, PolyDataType):
+            raise TypeError("'value' must be a PolyData instance")
         self._container = value
 
     def root(self) -> PolyDataLike:

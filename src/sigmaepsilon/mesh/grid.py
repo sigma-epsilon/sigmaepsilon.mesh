@@ -5,7 +5,7 @@ from numba import njit, prange
 
 from .utils.topology import unique_topo_data, detach_mesh_bulk, transform_topology
 from .utils import center_of_points, k_nearest_neighbours as knn, knn_to_lines
-from .polydata import PolyData
+from .data.polydata import PolyData
 
 __cache = True
 

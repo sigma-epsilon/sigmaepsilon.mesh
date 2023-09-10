@@ -1,7 +1,7 @@
 import numpy as np
 from contextlib import suppress
 
-from .polydata import PolyData
+from .data.polydata import PolyData
 from .cells import L2, L3
 
 from .config import __hasplotly__

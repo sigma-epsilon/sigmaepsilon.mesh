@@ -1,5 +1,5 @@
-from .pointdata import PointDataBase
-from .polydata import PolyDataBase
-from .celldata import CellDataBase
+from .pointdata import PointDataType
+from .polydata import PolyDataType
+from .celldata import CellDataType
 
-__all__ = ["PointDataBase", "PolyDataBase", "CellDataBase"]
+__all__ = ["PointDataType", "PolyDataType", "CellDataType"]

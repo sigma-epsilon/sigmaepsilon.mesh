@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from .cell import PolyCell
-from .celldata import CellData
-from .geometry import (
+from ..data.celldata import CellData
+from ..typing.geometry import (
     PolyCellGeometryMixin1d,
     PolyCellGeometryMixin2d,
     PolyCellGeometryMixin3d,

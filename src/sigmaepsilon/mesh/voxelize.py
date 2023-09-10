@@ -4,7 +4,7 @@ from typing import Tuple
 import numpy as np
 from numpy import ndarray
 
-from .polydata import PolyData
+from .data.polydata import PolyData
 from .cells import H8
 from .grid import grid
 from .utils.topology import detach_mesh_bulk

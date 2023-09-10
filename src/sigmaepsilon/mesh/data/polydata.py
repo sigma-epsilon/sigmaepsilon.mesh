@@ -17,20 +17,20 @@ from sigmaepsilon.math.linalg.sparse import csr_matrix
 from sigmaepsilon.math.linalg import Vector, ReferenceFrame as FrameLike
 from sigmaepsilon.math import atleast1d, minmax, repeat
 
-from .indexmanager import IndexManager
+from ..indexmanager import IndexManager
 from .akwrapper import AkWrapper
-from .utils.topology.topo import inds_to_invmap_as_dict, remap_topo_1d
-from .space import CartesianFrame, PointCloud
-from .utils.utils import (
+from ..utils.topology.topo import inds_to_invmap_as_dict, remap_topo_1d
+from ..space import CartesianFrame, PointCloud
+from ..utils.utils import (
     cells_coords,
     cells_around,
     cell_centers_bulk,
     explode_mesh_data_bulk,
     nodal_distribution_factors,
 )
-from .utils.knn import k_nearest_neighbours as KNN
-from .vtkutils import mesh_to_UnstructuredGrid as mesh_to_vtk
-from .cells import (
+from ..utils.knn import k_nearest_neighbours as KNN
+from ..vtkutils import mesh_to_UnstructuredGrid as mesh_to_vtk
+from ..cells import (
     L2 as Line,
     T3 as Triangle,
     Q4 as Quadrilateral,
@@ -41,26 +41,26 @@ from .cells import (
     W6,
     W18,
 )
-from .utils.space import (
+from ..utils.space import (
     index_of_closest_point,
     index_of_furthest_point,
     frames_of_surfaces,
     frames_of_lines,
 )
-from .utils.topology import (
+from ..utils.topology import (
     nodal_adjacency,
     detach_mesh_data_bulk,
     detach_mesh_bulk,
     cells_at_nodes,
 )
-from .topoarray import TopologyArray
+from ..topoarray import TopologyArray
 from .pointdata import PointData
-from .cells import CellData
-from .typing.polydata import PolyDataBase
-from .cells.cell import PolyCell
-from .helpers import meshio_to_celltype, vtk_to_celltype
-from .vtkutils import PolyData_to_mesh
-from .config import __hasvtk__, __haspyvista__, __hask3d__, __hasmatplotlib__
+from ..cells import CellData
+from ..typing.polydata import PolyDataType
+from ..cells.cell import PolyCell
+from ..helpers import meshio_to_celltype, vtk_to_celltype
+from ..vtkutils import PolyData_to_mesh
+from ..config import __hasvtk__, __haspyvista__, __hask3d__, __hasmatplotlib__
 
 if __hasvtk__:
     import vtk
@@ -90,7 +90,7 @@ PD = TypeVar("PD", bound=PointData)
 CD = TypeVar("CD", bound=CellData)
 
 
-class PolyData(Generic[PD, CD], PolyDataBase[PD, CD], DeepDict):
+class PolyData(Generic[PD, CD], PolyDataType[PD, CD], DeepDict):
     """
     A class to handle complex polygonal meshes.
 

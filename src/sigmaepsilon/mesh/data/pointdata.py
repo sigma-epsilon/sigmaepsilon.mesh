@@ -11,9 +11,9 @@ from sigmaepsilon.math.logical import isboolarray
 from sigmaepsilon.math.linalg.sparse import csr_matrix
 
 from .akwrapper import AkWrapper
-from .space import CartesianFrame, PointCloud
-from .typing import PolyDataBase, PointDataBase
-from .utils import collect_nodal_data
+from ..space import CartesianFrame, PointCloud
+from ..typing import PolyDataType, PointDataType
+from ..utils import collect_nodal_data
 
 
 __all__ = ["PointData"]
@@ -23,7 +23,7 @@ def gen_frame(coords: ndarray) -> CartesianFrame:
     return CartesianFrame(dim=coords.shape[1])
 
 
-class PointData(AkWrapper, PointDataBase):
+class PointData(AkWrapper, PointDataType):
     """
     A class to handle data related to the pointcloud of a polygonal mesh.
 
@@ -53,7 +53,7 @@ class PointData(AkWrapper, PointDataBase):
         newaxis: int = 2,
         activity: ndarray = None,
         db: akRecord = None,
-        container: PolyDataBase = None,
+        container: PolyDataType = None,
         **kwargs
     ):
         if db is not None:
@@ -166,18 +166,18 @@ class PointData(AkWrapper, PointDataBase):
         return self._dbkey_x_ in self._wrapped.fields
 
     @property
-    def container(self) -> PolyDataBase:
+    def container(self) -> PolyDataType:
         """
         Returns the container object of the block.
         """
         return self._container
 
     @container.setter
-    def container(self, value: PolyDataBase):
+    def container(self, value: PolyDataType):
         """
         Sets the container of the block.
         """
-        assert isinstance(value, PolyDataBase)
+        assert isinstance(value, PolyDataType)
         self._container = value
 
     @property
@@ -241,7 +241,7 @@ class PointData(AkWrapper, PointDataBase):
         :func:`nodal_distribution_factors`
         :func:`~sigmaepsilon.mesh.utils.utils.collect_nodal_data`
         """
-        source: PolyDataBase = self.container.source()
+        source: PolyDataType = self.container.source()
         if ndf is None:
             ndf = source.nodal_distribution_factors()
         if isinstance(ndf, ndarray):
