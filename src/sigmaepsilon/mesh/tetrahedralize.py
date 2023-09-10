@@ -32,7 +32,7 @@ def tetrahedralize(
     Notes
     -----
     The input mesh must contain exactly one block of solid cells.
-    
+
     Examples
     --------
     >>> from sigmaepsilon.mesh import Grid, tetrahedralize

@@ -14,13 +14,12 @@ def load_tests(loader, tests, ignore):  # pragma: no cover
 
 
 class TestTetrahedralize(SigmaEpsilonTestCase):
-
     def test_tetrahedralize(self):
         mesh = Grid(size=(80, 60, 20), shape=(8, 6, 2), eshape="H8")
         tetrahedralize(mesh)
         tetrahedralize(mesh, order=2)
         self.assertFailsProperly(ValueError, tetrahedralize, mesh, order=3)
-        
+
 
 if __name__ == "__main__":
     unittest.main()
