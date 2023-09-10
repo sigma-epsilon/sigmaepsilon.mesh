@@ -312,7 +312,7 @@ class LineSection(Wrapper):
             raise NotImplementedError
         return TriMesh(points=points, triangles=triangles, **kwargs)
 
-    def extrude(self, *args, length=None, frame=None, N=None, **kwargs) -> TetMesh:
+    def extrude(self, *, length=None, frame=None, N=None, **__) -> TetMesh:
         """
         Creates a 3d tetragonal mesh from the section.
 
