@@ -11,6 +11,7 @@ from sigmaepsilon.math import minmax
 
 import numpy as np
 from k3d.colormaps import matplotlib_color_maps
+from pyvista import themes
 
 
 class TestPolyDataPlot(unittest.TestCase):
@@ -144,6 +145,46 @@ class TestPolyDataPlot(unittest.TestCase):
             theme="document",
             return_plotter=True,
         )
+        
+        block.pvplot(
+            notebook=False,
+            jupyter_backend="static",
+            window_size=(600, 400),
+            config_key=["pyvista", "plot"],
+            cmap="jet",
+            theme="dark",
+            return_plotter=True,
+        )
+        
+        block.pvplot(
+            notebook=False,
+            jupyter_backend="static",
+            window_size=(600, 400),
+            config_key=["pyvista", "plot"],
+            cmap="jet",
+            theme="bw",
+            return_plotter=True,
+        )
+        
+        block.pvplot(
+            notebook=False,
+            jupyter_backend="static",
+            window_size=(600, 400),
+            config_key=["pyvista", "plot"],
+            cmap="jet",
+            theme=themes.DefaultTheme(),
+            return_plotter=True,
+        )
+        
+        block.pvplot(
+            notebook=False,
+            jupyter_backend="static",
+            window_size=(600, 400),
+            config_key=["pyvista", "plot"],
+            cmap="jet",
+            edge_color="black",
+            return_plotter=True,
+        )
 
     def test_k3d(self):
         mesh: PolyData = self.mesh
@@ -157,10 +198,10 @@ class TestPolyDataPlot(unittest.TestCase):
         mesh["bodies", "H8"].config["k3d", "plot", "color"] = "cyan"
         mesh["bodies", "H8"].config["k3d", "plot", "opacity"] = 1.0
 
-        plot = mesh["lines", "L2"].k3dplot(
+        _ = mesh["lines", "L2"].k3dplot(
             config_key=["k3d", "plot"], menu_visibility=False
         )
-        plot = mesh.k3dplot(config_key=["k3d", "plot"], menu_visibility=False)
+        _ = mesh.k3dplot(config_key=["k3d", "plot"], menu_visibility=False)
 
         mesh["lines", "L2"].cd.db["scalars"] = 100 * np.random.rand(len(self.cdL2))
         mesh["surfaces", "Q4"].cd.db["scalars"] = 100 * np.random.rand(len(self.cdQ4))
@@ -168,7 +209,7 @@ class TestPolyDataPlot(unittest.TestCase):
         scalars = mesh.pd.pull("scalars")
 
         cmap = matplotlib_color_maps.Jet
-        plot = mesh.k3dplot(scalars=scalars, menu_visibility=False, cmap=cmap)
+        _ = mesh.plot(backend="k3d", scalars=scalars, menu_visibility=False, cmap=cmap, notebook=True)
 
 
 if __name__ == "__main__":

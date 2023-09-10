@@ -19,8 +19,8 @@ from sectionproperties.pre.pre import Material
 import numpy as np
 
 
-class TestJointCube(unittest.TestCase):
-    def test_joint_cube(self):
+class TestScenario2(unittest.TestCase):
+    def test_scenario_2(self):
         steel = Material(
             name="Steel",
             elastic_modulus=200e3,
