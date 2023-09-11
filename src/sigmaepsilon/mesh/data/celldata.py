@@ -10,7 +10,7 @@ from sigmaepsilon.math.linalg.sparse import csr_matrix
 from sigmaepsilon.math.linalg import ReferenceFrame
 
 from .akwrapper import AkWrapper
-from ..typing import PolyDataType, PointDataType, CellDataType
+from ..typing import PolyDataProtocol, PointDataProtocol
 from .akwrapper import AwkwardLike
 from ..utils import (
     avg_cell_data,
@@ -18,11 +18,11 @@ from ..utils import (
     distribute_nodal_data_sparse,
 )
 
-PointDataLike = TypeVar("PointDataLike", bound=PointDataType)
-PolyDataLike = TypeVar("PolyDataLike", bound=PolyDataType)
+PD = TypeVar("PD", bound=PointDataProtocol)
+MD = TypeVar("MD", bound=PolyDataProtocol)
 
 
-class CellData(Generic[PolyDataLike, PointDataLike], AkWrapper, CellDataType):
+class CellData(Generic[MD, PD], AkWrapper):
     """
     A class to handle data related to the cells of a polygonal mesh.
 
@@ -71,7 +71,7 @@ class CellData(Generic[PolyDataLike, PointDataLike], AkWrapper, CellDataType):
     def __init__(
         self,
         *args,
-        pointdata: PointDataLike = None,
+        pointdata: PD = None,
         wrap: AwkwardLike = None,
         topo: ndarray = None,
         fields: dict = None,
@@ -80,7 +80,7 @@ class CellData(Generic[PolyDataLike, PointDataLike], AkWrapper, CellDataType):
         areas: Union[ndarray, float] = None,
         t: Union[ndarray, float] = None,
         db: AwkwardLike = None,
-        container: PolyDataLike = None,
+        container: MD = None,
         i: ndarray = None,
         **kwargs,
     ):
@@ -218,7 +218,11 @@ class CellData(Generic[PolyDataLike, PointDataLike], AkWrapper, CellDataType):
         return self._dbkey_areas_ in self._wrapped.fields
 
     @property
-    def pointdata(self) -> PointDataLike:
+    def db(self) -> AwkwardLike:
+        return self._wrapped
+    
+    @property
+    def pointdata(self) -> PD:
         """
         Returns the attached point database. This is what
         the topology of the cells are referring to.
@@ -226,18 +230,18 @@ class CellData(Generic[PolyDataLike, PointDataLike], AkWrapper, CellDataType):
         return self._pointdata
 
     @pointdata.setter
-    def pointdata(self, value: PointDataLike):
+    def pointdata(self, value: PD):
         """
         Sets the attached point database. This is what
         the topology of the cells are referring to.
         """
         if value is not None:
-            if not isinstance(value, PointDataType):
+            if not isinstance(value, PointDataProtocol):
                 raise TypeError("'value' must be a PointData instance")
         self._pointdata = value
 
     @property
-    def pd(self) -> PointDataLike:
+    def pd(self) -> PD:
         """
         Returns the attached point database. This is what
         the topology of the cells are referring to.
@@ -245,120 +249,21 @@ class CellData(Generic[PolyDataLike, PointDataLike], AkWrapper, CellDataType):
         return self.pointdata
 
     @pd.setter
-    def pd(self, value: PointDataLike):
+    def pd(self, value: PD):
         """Sets the attached pointdata."""
         self.pointdata = value
 
     @property
-    def container(self) -> PolyDataLike:
+    def container(self) -> MD:
         """Returns the container object of the block."""
         return self._container
 
     @container.setter
-    def container(self, value: PolyDataLike) -> None:
+    def container(self, value: MD) -> None:
         """Sets the container of the block."""
-        if not isinstance(value, PolyDataType):
+        if not isinstance(value, PolyDataProtocol):
             raise TypeError("'value' must be a PolyData instance")
         self._container = value
-
-    def root(self) -> PolyDataLike:
-        """
-        Returns the top level container of the model the block is
-        the part of.
-        """
-        c = self.container
-        return None if c is None else c.root()
-
-    def source(self) -> PolyDataLike:
-        """
-        Retruns the source of the cells. This is the PolyData block
-        that stores the PointData object the topology of the cells
-        are referring to.
-        """
-        c = self.container
-        return None if c is None else c.source()
-
-    def __getattr__(self, attr):
-        """
-        Modified for being able to fetch data from pointcloud.
-        """
-        if attr in self.__dict__:
-            return getattr(self, attr)
-        try:
-            return getattr(self._wrapped, attr)
-        except AttributeError:
-            try:
-                if self.pointdata is not None:
-                    if attr in self.pointdata.fields:
-                        data = self.pointdata[attr].to_numpy()
-                        topo = self.nodes
-                        return avg_cell_data(data, topo)
-            except:
-                pass
-            name = self.__class__.__name__
-            raise AttributeError(f"'{name}' object has no attribute called {attr}")
-        except Exception:
-            name = self.__class__.__name__
-            raise AttributeError(f"'{name}' object has no attribute called {attr}")
-
-    def set_nodal_distribution_factors(self, factors: ndarray, key: str = None) -> None:
-        """
-        Sets nodal distribution factors.
-
-        Parameters
-        ----------
-        factors: numpy.ndarray
-            A 3d float array. The length of the array must equal the number
-            pf cells in the block.
-        key: str, Optional
-            A key used to store the values in the database. This makes you able
-            to use more nodal distribution strategies in one model.
-            If not specified, a default key is used.
-        """
-        if key is None:
-            key = self.__class__._attr_map_[self._dbkey_ndf_]
-        if len(factors) != len(self._wrapped):
-            self._wrapped[key] = factors[self._wrapped.id]
-        else:
-            self._wrapped[key] = factors
-
-    def pull(
-        self, data: Union[str, ndarray], ndf: Union[ndarray, csr_matrix] = None
-    ) -> ndarray:
-        """
-        Pulls data from the attached pointdata. The pulled data is either copied or
-        distributed according to a measure.
-
-        Parameters
-        ----------
-        data: str or numpy.ndarray
-            Either a field key to identify data in the database of the attached
-            PointData, or a NumPy array.
-
-        See Also
-        --------
-        :func:`~sigmaepsilon.mesh.utils.utils.distribute_nodal_data_bulk`
-        :func:`~sigmaepsilon.mesh.utils.utils.distribute_nodal_data_sparse`
-        """
-        if isinstance(data, str):
-            pd = self.source().pd
-            nodal_data = pd[data].to_numpy()
-        else:
-            assert isinstance(
-                data, ndarray
-            ), "'data' must be a string or a NumPy array."
-            nodal_data = data
-        topo = self.nodes
-        if ndf is None:
-            ndf = np.ones_like(topo).astype(float)
-        if len(nodal_data.shape) == 1:
-            nodal_data = atleast2d(nodal_data, back=True)
-        if isinstance(ndf, ndarray):
-            d = distribute_nodal_data_bulk(nodal_data, topo, ndf)
-        else:
-            d = distribute_nodal_data_sparse(nodal_data, topo, self.id, ndf)
-        # nE, nNE, nDATA
-        return d
 
     @property
     def fields(self) -> Iterable[str]:
@@ -470,3 +375,102 @@ class CellData(Generic[PolyDataLike, PointDataLike], AkWrapper, CellDataType):
         if isinstance(value, bool):
             value = np.full(len(self), value, dtype=bool)
         self._wrapped[self._dbkey_activity_] = value
+        
+    def root(self) -> MD:
+        """
+        Returns the top level container of the model the block is
+        the part of.
+        """
+        c = self.container
+        return None if c is None else c.root()
+
+    def source(self) -> MD:
+        """
+        Retruns the source of the cells. This is the PolyData block
+        that stores the PointData object the topology of the cells
+        are referring to.
+        """
+        c = self.container
+        return None if c is None else c.source()
+
+    def __getattr__(self, attr):
+        """
+        Modified for being able to fetch data from pointcloud.
+        """
+        if attr in self.__dict__:
+            return getattr(self, attr)
+        try:
+            return getattr(self._wrapped, attr)
+        except AttributeError:
+            try:
+                if self.pointdata is not None:
+                    if attr in self.pointdata.fields:
+                        data = self.pointdata[attr].to_numpy()
+                        topo = self.nodes
+                        return avg_cell_data(data, topo)
+            except:
+                pass
+            name = self.__class__.__name__
+            raise AttributeError(f"'{name}' object has no attribute called {attr}")
+        except Exception:
+            name = self.__class__.__name__
+            raise AttributeError(f"'{name}' object has no attribute called {attr}")
+
+    def set_nodal_distribution_factors(self, factors: ndarray, key: str = None) -> None:
+        """
+        Sets nodal distribution factors.
+
+        Parameters
+        ----------
+        factors: numpy.ndarray
+            A 3d float array. The length of the array must equal the number
+            pf cells in the block.
+        key: str, Optional
+            A key used to store the values in the database. This makes you able
+            to use more nodal distribution strategies in one model.
+            If not specified, a default key is used.
+        """
+        if key is None:
+            key = self.__class__._attr_map_[self._dbkey_ndf_]
+        if len(factors) != len(self._wrapped):
+            self._wrapped[key] = factors[self._wrapped.id]
+        else:
+            self._wrapped[key] = factors
+
+    def pull(
+        self, data: Union[str, ndarray], ndf: Union[ndarray, csr_matrix] = None
+    ) -> ndarray:
+        """
+        Pulls data from the attached pointdata. The pulled data is either copied or
+        distributed according to a measure.
+
+        Parameters
+        ----------
+        data: str or numpy.ndarray
+            Either a field key to identify data in the database of the attached
+            PointData, or a NumPy array.
+
+        See Also
+        --------
+        :func:`~sigmaepsilon.mesh.utils.utils.distribute_nodal_data_bulk`
+        :func:`~sigmaepsilon.mesh.utils.utils.distribute_nodal_data_sparse`
+        """
+        if isinstance(data, str):
+            pd = self.source().pd
+            nodal_data = pd[data].to_numpy()
+        else:
+            assert isinstance(
+                data, ndarray
+            ), "'data' must be a string or a NumPy array."
+            nodal_data = data
+        topo = self.nodes
+        if ndf is None:
+            ndf = np.ones_like(topo).astype(float)
+        if len(nodal_data.shape) == 1:
+            nodal_data = atleast2d(nodal_data, back=True)
+        if isinstance(ndf, ndarray):
+            d = distribute_nodal_data_bulk(nodal_data, topo, ndf)
+        else:
+            d = distribute_nodal_data_sparse(nodal_data, topo, self.id, ndf)
+        # nE, nNE, nDATA
+        return d

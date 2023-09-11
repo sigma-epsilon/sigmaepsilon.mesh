@@ -4,8 +4,8 @@ import numpy as np
 from numpy import ndarray
 from sympy import symbols
 
-from .base import PolyCell
-from ..typing.geometry import PolyCellGeometryMixin3d
+from .geometry import PolyCellGeometry3d
+from ..data.cellbase import PolyCell
 from ..utils.cells.tet4 import (
     shp_TET4_multi,
     dshp_TET4_multi,
@@ -22,7 +22,7 @@ class TET4(PolyCell):
 
     label = "TET4"
 
-    class Geometry(PolyCellGeometryMixin3d):
+    class Geometry(PolyCellGeometry3d):
         number_of_nodes = 4
         vtk_cell_id = 10
         shape_function_evaluator: shp_TET4_multi

@@ -1,72 +1,63 @@
-from abc import abstractmethod, abstractproperty
-from typing import Union, Iterable, Generic, TypeVar
+from typing import Union, Iterable, Protocol, runtime_checkable, TypeVar, Generic
 
 from numpy import ndarray
 
-from sigmaepsilon.core.meta import ABCMeta_Weak
+from sigmaepsilon.math.linalg import ReferenceFrame as FrameLike
 from sigmaepsilon.math.linalg.sparse import csr_matrix
 
 from ..topoarray import TopologyArray
-from .pointdata import PointDataType
-from .celldata import CellDataType
 
-PD = TypeVar("PD", bound=PointDataType)
-CD = TypeVar("CD", bound=CellDataType)
-
-__all__ = ["PolyDataType"]
+__all__ = ["PolyDataProtocol"]
 
 
-class ABC(metaclass=ABCMeta_Weak):
-    """
-    Helper class that provides a standard way to create an ABC using
-    inheritance.
-    """
-
-    __slots__ = ()
+PD = TypeVar("PD")
+CD = TypeVar("CD")
 
 
-class PolyDataType(Generic[PD, CD], ABC):
-    """
-    Base class for PolyData objects.
-    """
+@runtime_checkable
+class PolyDataProtocol(Generic[PD, CD], Protocol):
+    """Protocol for polygonal meshes."""
 
-    @abstractproperty
-    def frame(self) -> ndarray:
-        """Ought to return a frame of reference."""
+    @property
+    def frame(self) -> FrameLike:
+        """Ought to return the frame of the attached pointdata"""
+        
+    @property
+    def pointdata(self) -> PD:
+        """Ought to return the attached pointdata."""
         ...
 
-    @abstractmethod
-    def source(self, *args, **kwargs) -> "PolyDataType":
+    @property
+    def celldata(self) -> CD:
+        """Ought to return the attached celldata."""
+        ...
+
+    def source(self, *args, **kwargs) -> Union["PolyDataProtocol", None]:
         """Ought to return the object that holds onto point data."""
         ...
 
-    @abstractmethod
     def coords(self, *args, **kwargs) -> ndarray:
         """Ought to return the coordiantes associated with the object."""
         ...
 
-    @abstractmethod
-    def topology(self, *args, **kwargs) -> TopologyArray:
+    def topology(self, *args, **kwargs) -> Union[ndarray, TopologyArray]:
         """Ought to return the topology associated with the object."""
         ...
 
-    @abstractmethod
-    def nodal_distribution_factors(self) -> Union[ndarray, csr_matrix]:
+    def nodal_distribution_factors(self, *args, **kwargs) -> Union[ndarray, csr_matrix]:
         """
         Ought to return nodal distribution factors for every node
         of every cell in the block.
         """
         ...
 
-    @abstractmethod
-    def pointblocks(self) -> Iterable[PD]:
+    def pointblocks(self, *args, **kwargs) -> Iterable["PolyDataProtocol"]:
         """
         Ought to return PolyData blocks with attached PointData.
         """
         ...
 
-    @abstractmethod
-    def cellblocks(self) -> Iterable[CD]:
+    def cellblocks(self, *args, **kwargs) -> Iterable["PolyDataProtocol"]:
         """
         Ought to return PolyData blocks with attached CellData.
         """

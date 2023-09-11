@@ -4,8 +4,8 @@ import numpy as np
 from numpy import ndarray
 from sympy import symbols
 
-from .base import PolyCell
-from ..typing.geometry import PolyCellGeometryMixin2d
+from .geometry import PolyCellGeometry2d
+from ..data.cellbase import PolyCell
 from ..utils.utils import cells_coords
 from ..utils.cells.t6 import (
     shp_T6_multi,
@@ -25,7 +25,7 @@ class T6(PolyCell):
 
     label = "T6"
 
-    class Geometry(PolyCellGeometryMixin2d):
+    class Geometry(PolyCellGeometry2d):
         number_of_nodes = 6
         vtk_cell_id = 22
         shape_function_evaluator: shp_T6_multi

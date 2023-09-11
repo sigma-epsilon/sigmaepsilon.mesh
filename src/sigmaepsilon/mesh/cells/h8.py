@@ -6,8 +6,8 @@ from numpy import ndarray
 
 from sigmaepsilon.math.numint import gauss_points as gp
 
-from .base import PolyCell
-from ..typing.geometry import PolyCellGeometryMixin3d
+from .geometry import PolyCellGeometry3d
+from ..data.cellbase import PolyCell
 from ..utils.utils import cells_coords
 from ..utils.cells.h8 import (
     shp_H8_multi,
@@ -38,7 +38,7 @@ class H8(PolyCell):
 
     label = "H8"
 
-    class Geometry(PolyCellGeometryMixin3d):
+    class Geometry(PolyCellGeometry3d):
         number_of_nodes = 8
         vtk_cell_id = 12
         shape_function_evaluator: shp_H8_multi

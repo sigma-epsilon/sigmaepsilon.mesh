@@ -3,8 +3,8 @@ import numpy as np
 from numpy import ndarray
 from sympy import symbols
 
-from .base import PolyCell
-from ..typing.geometry import PolyCellGeometryMixin3d
+from .geometry import PolyCellGeometry3d
+from ..data.cellbase import PolyCell
 from ..utils.cells.numint import Gauss_Legendre_Wedge_3x2
 from ..utils.cells.utils import volumes
 from ..utils.utils import cells_coords
@@ -18,7 +18,7 @@ class W6(PolyCell):
 
     label = "W6"
 
-    class Geometry(PolyCellGeometryMixin3d):
+    class Geometry(PolyCellGeometry3d):
         number_of_nodes = 6
         vtk_cell_id = 13
         monomial_evaluator: monoms_W6

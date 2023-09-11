@@ -1,5 +1,15 @@
 from copy import copy, deepcopy
-from typing import Union, Hashable, Collection, Iterable, Tuple, Any, Generic, TypeVar
+from typing import (
+    Union,
+    Hashable,
+    Collection,
+    Iterable,
+    Tuple,
+    Any,
+    Generic,
+    TypeVar,
+    Optional,
+)
 from collections import defaultdict
 import functools
 import warnings
@@ -17,11 +27,23 @@ from sigmaepsilon.math.linalg.sparse import csr_matrix
 from sigmaepsilon.math.linalg import Vector, ReferenceFrame as FrameLike
 from sigmaepsilon.math import atleast1d, minmax, repeat
 
+from ..typing import (
+    PointDataProtocol,
+    PointDataProtocol,
+    CellDataProtocol,
+    PolyDataProtocol as PDP,
+)
+
 from .akwrapper import AkWrapper
 from .pointdata import PointData
-from ..indexmanager import IndexManager
-from ..utils.topology.topo import inds_to_invmap_as_dict, remap_topo_1d
+from .cellbase import PolyCell
+from .celldata import CellData
+from .cellbase import PolyCell
 from ..space import CartesianFrame, PointCloud
+from ..indexmanager import IndexManager
+from ..topoarray import TopologyArray
+
+from ..utils.topology.topo import inds_to_invmap_as_dict, remap_topo_1d
 from ..utils.utils import (
     cells_coords,
     cells_around,
@@ -54,10 +76,6 @@ from ..utils.topology import (
     detach_mesh_bulk,
     cells_at_nodes,
 )
-from ..topoarray import TopologyArray
-from ..cells import CellData
-from ..typing.polydata import PolyDataType
-from ..cells.base import PolyCell
 from ..helpers import meshio_to_celltype, vtk_to_celltype
 from ..vtkutils import PolyData_to_mesh
 from ..config import __hasvtk__, __haspyvista__, __hask3d__, __hasmatplotlib__
@@ -86,11 +104,11 @@ VectorLike = Union[Vector, ndarray]
 
 __all__ = ["PolyData"]
 
-PD = TypeVar("PD", bound=PointData)
-CD = TypeVar("CD", bound=CellData)
+PD = TypeVar("PD", bound=PointDataProtocol)
+CD = TypeVar("CD", bound=CellDataProtocol)
 
 
-class PolyData(Generic[PD, CD], PolyDataType[PD, CD], DeepDict):
+class PolyData(DeepDict, Generic[PD, CD]):
     """
     A class to handle complex polygonal meshes.
 
@@ -108,7 +126,7 @@ class PolyData(Generic[PD, CD], PolyDataType[PD, CD], DeepDict):
 
     Parameters
     ----------
-    pd: PointData or CellData, Optional
+    pd: Union[PointData, CellData], Optional
         A PolyData or a CellData instance. Dafault is None.
     cd: CellData, Optional
         A CellData instance, if the first argument is provided. Dafault is None.
@@ -175,18 +193,18 @@ class PolyData(Generic[PD, CD], PolyDataType[PD, CD], DeepDict):
 
     def __init__(
         self,
-        pd: Union[PointData, CellData] = None,
-        cd: CellData = None,
+        pd: Optional[Union[PointData, CellData]] = None,
+        cd: Optional[CellData] = None,
         *args,
-        coords: ndarray = None,
-        topo: ndarray = None,
-        celltype: PolyCell = None,
-        frame: FrameLike = None,
-        newaxis: int = 2,
-        cell_fields: dict = None,
-        point_fields: dict = None,
-        parent: "PolyData" = None,
-        frames: Union[FrameLike, ndarray] = None,
+        coords: Optional[ndarray] = None,
+        topo: Optional[ndarray] = None,
+        celltype: Optional[PolyCell] = None,
+        frame: Optional[FrameLike] = None,
+        newaxis: Optional[int] = 2,
+        cell_fields: Optional[dict] = None,
+        point_fields: Optional[dict] = None,
+        parent: Optional["PolyData"] = None,
+        frames: Optional[Union[FrameLike, ndarray]] = None,
         **kwargs,
     ):
         self._reset_point_data()
@@ -198,7 +216,6 @@ class PolyData(Generic[PD, CD], PolyDataType[PD, CD], DeepDict):
         self._cid2bid = None  # maps cell indices to block indices
         self._bid2b = None  # maps block indices to block addresses
         self._init_config_()
-
         self._pointdata = None
         self._celldata = None
 
@@ -383,14 +400,14 @@ class PolyData(Generic[PD, CD], PolyDataType[PD, CD], DeepDict):
         return super().__getitem__(key)
 
     @property
-    def pointdata(self) -> PointData:
+    def pointdata(self) -> PointDataProtocol:
         """
         Returns the attached pointdata.
         """
         return self._pointdata
 
     @pointdata.setter
-    def pointdata(self, pd: Union[PointData, None]) -> None:
+    def pointdata(self, pd: Optional[PointData]) -> None:
         """
         Returns the attached pointdata.
         """
@@ -408,14 +425,14 @@ class PolyData(Generic[PD, CD], PolyDataType[PD, CD], DeepDict):
         return self.pointdata
 
     @property
-    def celldata(self) -> PolyCell:
+    def celldata(self) -> CellDataProtocol:
         """
         Returns the attached celldata.
         """
         return self._celldata
 
     @celldata.setter
-    def celldata(self, cd: Union[PolyCell, None]) -> None:
+    def celldata(self, cd: Optional[PolyCell]) -> None:
         """
         Returns the attached celldata.
         """
@@ -432,7 +449,7 @@ class PolyData(Generic[PD, CD], PolyDataType[PD, CD], DeepDict):
         """
         return self.celldata
 
-    def lock(self, create_mappers: bool = False) -> "PolyData":
+    def lock(self, create_mappers: Optional[bool] = False) -> "PolyData":
         """
         Locks the layout. If a `PolyData` instance is locked,
         missing keys are handled the same way as they would've been handled
@@ -872,7 +889,7 @@ class PolyData(Generic[PD, CD], PolyDataType[PD, CD], DeepDict):
         key = PointData._dbkey_x_ if key is None else key
         return self.pointdata is not None and key in self.pointdata.fields
 
-    def source(self, key: str = None) -> Union["PolyData", None]:
+    def source(self, key: Optional[str] = None) -> Union[PDP[PD, CD], None]:
         """
         Returns the closest (going upwards in the hierarchy) block that holds
         on to data with a certain field name. If called without arguments,
@@ -919,7 +936,7 @@ class PolyData(Generic[PD, CD], PolyDataType[PD, CD], DeepDict):
         dtype = PolyData if blocktype is None else blocktype
         return self.containers(self, inclusive=inclusive, dtype=dtype, deep=deep)
 
-    def pointblocks(self, *args, **kwargs) -> Iterable["PolyData"]:
+    def pointblocks(self, *args, **kwargs) -> Iterable[PDP[PD, CD]]:
         """
         Returns an iterable over blocks with PointData. All arguments
         are forwarded to :func:`blocks`.
@@ -936,7 +953,7 @@ class PolyData(Generic[PD, CD], PolyDataType[PD, CD], DeepDict):
         """
         return filter(lambda i: i.pd is not None, self.blocks(*args, **kwargs))
 
-    def cellblocks(self, *args, **kwargs) -> Iterable["PolyData"]:
+    def cellblocks(self, *args, **kwargs) -> Iterable[PDP[PD, CD]]:
         """
         Returns an iterable over blocks with CellData. All arguments
         are forwarded to :func:`blocks`.
@@ -994,10 +1011,7 @@ class PolyData(Generic[PD, CD], PolyDataType[PD, CD], DeepDict):
         if result is None:
             if self.parent is not None:
                 result = self.parent.frame
-        if result is None:
-            raise AttributeError("This instance have no attached pointcloud.")
-        else:
-            return result
+        return result
 
     @property
     def frames(self) -> ndarray:

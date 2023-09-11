@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-from .base import PolyCell
-from ..typing.geometry import PolyCellGeometryMixin1d
+from .geometry import PolyCellGeometry1d
+from ..data.cellbase import PolyCell
 from ..utils.cells.l2 import (
     shp_L2_multi,
     dshp_L2_multi,
@@ -17,7 +17,7 @@ class L2(PolyCell):
     2-Node line element.
     """
 
-    class Geometry(PolyCellGeometryMixin1d):
+    class Geometry(PolyCellGeometry1d):
         number_of_nodes = 2
         vtk_cell_id = 3
         shape_function_evaluator: shp_L2_multi

@@ -12,7 +12,7 @@ from sigmaepsilon.math.linalg.sparse import csr_matrix
 
 from .akwrapper import AkWrapper
 from ..space import CartesianFrame, PointCloud
-from ..typing import PolyDataType, PointDataType
+from ..typing import PolyDataProtocol
 from ..utils import collect_nodal_data
 
 
@@ -23,7 +23,7 @@ def gen_frame(coords: ndarray) -> CartesianFrame:
     return CartesianFrame(dim=coords.shape[1])
 
 
-class PointData(AkWrapper, PointDataType):
+class PointData(AkWrapper):
     """
     A class to handle data related to the pointcloud of a polygonal mesh.
 
@@ -53,7 +53,7 @@ class PointData(AkWrapper, PointDataType):
         newaxis: int = 2,
         activity: ndarray = None,
         db: akRecord = None,
-        container: PolyDataType = None,
+        container: PolyDataProtocol = None,
         **kwargs
     ):
         if db is not None:
@@ -166,18 +166,18 @@ class PointData(AkWrapper, PointDataType):
         return self._dbkey_x_ in self._wrapped.fields
 
     @property
-    def container(self) -> PolyDataType:
+    def container(self) -> PolyDataProtocol:
         """
         Returns the container object of the block.
         """
         return self._container
 
     @container.setter
-    def container(self, value: PolyDataType):
+    def container(self, value: PolyDataProtocol):
         """
         Sets the container of the block.
         """
-        assert isinstance(value, PolyDataType)
+        assert isinstance(value, PolyDataProtocol)
         self._container = value
 
     @property
@@ -241,7 +241,7 @@ class PointData(AkWrapper, PointDataType):
         :func:`nodal_distribution_factors`
         :func:`~sigmaepsilon.mesh.utils.utils.collect_nodal_data`
         """
-        source: PolyDataType = self.container.source()
+        source: PolyDataProtocol = self.container.source()
         if ndf is None:
             ndf = source.nodal_distribution_factors()
         if isinstance(ndf, ndarray):

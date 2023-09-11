@@ -6,6 +6,8 @@ from typing import (
     Any,
     ClassVar,
     Optional,
+    TypeVar,
+    Generic,
 )
 
 import numpy as np
@@ -15,12 +17,8 @@ from sigmaepsilon.math import atleast1d, atleast2d, ascont
 from sigmaepsilon.math.linalg import ReferenceFrame as FrameLike
 from sigmaepsilon.math.utils import to_range_1d
 
-from ..typing.polydata import PolyDataType
-from ..typing.pointdata import PointDataType
-from ..data.celldata import CellData
-from ..typing.geometry import (
-    PolyCellGeometryMixin,
-)
+from ..typing import ABC_PolyCell, PolyDataProtocol, PointDataProtocol, GeometryProtocol
+from .celldata import CellData
 from ..space import PointCloud, CartesianFrame
 from ..utils.utils import (
     jacobian_matrix_bulk,
@@ -63,16 +61,18 @@ if __haspyvista__:
     import pyvista as pv
 
 MapLike = Union[ndarray, MutableMapping]
+PD = TypeVar("PD", bound=PointDataProtocol)
+MD = TypeVar("MD", bound=PolyDataProtocol)
 
 
-class PolyCell(CellData[PolyDataType, PointDataType]):
+class PolyCell(Generic[MD, PD], CellData[MD, PD], ABC_PolyCell):
     """
     A subclass of :class:`~sigmaepsilon.mesh.celldata.CellData` as a base class
     for all cell containers.
     """
 
     label: ClassVar[Optional[str]] = None
-    Geometry: PolyCellGeometryMixin = None
+    Geometry: ClassVar[GeometryProtocol]
 
     def to_triangles(self) -> ndarray:
         """
@@ -84,7 +84,7 @@ class PolyCell(CellData[PolyDataType, PointDataType]):
         else:
             raise NotImplementedError("This is only for 2d cells")
 
-    def to_tetrahedra(self, flatten: bool = True) -> ndarray:
+    def to_tetrahedra(self, flatten: Optional[bool] = True) -> ndarray:
         """
         Returns the topology as a collection of TET4 tetrahedra.
 

@@ -1,37 +1,29 @@
-from abc import abstractproperty
+from typing import Protocol, runtime_checkable
 
 from numpy import ndarray
 
-from sigmaepsilon.core.meta import ABCMeta_Weak
+from sigmaepsilon.math.linalg import ReferenceFrame as FrameLike
 
-__all__ = ["PointDataType"]
-
-
-class ABC(metaclass=ABCMeta_Weak):
-    """
-    Helper class that provides a standard way to create an ABC using
-    inheritance.
-    """
-
-    __slots__ = ()
+__all__ = ["PointDataProtocol"]
 
 
-class PointDataType(ABC):
+@runtime_checkable
+class PointDataProtocol(Protocol):
     """
     Base class for PointData objects.
     """
 
-    @abstractproperty
+    @property
     def id(self) -> ndarray:
         """Ought to return global ids of the points."""
         ...
 
-    @abstractproperty
-    def frame(self) -> ndarray:
+    @property
+    def frame(self) -> FrameLike:
         """Ought to return a frame of reference."""
         ...
 
-    @abstractproperty
+    @property
     def x(self) -> ndarray:
         """Ought to return the coordinates of the associated pointcloud."""
         ...

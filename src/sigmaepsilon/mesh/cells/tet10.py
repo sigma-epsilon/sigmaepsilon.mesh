@@ -3,8 +3,8 @@ import numpy as np
 from numpy import ndarray
 from sympy import symbols
 
-from .base import PolyCell
-from ..typing.geometry import PolyCellGeometryMixin3d
+from .geometry import PolyCellGeometry3d
+from ..data.cellbase import PolyCell
 from ..utils.cells.tet10 import (
     monoms_TET10,
 )
@@ -20,7 +20,7 @@ class TET10(PolyCell):
 
     label = "TET10"
 
-    class Geometry(PolyCellGeometryMixin3d):
+    class Geometry(PolyCellGeometry3d):
         number_of_nodes = 10
         vtk_cell_id = 24
         monomial_evaluator: monoms_TET10

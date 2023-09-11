@@ -3,8 +3,8 @@ import numpy as np
 from numpy import ndarray
 from sympy import symbols
 
-from .base import PolyCell
-from ..typing.geometry import PolyCellGeometryMixin2d
+from .geometry import PolyCellGeometry2d
+from ..data.cellbase import PolyCell
 from ..utils.cells.q9 import (
     shp_Q9_multi,
     dshp_Q9_multi,
@@ -22,7 +22,7 @@ class Q9(PolyCell):
 
     label = "Q9"
 
-    class Geometry(PolyCellGeometryMixin2d):
+    class Geometry(PolyCellGeometry2d):
         number_of_nodes = 9
         vtk_cell_id = 28
         shape_function_evaluator: shp_Q9_multi
