@@ -104,6 +104,7 @@ VectorLike = Union[Vector, ndarray]
 
 __all__ = ["PolyData"]
 
+MD = TypeVar("MD", bound="PolyData")
 PD = TypeVar("PD", bound=PointDataProtocol)
 CD = TypeVar("CD", bound=CellDataProtocol)
 
@@ -203,7 +204,7 @@ class PolyData(DeepDict, Generic[PD, CD]):
         newaxis: Optional[int] = 2,
         cell_fields: Optional[dict] = None,
         point_fields: Optional[dict] = None,
-        parent: Optional["PolyData"] = None,
+        parent: Optional[MD] = None,
         frames: Optional[Union[FrameLike, ndarray]] = None,
         **kwargs,
     ):
@@ -384,23 +385,23 @@ class PolyData(DeepDict, Generic[PD, CD]):
 
         return result
 
-    def copy(self) -> "PolyData":
+    def copy(self: MD) -> MD:
         """
         Returns a shallow copy.
         """
         return copy(self)
 
-    def deepcopy(self) -> "PolyData":
+    def deepcopy(self: MD) -> MD:
         """
         Returns a deep copy.
         """
         return deepcopy(self)
 
-    def __getitem__(self, key) -> "PolyData":
+    def __getitem__(self: MD, key) -> MD:
         return super().__getitem__(key)
 
     @property
-    def pointdata(self) -> PointDataProtocol:
+    def pointdata(self) -> PD:
         """
         Returns the attached pointdata.
         """
@@ -418,14 +419,14 @@ class PolyData(DeepDict, Generic[PD, CD]):
             self._pointdata.container = self
 
     @property
-    def pd(self) -> PointData:
+    def pd(self) -> PD:
         """
         Returns the attached pointdata.
         """
         return self.pointdata
 
     @property
-    def celldata(self) -> CellDataProtocol:
+    def celldata(self) -> CD:
         """
         Returns the attached celldata.
         """
@@ -443,13 +444,13 @@ class PolyData(DeepDict, Generic[PD, CD]):
             self._celldata.container = self
 
     @property
-    def cd(self) -> PolyCell:
+    def cd(self) -> CD:
         """
         Returns the attached celldata.
         """
         return self.celldata
 
-    def lock(self, create_mappers: Optional[bool] = False) -> "PolyData":
+    def lock(self: MD, create_mappers: Optional[bool] = False) -> MD:
         """
         Locks the layout. If a `PolyData` instance is locked,
         missing keys are handled the same way as they would've been handled
@@ -473,7 +474,7 @@ class PolyData(DeepDict, Generic[PD, CD]):
         self._locked = True
         return self
 
-    def unlock(self) -> "PolyData":
+    def unlock(self: MD) -> MD:
         """
         Releases the layout. If a `sigmaepsilon.mesh` instance is not locked,
         a missing key creates a new level in the layout, also setting and
@@ -535,7 +536,7 @@ class PolyData(DeepDict, Generic[PD, CD]):
         return bid2b, cid2bid
 
     @classmethod
-    def read(cls, *args, **kwargs) -> "PolyData":
+    def read(cls: MD, *args, **kwargs) -> MD:
         """
         Reads from a file using PyVista.
 
@@ -551,7 +552,7 @@ class PolyData(DeepDict, Generic[PD, CD]):
         return cls.from_pv(pv.read(*args, **kwargs))
 
     @classmethod
-    def from_meshio(cls, mesh: MeshioMesh) -> "PolyData":
+    def from_meshio(cls: MD, mesh: MeshioMesh) -> MD:
         """
         Returns a :class:`~sigmaepsilon.mesh.polydata.PolyData` instance from a :class:`meshio.Mesh` instance.
 
@@ -591,7 +592,7 @@ class PolyData(DeepDict, Generic[PD, CD]):
         return polydata
 
     @classmethod
-    def from_pv(cls, pvobj: pyVistaLike) -> "PolyData":
+    def from_pv(cls: MD, pvobj: pyVistaLike) -> MD:
         """
         Returns a :class:`~sigmaepsilon.mesh.polydata.PolyData` instance from
         a :class:`pyvista.PolyData` or a :class:`pyvista.UnstructuredGrid`
@@ -866,12 +867,12 @@ class PolyData(DeepDict, Generic[PD, CD]):
         return self.cell_index_manager
 
     @property
-    def parent(self) -> "PolyData":
+    def parent(self: MD) -> MD:
         """Returns the parent of the object."""
         return self._parent
 
     @parent.setter
-    def parent(self, value: "PolyData"):
+    def parent(self, value: MD):
         """Sets the parent."""
         self._parent = value
 
@@ -910,8 +911,8 @@ class PolyData(DeepDict, Generic[PD, CD]):
                 return self.parent.source(key=key)
 
     def blocks(
-        self, *, inclusive: bool = False, blocktype: Any = None, deep: bool = True, **kw
-    ) -> Collection["PolyData"]:
+        self: MD, *, inclusive: bool = False, blocktype: Any = None, deep: bool = True, **kw
+    ) -> Collection[MD]:
         """
         Returns an iterable over nested blocks.
 
@@ -1041,8 +1042,8 @@ class PolyData(DeepDict, Generic[PD, CD]):
         self.celltype = None
 
     def rewire(
-        self, deep: bool = True, imap: ndarray = None, invert: bool = False
-    ) -> "PolyData":
+        self: MD, deep: bool = True, imap: ndarray = None, invert: bool = False
+    ) -> MD:
         """
         Rewires topology according to the index mapping of the source object.
 
@@ -1088,11 +1089,11 @@ class PolyData(DeepDict, Generic[PD, CD]):
         return self
 
     def to_standard_form(
-        self,
+        self: MD,
         inplace: bool = True,
         default_point_fields: dict = None,
         default_cell_fields: dict = None,
-    ) -> "PolyData":
+    ) -> MD:
         """
         Transforms the problem to standard form, which means
         a centralized pointdata and regular cell indices.
@@ -1250,7 +1251,7 @@ class PolyData(DeepDict, Generic[PD, CD]):
         c = self.coords(*args, **kwargs)
         return [minmax(c[:, 0]), minmax(c[:, 1]), minmax(c[:, 2])]
 
-    def surface(self) -> "PolyData":
+    def surface(self: MD) -> MD:
         """
         Returns the surface of the mesh as another `PolyData` instance.
         """
@@ -1321,7 +1322,7 @@ class PolyData(DeepDict, Generic[PD, CD]):
         m = map(lambda b: b.cd.id, blocks)
         return np.concatenate(list(m))
 
-    def detach(self, nummrg: bool = False) -> "PolyData":
+    def detach(self: MD, nummrg: bool = False) -> MD:
         """
         Returns a detached version of the mesh.
 
@@ -1350,7 +1351,7 @@ class PolyData(DeepDict, Generic[PD, CD]):
             pd.nummrg()
         return pd
 
-    def nummrg(self):
+    def nummrg(self: MD) -> MD:
         """
         Merges node numbering.
         """
@@ -1365,8 +1366,8 @@ class PolyData(DeepDict, Generic[PD, CD]):
         return self
 
     def move(
-        self, v: VectorLike, frame: FrameLike = None, inplace: bool = True
-    ) -> "PolyData":
+        self: MD, v: VectorLike, frame: FrameLike = None, inplace: bool = True
+    ) -> MD:
         """
         Moves and returns the object or a deep copy of it.
 
@@ -1403,7 +1404,7 @@ class PolyData(DeepDict, Generic[PD, CD]):
             source.pointdata.x = pc.array
         return subject
 
-    def rotate(self, *args, inplace: bool = True, **kwargs) -> "PolyData":
+    def rotate(self: MD, *args, inplace: bool = True, **kwargs) -> MD:
         """
         Rotates and returns the object. Positional and keyword arguments
         not listed here are forwarded to :class:`sigmaepsilon.math.linalg.frame.ReferenceFrame`
@@ -1440,7 +1441,7 @@ class PolyData(DeepDict, Generic[PD, CD]):
         source.pointdata.x = pc.show(subject.frame)
         return subject
 
-    def spin(self, *args, inplace: bool = True, **kwargs) -> "PolyData":
+    def spin(self: MD, *args, inplace: bool = True, **kwargs) -> MD:
         """
         Like rotate, but rotation happens around centroidal axes. Positional and keyword
         arguments not listed here are forwarded to :class:`sigmaepsilon.math.linalg.frame.ReferenceFrame`
@@ -1624,8 +1625,8 @@ class PolyData(DeepDict, Generic[PD, CD]):
         return centers
 
     def centralize(
-        self, target: FrameLike = None, inplace: bool = True, axes: Iterable = None
-    ) -> "PolyData":
+        self: MD, target: FrameLike = None, inplace: bool = True, axes: Iterable = None
+    ) -> MD:
         """
         Moves all the meshes that belong to the same source such that the current object's
         center will be at the origin of its embedding frame.
