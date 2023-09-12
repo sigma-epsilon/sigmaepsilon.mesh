@@ -17,6 +17,7 @@ from sigmaepsilon.core.meta import ABCMeta_Weak
 from sigmaepsilon.math import atleast1d, atleast2d, ascont
 from sigmaepsilon.math.utils import to_range_1d
 
+from ..typing import GeometryProtocol
 from ..utils import cell_center, cell_center_2d
 from ..utils.utils import global_shape_function_derivatives
 from ..cellapproximator import LagrangianCellApproximator
@@ -60,14 +61,19 @@ class PolyCellGeometry(ABC):
     monomial_evaluator: ClassVar[Optional[Callable]] = None
     quadrature: ClassVar[Optional[dict]] = None
 
-    @classmethod
-    def generate_class(cls, **kwargs) -> "PolyCellGeometry":
+    @staticmethod
+    def generate_class(
+        base: Optional[Union[GeometryProtocol, None]] = None, **kwargs
+    ) -> GeometryProtocol:
         """
         A factory function that returns a custom 1d class.
 
         Parameters
         ----------
-        **kwargs: doct, Optional
+        base: GeometryProtocol, Optional
+            A base class that implements the GeometryProtocol. If not
+            provided, the PolyCellGeometry class serves as a base.
+        **kwargs: dict, Optional
             A dictionary of class attributes and their values.
 
         Example
@@ -82,8 +88,9 @@ class PolyCellGeometry(ABC):
         >>> class CustomClass(PolyCellGeometry1d):
         ...     number_of_nodes = 4
         """
+        base = PolyCellGeometry if not base else base
 
-        class CustomClass(cls):
+        class CustomClass(base):
             ...
 
         for key, value in kwargs.items():
