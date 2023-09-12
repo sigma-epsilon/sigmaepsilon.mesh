@@ -61,9 +61,9 @@ class PolyCellGeometry(ABC):
     monomial_evaluator: ClassVar[Optional[Callable]] = None
     quadrature: ClassVar[Optional[dict]] = None
 
-    @staticmethod
+    @classmethod
     def generate_class(
-        base: Optional[Union[GeometryProtocol, None]] = None, **kwargs
+        cls, base: Optional[Union[GeometryProtocol, None]] = None, **kwargs
     ) -> GeometryProtocol:
         """
         A factory function that returns a custom 1d class.
@@ -72,10 +72,15 @@ class PolyCellGeometry(ABC):
         ----------
         base: GeometryProtocol, Optional
             A base class that implements the GeometryProtocol. If not
-            provided, the PolyCellGeometry class serves as a base.
+            provided, the class serves as a base.
         **kwargs: dict, Optional
             A dictionary of class attributes and their values.
 
+        Notes
+        -----
+        During generation, the generated class only inherits some properties,
+        while others are set to default values to avoid inconsistent attributes.
+        
         Example
         -------
         Define a custom 1d cell with 4 nodes:
@@ -88,10 +93,17 @@ class PolyCellGeometry(ABC):
         >>> class CustomClass(PolyCellGeometry1d):
         ...     number_of_nodes = 4
         """
-        base = PolyCellGeometry if not base else base
+        base = cls if not base else base
 
         class CustomClass(base):
-            ...
+            vtk_cell_id = None
+            meshio_cell_id = None
+            boundary_class = None
+            shape_function_evaluator = None
+            shape_function_matrix_evaluator = None
+            shape_function_derivative_evaluator = None
+            monomial_evaluator = None
+            quadrature = None
 
         for key, value in kwargs.items():
             setattr(CustomClass, key, value)
