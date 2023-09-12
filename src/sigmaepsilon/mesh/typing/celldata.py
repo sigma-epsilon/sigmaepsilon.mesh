@@ -1,38 +1,53 @@
-from typing import Protocol, runtime_checkable, Tuple, ClassVar, Optional
+from typing import (
+    Protocol,
+    runtime_checkable,
+    Tuple,
+    ClassVar,
+    Optional,
+    TypeVar,
+    Generic,
+)
 
 from numpy import ndarray
 
-from .polydata import PolyDataProtocol as MD
-from .pointdata import PointDataProtocol as PD
+from .polydata import PolyDataProtocol
+from .pointdata import PointDataProtocol
 from .geometry import GeometryProtocol
 from ..topoarray import TopologyArray
 
 __all__ = ["CellDataProtocol"]
 
+MD = TypeVar("MD", bound=PolyDataProtocol[PointDataProtocol, "CellDataProtocol"])
+PD = TypeVar("PD", bound=PointDataProtocol)
+
 
 @runtime_checkable
-class CellDataProtocol(Protocol):
+class CellDataProtocol(Generic[MD, PD], Protocol):
     """
     Base class for CellData objects.
     """
 
     label: ClassVar[Optional[str]] = None
     Geometry: ClassVar[GeometryProtocol]
-    
+
     @property
     def id(self) -> ndarray:
         """Ought to return global ids of the cells."""
         ...
-        
+
     @property
     def frames(self) -> ndarray:
         """Ought to return the reference frames of the cells."""
         ...
 
     @property
-    def container(self) -> MD[PD, "CellDataProtocol"]:
-        """Returns the container object of the block."""
+    def pointdata(self) -> PD:
+        """Returns the hosting pointdata."""
     
+    @property
+    def container(self) -> MD:
+        """Returns the container object of the block."""
+
     def coords(self, *args, **kwargs) -> ndarray:
         """Ought to return the coordiantes associated with the object."""
         ...

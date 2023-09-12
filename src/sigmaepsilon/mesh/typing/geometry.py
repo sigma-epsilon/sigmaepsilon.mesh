@@ -22,6 +22,7 @@ class GeometryProtocol(Protocol):
 
     number_of_nodes: ClassVar[int]
     number_of_spatial_dimensions: ClassVar[int]
+    number_of_nodal_variables: ClassVar[int] = 1
     vtk_cell_id: ClassVar[Optional[int]] = None
     meshio_cell_id: ClassVar[Optional[str]] = None
     boundary_class: ClassVar[Optional["GeometryProtocol"]] = None

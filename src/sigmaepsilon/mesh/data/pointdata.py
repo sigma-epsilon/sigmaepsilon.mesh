@@ -10,6 +10,7 @@ from sigmaepsilon.math.linalg import ReferenceFrame as FrameLike
 from sigmaepsilon.math.logical import isboolarray
 from sigmaepsilon.math.linalg.sparse import csr_matrix
 
+from ..typing.abcakwrapper import ABC_AkWrapper
 from .akwrapper import AkWrapper
 from ..space import CartesianFrame, PointCloud
 from ..typing import PolyDataProtocol
@@ -23,7 +24,7 @@ def gen_frame(coords: ndarray) -> CartesianFrame:
     return CartesianFrame(dim=coords.shape[1])
 
 
-class PointData(AkWrapper):
+class PointData(AkWrapper, ABC_AkWrapper):
     """
     A class to handle data related to the pointcloud of a polygonal mesh.
 

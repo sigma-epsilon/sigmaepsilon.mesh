@@ -371,10 +371,10 @@ class PolyCell(Generic[MD, PD], CellData[MD, PD], ABC_PolyCell):
         else:
             if NDIM == 1:
                 rng = np.array([-1, 1]) if rng is None else np.array(rng)
-                pcoords = atleast1d(np.array(pcoords))
-                pcoords = to_range_1d(pcoords, source=rng, target=[0, 1])
+                points = atleast1d(np.array(points))
+                points = to_range_1d(points, source=rng, target=[0, 1])
             else:
-                pcoords = np.array(pcoords)
+                points = np.array(points)
 
         if NDIM == 1:
             res = pcoords_to_coords_1d(points, ecoords)  # (nE * nP, nD)

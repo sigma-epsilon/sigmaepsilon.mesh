@@ -5,6 +5,7 @@ from typing import (
     Iterable,
     Tuple,
     List,
+    Union,
 )
 from abc import abstractclassmethod
 
@@ -41,13 +42,15 @@ class ABC(metaclass=ABCMeta_Weak):
 class PolyCellGeometry(ABC):
     """
     Base class for classes that implement the geometry protocol.
-    
+
     See Also
     --------
     :class:`~sigmaepsilon.mesh.typing.geometry.GeometryProtocol`
     """
+
     number_of_nodes: ClassVar[int]
     number_of_spatial_dimensions: ClassVar[int]
+    number_of_nodal_variables = 1
     vtk_cell_id: ClassVar[Optional[int]] = None
     meshio_cell_id: ClassVar[Optional[str]] = None
     boundary_class: ClassVar[Optional["PolyCellGeometry"]] = None
@@ -249,8 +252,6 @@ class PolyCellGeometry(ABC):
             are the number of evaluation points, degrees of freedom per node
             and nodes per cell.
         """
-        nDOFN = getattr(cls, "NDOFN", N) if N is None else N
-
         if cls.number_of_spatial_dimensions == 1:
             rng = np.array([-1, 1]) if rng is None else np.array(rng)
             pcoords = atleast1d(np.array(pcoords))
@@ -264,15 +265,13 @@ class PolyCellGeometry(ABC):
         if cls.number_of_spatial_dimensions == 3:
             if len(pcoords.shape) == 1:
                 pcoords = atleast2d(pcoords, front=True)
-                if nDOFN:
-                    return cls.shape_function_matrix_evaluator(pcoords, nDOFN).astype(
-                        float
-                    )
+                if N:
+                    return cls.shape_function_matrix_evaluator(pcoords, N).astype(float)
                 else:
                     return cls.shape_function_matrix_evaluator(pcoords).astype(float)
 
-        if nDOFN:
-            return cls.shape_function_matrix_evaluator(pcoords, nDOFN).astype(float)
+        if N:
+            return cls.shape_function_matrix_evaluator(pcoords, N).astype(float)
         else:
             return cls.shape_function_matrix_evaluator(pcoords).astype(float)
 
@@ -291,7 +290,10 @@ class PolyCellGeometry(ABC):
 
     @classmethod
     def generate_class_functions(
-        cls, return_symbolic: bool = True, update: bool = True
+        cls,
+        return_symbolic: Optional[bool] = True,
+        update: Optional[bool] = True,
+        N: Optional[Union[int, None]] = None,
     ) -> Tuple:
         """
         Generates functions to evaulate shape functions, their derivatives
@@ -326,7 +328,7 @@ class PolyCellGeometry(ABC):
         """
         nN = cls.number_of_nodes
         nD = cls.number_of_spatial_dimensions
-        nDOF = getattr(cls, "NDOFN", 3)
+        nX = cls.number_of_nodal_variables
         locvars, monoms = cls.polybase()
         monoms.pop(0)
         lcoords = cls.master_coordinates()
@@ -357,7 +359,7 @@ class PolyCellGeometry(ABC):
             r = np.stack([_shpf(p[i])[0] for i in range(len(p))])
             return ascont(r)
 
-        def shpmf(p: ndarray, ndof: int = nDOF) -> ndarray:
+        def shpmf(p: ndarray, ndof: int = nX) -> ndarray:
             """
             Evaluates the shape function matrix at multiple points
             in the master domain.
@@ -468,7 +470,7 @@ class PolyCellGeometry1d(PolyCellGeometry):
                 "Attribute 'number_of_nodes' of the cell must be set to a positive integer"
             )
         locvars = r = symbols("r", real=True)
-        monoms = [r ** i for i in range(cls.number_of_nodes)]
+        monoms = [r**i for i in range(cls.number_of_nodes)]
         return [locvars], monoms
 
     @classmethod
