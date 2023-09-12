@@ -29,7 +29,6 @@ from sigmaepsilon.math import atleast1d, minmax, repeat
 
 from ..typing import (
     PointDataProtocol,
-    PointDataProtocol,
     CellDataProtocol,
     PolyDataProtocol as PDP,
 )
