@@ -2231,7 +2231,7 @@ class PolyData(DeepDict, Generic[PD, CD]):
                         theme = themes.DarkTheme()
                         theme.lighting = False
                     elif theme == "bw":
-                        theme = themes.DefaultTheme()
+                        theme = themes.Theme()
                         theme.color = "black"
                         theme.lighting = True
                         theme.edge_color = "white"
