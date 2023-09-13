@@ -15,7 +15,7 @@ class PointDataProtocol(Protocol):
 
     @property
     def id(self) -> ndarray:
-        """Ought to return global ids of the points."""
+        """Ought to return global ids of the points as an 1d integer array."""
         ...
 
     @property
@@ -25,5 +25,6 @@ class PointDataProtocol(Protocol):
 
     @property
     def x(self) -> ndarray:
-        """Ought to return the coordinates of the associated pointcloud."""
+        """Ought to return the coordinates of the associated pointcloud
+        as a 2d float array, where the first axis runs along the points."""
         ...

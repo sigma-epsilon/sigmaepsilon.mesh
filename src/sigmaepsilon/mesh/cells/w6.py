@@ -4,7 +4,7 @@ from numpy import ndarray
 from sympy import symbols
 
 from .geometry import PolyCellGeometry3d
-from ..data.cellbase import PolyCell
+from ..data.polycell import PolyCell
 from ..utils.cells.numint import Gauss_Legendre_Wedge_3x2
 from ..utils.cells.utils import volumes
 from ..utils.utils import cells_coords

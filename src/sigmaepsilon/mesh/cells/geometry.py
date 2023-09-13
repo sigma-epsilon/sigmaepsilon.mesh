@@ -80,7 +80,7 @@ class PolyCellGeometry(ABC):
         -----
         During generation, the generated class only inherits some properties,
         while others are set to default values to avoid inconsistent attributes.
-        
+
         Example
         -------
         Define a custom 1d cell with 4 nodes:
@@ -133,15 +133,15 @@ class PolyCellGeometry(ABC):
 
     @classmethod
     def shape_function_values(
-        cls, pcoords: ndarray, *, rng: Iterable = None
+        cls, x: Union[float, Iterable[float]], *, rng: Iterable = None
     ) -> ndarray:
         """
         Evaluates the shape functions at the specified locations.
 
         Parameters
         ----------
-        pcoords: float or Iterable[float]
-            Locations of the evaluation points.
+        x: Union[float, Iterable[float]]
+            Locations of the evaluation points in the master domain.
         rng: Iterable, Optional
             The range in which the locations ought to be understood, only for 1d
             cells. Typically [0, 1] or [-1, 1]. Default is [0, 1].
@@ -155,25 +155,25 @@ class PolyCellGeometry(ABC):
         """
         if cls.number_of_spatial_dimensions == 1:
             rng = np.array([-1, 1]) if rng is None else np.array(rng)
-            pcoords = atleast1d(np.array(pcoords))
-            pcoords = to_range_1d(pcoords, source=rng, target=[-1, 1])
+            x = atleast1d(np.array(x))
+            x = to_range_1d(x, source=rng, target=[-1, 1])
         else:
-            pcoords = np.array(pcoords)
+            x = np.array(x)
 
         if cls.shape_function_evaluator is None:
             cls.generate_class_functions(update=True)
 
         if cls.number_of_spatial_dimensions == 3:
-            if len(pcoords.shape) == 1:
-                pcoords = atleast2d(pcoords, front=True)
-                return cls.shape_function_evaluator(pcoords).astype(float)
+            if len(x.shape) == 1:
+                x = atleast2d(x, front=True)
+                return cls.shape_function_evaluator(x).astype(float)
 
-        return cls.shape_function_evaluator(pcoords).astype(float)
+        return cls.shape_function_evaluator(x).astype(float)
 
     @classmethod
     def shape_function_derivatives(
         cls,
-        pcoords: Iterable[float],
+        x: Union[float, Iterable[float]],
         *,
         jac: ndarray = None,
         dshp: ndarray = None,
@@ -186,7 +186,7 @@ class PolyCellGeometry(ABC):
 
         Parameters
         ----------
-        pcoords: Iterable[float]
+        x: Union[float, Iterable[float]]
             Locations of the evaluation points.
         jac: Iterable, Optional
             The jacobian matrix as a float array of shape (nE, nP, nD, nD), evaluated for
@@ -213,50 +213,44 @@ class PolyCellGeometry(ABC):
             If 'jac' is provided, the result is of shape (nE, nP, nNE, nD),
             where nE is the number of cells in the block.
         """
-        if pcoords is not None:
+        if x is not None:
             if cls.number_of_spatial_dimensions == 1:
                 rng = np.array([-1, 1]) if rng is None else np.array(rng)
-                pcoords = atleast1d(np.array(pcoords))
-                pcoords = to_range_1d(pcoords, source=rng, target=[-1, 1])
+                x = atleast1d(np.array(x))
+                x = to_range_1d(x, source=rng, target=[-1, 1])
             else:
-                pcoords = np.array(pcoords)
+                x = np.array(x)
 
         if jac is None:
-            pcoords = (
-                np.array(pcoords) if pcoords is not None else cls.master_coordinates()
-            )
+            x = np.array(x) if x is not None else cls.master_coordinates()
 
             if cls.shape_function_derivative_evaluator is None:
                 cls.generate_class_functions(update=True)
 
             if cls.number_of_spatial_dimensions == 3:
-                if len(pcoords.shape) == 1:
-                    pcoords = atleast2d(pcoords, front=True)
-                    return cls.shape_function_derivative_evaluator(pcoords).astype(
-                        float
-                    )
+                if len(x.shape) == 1:
+                    x = atleast2d(x, front=True)
+                    return cls.shape_function_derivative_evaluator(x).astype(float)
 
-            return cls.shape_function_derivative_evaluator(pcoords).astype(float)
+            return cls.shape_function_derivative_evaluator(x).astype(float)
         else:
-            pcoords = (
-                np.array(pcoords) if pcoords is not None else cls.master_coordinates()
-            )
+            x = np.array(x) if x is not None else cls.master_coordinates()
 
             if dshp is None:
-                dshp = cls.shape_function_derivatives(pcoords)
+                dshp = cls.shape_function_derivatives(x)
 
             return global_shape_function_derivatives(dshp, jac)
 
     @classmethod
     def shape_function_matrix(
-        cls, pcoords: ndarray, *, rng: Iterable = None, N: int = None
+        cls, x: Union[float, Iterable[float]], *, rng: Iterable = None, N: int = None
     ) -> ndarray:
         """
         Evaluates the shape function matrix at the specified locations.
 
         Parameters
         ----------
-        pcoords: numpy.ndarray
+        x: Union[float, Iterable[float]]
             Locations of the evaluation points.
         rng: Iterable, Optional
             The range in which the locations ought to be understood, only for 1d
@@ -273,26 +267,26 @@ class PolyCellGeometry(ABC):
         """
         if cls.number_of_spatial_dimensions == 1:
             rng = np.array([-1, 1]) if rng is None else np.array(rng)
-            pcoords = atleast1d(np.array(pcoords))
-            pcoords = to_range_1d(pcoords, source=rng, target=[-1, 1])
+            x = atleast1d(np.array(x))
+            x = to_range_1d(x, source=rng, target=[-1, 1])
         else:
-            pcoords = np.array(pcoords)
+            x = np.array(x)
 
         if cls.shape_function_matrix_evaluator is None:
             cls.generate_class_functions(update=True)
 
         if cls.number_of_spatial_dimensions == 3:
-            if len(pcoords.shape) == 1:
-                pcoords = atleast2d(pcoords, front=True)
+            if len(x.shape) == 1:
+                x = atleast2d(x, front=True)
                 if N:
-                    return cls.shape_function_matrix_evaluator(pcoords, N).astype(float)
+                    return cls.shape_function_matrix_evaluator(x, N).astype(float)
                 else:
-                    return cls.shape_function_matrix_evaluator(pcoords).astype(float)
+                    return cls.shape_function_matrix_evaluator(x).astype(float)
 
         if N:
-            return cls.shape_function_matrix_evaluator(pcoords, N).astype(float)
+            return cls.shape_function_matrix_evaluator(x, N).astype(float)
         else:
-            return cls.shape_function_matrix_evaluator(pcoords).astype(float)
+            return cls.shape_function_matrix_evaluator(x).astype(float)
 
     def polybase(cls) -> Tuple[List]:
         """
@@ -489,7 +483,7 @@ class PolyCellGeometry1d(PolyCellGeometry):
                 "Attribute 'number_of_nodes' of the cell must be set to a positive integer"
             )
         locvars = r = symbols("r", real=True)
-        monoms = [r**i for i in range(cls.number_of_nodes)]
+        monoms = [r ** i for i in range(cls.number_of_nodes)]
         return [locvars], monoms
 
     @classmethod

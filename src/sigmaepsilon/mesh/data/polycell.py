@@ -61,11 +61,15 @@ if __haspyvista__:
     import pyvista as pv
 
 MapLike = Union[ndarray, MutableMapping]
-PD = TypeVar("PD", bound=PointDataProtocol)
-MD = TypeVar("MD", bound=PolyDataProtocol)
+PointDataLike = TypeVar("PointDataLike", bound=PointDataProtocol)
+MeshDataLike = TypeVar("MeshDataLike", bound=PolyDataProtocol)
 
 
-class PolyCell(Generic[MD, PD], CellData[MD, PD], ABC_PolyCell):
+class PolyCell(
+    Generic[MeshDataLike, PointDataLike],
+    CellData[MeshDataLike, PointDataLike],
+    ABC_PolyCell,
+):
     """
     A subclass of :class:`~sigmaepsilon.mesh.celldata.CellData` as a base class
     for all cell containers.

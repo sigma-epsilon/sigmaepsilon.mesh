@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from .geometry import PolyCellGeometry1d
-from ..data.cellbase import PolyCell
+from ..data.polycell import PolyCell
 from ..utils.cells.l2 import (
     shp_L2_multi,
     dshp_L2_multi,

@@ -4,7 +4,7 @@ from numpy import ndarray
 from sympy import symbols
 
 from .geometry import PolyCellGeometry3d
-from ..data.cellbase import PolyCell
+from ..data.polycell import PolyCell
 from ..utils.cells.tet10 import (
     monoms_TET10,
 )

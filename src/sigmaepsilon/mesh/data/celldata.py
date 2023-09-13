@@ -18,11 +18,11 @@ from ..utils import (
     distribute_nodal_data_sparse,
 )
 
-PD = TypeVar("PD", bound=PointDataProtocol)
-MD = TypeVar("MD", bound=PolyDataProtocol)
+PointDataLike = TypeVar("PointDataLike", bound=PointDataProtocol)
+PolyDataLike = TypeVar("PolyDataLike", bound=PolyDataProtocol)
 
 
-class CellData(Generic[MD, PD], AkWrapper):
+class CellData(Generic[PolyDataLike, PointDataLike], AkWrapper):
     """
     A class to handle data related to the cells of a polygonal mesh.
 
@@ -71,7 +71,7 @@ class CellData(Generic[MD, PD], AkWrapper):
     def __init__(
         self,
         *args,
-        pointdata: PD = None,
+        pointdata: PointDataLike = None,
         wrap: AwkwardLike = None,
         topo: ndarray = None,
         fields: dict = None,
@@ -80,7 +80,7 @@ class CellData(Generic[MD, PD], AkWrapper):
         areas: Union[ndarray, float] = None,
         t: Union[ndarray, float] = None,
         db: AwkwardLike = None,
-        container: MD = None,
+        container: PolyDataLike = None,
         i: ndarray = None,
         **kwargs,
     ):
@@ -220,9 +220,9 @@ class CellData(Generic[MD, PD], AkWrapper):
     @property
     def db(self) -> AwkwardLike:
         return self._wrapped
-    
+
     @property
-    def pointdata(self) -> PD:
+    def pointdata(self) -> PointDataLike:
         """
         Returns the attached point database. This is what
         the topology of the cells are referring to.
@@ -230,7 +230,7 @@ class CellData(Generic[MD, PD], AkWrapper):
         return self._pointdata
 
     @pointdata.setter
-    def pointdata(self, value: PD):
+    def pointdata(self, value: PointDataLike):
         """
         Sets the attached point database. This is what
         the topology of the cells are referring to.
@@ -241,7 +241,7 @@ class CellData(Generic[MD, PD], AkWrapper):
         self._pointdata = value
 
     @property
-    def pd(self) -> PD:
+    def pd(self) -> PointDataLike:
         """
         Returns the attached point database. This is what
         the topology of the cells are referring to.
@@ -249,17 +249,17 @@ class CellData(Generic[MD, PD], AkWrapper):
         return self.pointdata
 
     @pd.setter
-    def pd(self, value: PD):
+    def pd(self, value: PointDataLike):
         """Sets the attached pointdata."""
         self.pointdata = value
 
     @property
-    def container(self) -> MD:
+    def container(self) -> PolyDataLike:
         """Returns the container object of the block."""
         return self._container
 
     @container.setter
-    def container(self, value: MD) -> None:
+    def container(self, value: PolyDataLike) -> None:
         """Sets the container of the block."""
         if not isinstance(value, PolyDataProtocol):
             raise TypeError("'value' must be a PolyData instance")
@@ -375,8 +375,8 @@ class CellData(Generic[MD, PD], AkWrapper):
         if isinstance(value, bool):
             value = np.full(len(self), value, dtype=bool)
         self._wrapped[self._dbkey_activity_] = value
-        
-    def root(self) -> MD:
+
+    def root(self) -> PolyDataLike:
         """
         Returns the top level container of the model the block is
         the part of.
@@ -384,7 +384,7 @@ class CellData(Generic[MD, PD], AkWrapper):
         c = self.container
         return None if c is None else c.root()
 
-    def source(self) -> MD:
+    def source(self) -> PolyDataLike:
         """
         Retruns the source of the cells. This is the PolyData block
         that stores the PointData object the topology of the cells

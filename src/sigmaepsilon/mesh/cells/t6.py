@@ -5,7 +5,7 @@ from numpy import ndarray
 from sympy import symbols
 
 from .geometry import PolyCellGeometry2d
-from ..data.cellbase import PolyCell
+from ..data.polycell import PolyCell
 from ..utils.utils import cells_coords
 from ..utils.cells.t6 import (
     shp_T6_multi,

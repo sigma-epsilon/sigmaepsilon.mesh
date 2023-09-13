@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from .geometry import PolyCellGeometry1d
-from ..data.cellbase import PolyCell
+from ..data.polycell import PolyCell
 from ..utils.cells.numint import Gauss_Legendre_Line_Grid
 from ..utils.cells.l3 import monoms_L3
 

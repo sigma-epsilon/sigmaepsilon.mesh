@@ -10,29 +10,30 @@ from ..topoarray import TopologyArray
 __all__ = ["PolyDataProtocol"]
 
 
-PD = TypeVar("PD")
-CD = TypeVar("CD")
+T = TypeVar("T", bound="PolyDataProtocol")
+PointDataLike = TypeVar("PointDataLike")
+PolyCellLike = TypeVar("PolyCellLike")
 
 
 @runtime_checkable
-class PolyDataProtocol(Generic[PD, CD], Protocol):
+class PolyDataProtocol(Generic[PointDataLike, PolyCellLike], Protocol):
     """Protocol for polygonal meshes."""
 
     @property
     def frame(self) -> FrameLike:
         """Ought to return the frame of the attached pointdata"""
-        
+
     @property
-    def pointdata(self) -> PD:
+    def pointdata(self) -> PointDataLike:
         """Ought to return the attached pointdata."""
         ...
 
     @property
-    def celldata(self) -> CD:
+    def celldata(self) -> PolyCellLike:
         """Ought to return the attached celldata."""
         ...
 
-    def source(self, *args, **kwargs) -> Union["PolyDataProtocol", None]:
+    def source(self: T, *args, **kwargs) -> Union[T, None]:
         """Ought to return the object that holds onto point data."""
         ...
 
@@ -51,13 +52,13 @@ class PolyDataProtocol(Generic[PD, CD], Protocol):
         """
         ...
 
-    def pointblocks(self, *args, **kwargs) -> Iterable["PolyDataProtocol"]:
+    def pointblocks(self: T, *args, **kwargs) -> Iterable[T]:
         """
         Ought to return PolyData blocks with attached PointData.
         """
         ...
 
-    def cellblocks(self, *args, **kwargs) -> Iterable["PolyDataProtocol"]:
+    def cellblocks(self: T, *args, **kwargs) -> Iterable[T]:
         """
         Ought to return PolyData blocks with attached CellData.
         """

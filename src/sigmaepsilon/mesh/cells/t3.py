@@ -5,7 +5,7 @@ from numpy import ndarray
 from sympy import symbols
 
 from .geometry import PolyCellGeometry2d
-from ..data.cellbase import PolyCell
+from ..data.polycell import PolyCell
 from ..utils.cells.numint import Gauss_Legendre_Tri_1
 from ..utils.cells.t3 import (
     shp_T3_multi,
