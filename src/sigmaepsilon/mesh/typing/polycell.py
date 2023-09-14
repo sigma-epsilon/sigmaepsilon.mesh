@@ -1,11 +1,4 @@
-from typing import (
-    Protocol,
-    Tuple,
-    ClassVar,
-    Optional,
-    TypeVar,
-    Generic,
-)
+from typing import Tuple, ClassVar, Optional, TypeVar, Generic, Protocol
 
 from numpy import ndarray
 
@@ -24,8 +17,8 @@ PointDataLike = TypeVar("PointDataLike", bound=PointDataProtocol)
 
 
 class PolyCellProtocol(
-    Generic[MeshDataLike, PointDataLike],
     CellDataProtocol[MeshDataLike, PointDataLike],
+    Generic[MeshDataLike, PointDataLike],
     Protocol,
 ):
     """

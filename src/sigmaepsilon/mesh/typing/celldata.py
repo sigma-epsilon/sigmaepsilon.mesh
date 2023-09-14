@@ -2,19 +2,20 @@ from typing import (
     Protocol,
     runtime_checkable,
     TypeVar,
-    Generic,
 )
 
 from numpy import ndarray
 
+from .pointdata import PointDataProtocol
+
 __all__ = ["CellDataProtocol"]
 
 MeshDataLike = TypeVar("MeshDataLike")
-PointDataLike = TypeVar("PointDataLike")
+PointDataLike = TypeVar("PointDataLike", bound=PointDataProtocol)
 
 
 @runtime_checkable
-class CellDataProtocol(Generic[MeshDataLike, PointDataLike], Protocol):
+class CellDataProtocol(Protocol[MeshDataLike, PointDataLike]):
     """
     Base class for CellData objects.
     """

@@ -16,7 +16,9 @@ PolyCellLike = TypeVar("PolyCellLike")
 
 
 @runtime_checkable
-class PolyDataProtocol(Generic[PointDataLike, PolyCellLike], Protocol):
+class PolyDataProtocol(
+    Protocol[PointDataLike, PolyCellLike], Generic[PointDataLike, PolyCellLike]
+):
     """Protocol for polygonal meshes."""
 
     @property
