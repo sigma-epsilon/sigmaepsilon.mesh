@@ -7,7 +7,7 @@ import sigmaepsilon.mesh
 from sigmaepsilon.mesh.triang import (
     triangulate,
     triobj_to_mpl,
-    _get_triobj_data,
+    get_triobj_data,
     _is_triobj,
 )
 
@@ -33,7 +33,7 @@ class TestTriangulate(unittest.TestCase):
         )
         self.assertTrue(_is_triobj(triobj))
         coords, topo, triobj = triangulate(triobj)
-        coords, topo = _get_triobj_data(triobj)
+        coords, topo = get_triobj_data(triobj)
         self.assertTrue(isinstance(triobj, triobj_mpl))
         triobj = triobj_to_mpl(triobj)
         self.assertTrue(isinstance(triobj, triobj_mpl))
@@ -44,7 +44,7 @@ class TestTriangulate(unittest.TestCase):
         )
         self.assertTrue(_is_triobj(triobj))
         coords, topo, triobj = triangulate(triobj)
-        coords, topo = _get_triobj_data(triobj)
+        coords, topo = get_triobj_data(triobj)
         self.assertTrue(isinstance(triobj, triobj_scipy))
         triobj = triobj_to_mpl(triobj)
         self.assertTrue(isinstance(triobj, triobj_mpl))
@@ -55,7 +55,7 @@ class TestTriangulate(unittest.TestCase):
         )
         self.assertTrue(_is_triobj(triobj))
         coords, topo, triobj = triangulate(triobj)
-        coords, topo = _get_triobj_data(triobj)
+        coords, topo = get_triobj_data(triobj)
         triobj = triobj_to_mpl(triobj)
         self.assertTrue(isinstance(triobj, triobj_mpl))
 
