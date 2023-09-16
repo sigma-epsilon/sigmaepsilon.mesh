@@ -2357,7 +2357,7 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
         elif backend == "pyvista":
             return self.pvplot(notebook=notebook, config_key=config_key, **kwargs)
 
-    def __join_parent__(self, parent: DeepDict, key: Hashable = None):
+    def __join_parent__(self, parent: DeepDict, key: Hashable = None) -> None:
         super().__join_parent__(parent, key)
         if self.celldata is not None:
             GIDs = self.root().cim.generate_np(len(self.celldata))
@@ -2366,7 +2366,7 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
                 self.celldata.pd = self.source().pd
             self.celldata.container = self
 
-    def __leave_parent__(self):
+    def __leave_parent__(self) -> None:
         if self.celldata is not None:
             self.root().cim.recycle(self.celldata.id)
             dbkey = self.celldata._dbkey_id_
