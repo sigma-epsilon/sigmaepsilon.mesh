@@ -34,6 +34,10 @@ class PolyDataProtocol(
     def celldata(self) -> PolyCellLike:
         """Ought to return the attached celldata."""
         ...
+        
+    def root(self: T, *args, **kwargs) -> T:
+        """Ought to return the top level container."""
+        ...
 
     def source(self: T, *args, **kwargs) -> Union[T, None]:
         """Ought to return the object that holds onto point data."""
