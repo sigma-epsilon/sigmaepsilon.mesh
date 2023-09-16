@@ -1,6 +1,4 @@
-packaging
 toml
-
 linkeddeepdict>=1.1.0
 sigmaepsilon.core>=1.1.0
 sigmaepsilon.math>=1.0.0
