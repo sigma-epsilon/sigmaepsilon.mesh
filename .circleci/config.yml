@@ -80,6 +80,12 @@ jobs:
           name: Install package for testing
           command: pip install ".[test, dev]"
       - run:
+          name: Refresh packages
+          command: sudo apt-get update
+      - run:
+          name: Install xvfb for offline rendering
+          command: sudo apt-get install libgl1-mesa-glx xvfb
+      - run:
           name: Run tests and generate coverage report
           command: |
             chmod +x ./run_pytest_cov.sh
