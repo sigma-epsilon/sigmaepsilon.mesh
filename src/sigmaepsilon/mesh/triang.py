@@ -104,7 +104,7 @@ def triangulate(
             triobj = args[0]
 
     if triobj is not None:
-        points, triangles = _get_triobj_data(triobj, *args, **kwargs)
+        points, triangles = get_triobj_data(triobj, *args, **kwargs)
     else:
         # create points from input
         if points is None:
@@ -189,13 +189,13 @@ def triobj_to_mpl(triobj, *args, **kwargs) -> tri.Triangulation:
     if isinstance(triobj, tri.Triangulation):
         return triobj
     else:
-        points, triangles = _get_triobj_data(triobj, *args, **kwargs)
+        points, triangles = get_triobj_data(triobj, *args, **kwargs)
         kwargs["backend"] = "mpl"
         _, _, triang = triangulate(*args, points=points, triangles=triangles, **kwargs)
         return triang
 
 
-def _get_triobj_data(
+def get_triobj_data(
     obj: Any = None, *_, trim2d: bool = True, **__
 ) -> Tuple[np.ndarray]:
     coords, topo = None, None
