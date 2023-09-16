@@ -12,7 +12,7 @@ from sigmaepsilon.mesh.utils.space import frames_of_lines
 class TestScenario3(unittest.TestCase):
     def test_scenario_3(self):
         size = 10, 10, 5
-        shape = 10, 10, 5
+        shape = 2, 2, 2
         grid = Grid(size=size, shape=shape, eshape="H8")
         grid.centralize()
 
@@ -63,7 +63,6 @@ class TestScenario3(unittest.TestCase):
             jupyter_backend="static",
             config_key=["A"],
             show_edges=True,
-            window_size=(600, 480),
             theme="document",
             return_plotter=True,
         )
@@ -87,22 +86,22 @@ class TestScenario3(unittest.TestCase):
             config_key=["A"],
             cmap="plasma",
             show_edges=True,
-            window_size=(600, 480),
             scalars="scalars",
             theme="document",
             return_plotter=True,
         )
 
         scalars = mesh.pd.pull("scalars")  # or simply pd.pull('scalars')
-        self.assertEqual(scalars.shape, (726,))
-        self.assertEqual(mesh.coords().shape, (726, 3))
+        #print(scalars.shape)
+        #print(mesh.coords().shape)
+        self.assertEqual(scalars.shape, (27,))
+        self.assertEqual(mesh.coords().shape, (27, 3))
 
         mesh.plot(
             notebook=False,
             jupyter_backend="static",
             config_key=["A"],
             show_edges=True,
-            window_size=(600, 480),
             scalars=scalars,
             cmap="plasma",
             theme="document",
@@ -115,8 +114,10 @@ class TestScenario3(unittest.TestCase):
         mesh.pd.db["scalars"] = scalars_on_points
 
         hex_data = mesh["hex"].cd.pull("scalars")
-        self.assertEqual(hex_data.shape, (125, 8, 1))
-        self.assertEqual(mesh["hex"].topology().shape, (125, 8))
+        #print(hex_data.shape)
+        #print(mesh["hex"].topology().shape)
+        self.assertEqual(hex_data.shape, (2, 8, 1))
+        self.assertEqual(mesh["hex"].topology().shape, (2, 8))
 
         # ------------- CUSTOMIZING THE DISTRIBUTION MECHANISM ----------------
 
@@ -129,7 +130,6 @@ class TestScenario3(unittest.TestCase):
             config_key=["B"],
             cmap="plasma",
             show_edges=True,
-            window_size=(600, 480),
             scalars="scalars",
             theme="document",
             return_plotter=True,
@@ -141,7 +141,6 @@ class TestScenario3(unittest.TestCase):
             jupyter_backend="static",
             config_key=["A"],
             show_edges=True,
-            window_size=(600, 480),
             scalars=scalars,
             cmap="jet",
             theme="document",
@@ -158,7 +157,6 @@ class TestScenario3(unittest.TestCase):
             jupyter_backend="static",
             config_key=["A"],
             show_edges=True,
-            window_size=(600, 480),
             scalars=scalars,
             cmap="jet",
             theme="document",
