@@ -11,7 +11,10 @@ from sigmaepsilon.math import minmax
 
 import numpy as np
 from k3d.colormaps import matplotlib_color_maps
+import pyvista
 from pyvista import themes
+
+pyvista.start_xvfb()
 
 
 class TestPolyDataPlot(unittest.TestCase):

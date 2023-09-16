@@ -8,6 +8,11 @@ from sigmaepsilon.mesh.cells import H8, TET4, L2
 from sigmaepsilon.mesh.utils.topology import H8_to_TET4, H8_to_L2
 from sigmaepsilon.mesh.utils.space import frames_of_lines
 
+import pyvista
+
+
+pyvista.start_xvfb()
+
 
 class TestScenario3(unittest.TestCase):
     def test_scenario_3(self):
