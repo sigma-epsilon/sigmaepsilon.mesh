@@ -1,4 +1,13 @@
-from typing import Tuple, ClassVar, Optional, TypeVar, Generic, Protocol
+from typing import (
+    Tuple,
+    ClassVar,
+    Optional,
+    TypeVar,
+    Generic,
+    Protocol,
+    Union,
+    Iterable,
+)
 
 from numpy import ndarray
 
@@ -55,4 +64,15 @@ class PolyCellProtocol(
 
     def jacobian_matrix(self) -> ndarray:
         """Ought to return meaninful measures for each cell."""
+        ...
+
+    def loc_to_glob(
+        self, x: Union[Iterable, ndarray], ec: Optional[Union[ndarray, None]] = None
+    ) -> ndarray:
+        """
+        Maps local coordinates in the master domain to global cooridnates.
+        The basis of the transformation is 'ec', which is the node coordinates 
+        array of the cells of shape (nE, nNE, nD), where 'nE', 'nNE' and 'nD' are
+        the number of cells, nodes per cell and local spatial dimensions.
+        """
         ...
