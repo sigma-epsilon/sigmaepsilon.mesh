@@ -489,7 +489,9 @@ class PolyCell(
         """
         raise NotImplementedError
 
-    def loc_to_glob(self, x: Union[Iterable, ndarray]) -> ndarray:
+    def loc_to_glob(
+        self, x: Union[Iterable, ndarray], ec: Optional[Union[ndarray, None]] = None
+    ) -> ndarray:
         """
         Returns the global coordinates of the input points for each
         cell in the block. The input 'x' can describe a single (1d array),
@@ -505,6 +507,10 @@ class PolyCell(
         x: Iterable or numpy.ndarray
             A single point as an 1d array, or a collection of points
             as a 2d array.
+        ec: numpy.ndarray, Optional
+            Element coordinates as a 3d array of shape (nE, nNE, nD).
+            Default is None, in which case the global coordinates of the
+            cells are used.
 
         Returns
         -------
@@ -513,9 +519,10 @@ class PolyCell(
             nE is the number of cells in the block and nD is the number of spatial dimensions.
         """
         x = atleast2d(x, front=True)
-        shp = self.Geometry.shape_function_values(x)
-        ecoords = self.points_of_cells()
-        return _loc_to_glob_bulk_(shp.T, ecoords)
+        shp = self.Geometry.shape_function_values(x)  # (nP, nNE)
+        if ec is None:
+            ec = self.points_of_cells()
+        return _loc_to_glob_bulk_(shp, ec)
 
     def pip(
         self,
