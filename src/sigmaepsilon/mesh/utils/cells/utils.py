@@ -28,9 +28,9 @@ def _loc_to_glob_bulk_(shp: ndarray, gcoords: ndarray) -> ndarray:
 
     Parameters
     ----------
-    shp : numpy.ndarray
+    shp: numpy.ndarray
         The shape functions evaluated at a 'nP' number of local coordinates.
-    gcoords : numpy.ndarray
+    gcoords: numpy.ndarray
         3D array of shape (nE, nNE, nD) containing coordinates global for every node of
         a single element.
 
@@ -39,7 +39,7 @@ def _loc_to_glob_bulk_(shp: ndarray, gcoords: ndarray) -> ndarray:
     numpy.ndarray
         Array of global cooridnates of shape (nE, nP, nD).
     """
-    nP = shp.shape[-1]
+    nP = shp.shape[0]
     nE, _, nD = gcoords.shape
     res = np.zeros((nE, nP, nD), shp.dtype)
     for i in prange(nE):
