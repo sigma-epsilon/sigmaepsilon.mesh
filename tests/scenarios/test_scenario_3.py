@@ -1,5 +1,6 @@
+import unittest, sys
+
 import numpy as np
-import unittest
 
 from sigmaepsilon.mesh import PolyData, PointData, LineData
 from sigmaepsilon.mesh.space import CartesianFrame
@@ -10,8 +11,8 @@ from sigmaepsilon.mesh.utils.space import frames_of_lines
 
 import pyvista
 
-
-pyvista.start_xvfb()
+if sys.platform.startswith("linux"):
+    pyvista.start_xvfb()
 
 
 class TestScenario3(unittest.TestCase):

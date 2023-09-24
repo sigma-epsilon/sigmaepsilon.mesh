@@ -1,4 +1,4 @@
-import unittest
+import unittest, sys
 
 from sigmaepsilon.mesh.space import CartesianFrame
 from sigmaepsilon.mesh.recipes import cylinder
@@ -14,7 +14,9 @@ from k3d.colormaps import matplotlib_color_maps
 import pyvista
 from pyvista import themes
 
-pyvista.start_xvfb()
+
+if sys.platform.startswith("linux"):
+    pyvista.start_xvfb()
 
 
 class TestPolyDataPlot(unittest.TestCase):
