@@ -84,7 +84,7 @@ class LagrangianCellApproximator:
 
     Parameters
     ----------
-    cell_class: :class:`~sigmaepsilon.mesh.core.cell.PolyCell`
+    cell_class: :class:`~sigmaepsilon.mesh.data.polycell.PolyCell`
         A Lagrangian cell class that provides the batteries for interpolation.
         The capabilities of this class determines the nature and accuracy of the
         interpolation/extrapolation.

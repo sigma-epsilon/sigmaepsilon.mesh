@@ -10,10 +10,13 @@ from sigmaepsilon.core.wrapping import Wrapper
 AwkwardLike = Union[akArray, akRecord]
 
 
+__all__ = ["AkWrapper"]
+
+
 class AkWrapper(Wrapper):
     """
     A wrapper for Awkward objects. This is the base class of most
-    database classes in DewLoosh projects.
+    database classes in SigmaEpsilon projects.
     """
 
     _attr_map_ = {}

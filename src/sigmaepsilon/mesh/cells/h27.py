@@ -112,7 +112,6 @@ class H27(PolyCell):
             Returns
             -------
             numpy.ndarray
-
             """
             return np.array(
                 [

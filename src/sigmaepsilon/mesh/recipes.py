@@ -128,7 +128,7 @@ def cylinder(
 
     Returns
     -------
-    :class:`~sigmaepsilon.mesh.polydata.PolyData`
+    :class:`~sigmaepsilon.mesh.data.polydata.PolyData`
     """
     if celltype is None:
         celltype = H8 if voxelize else TET4
@@ -245,7 +245,7 @@ def ribbed_plate(
 
     Returns
     -------
-    :class:`~sigmaepsilon.mesh.polydata.PolyData`
+    :class:`~sigmaepsilon.mesh.data.polydata.PolyData`
     """
 
     def subdivide(bins, lmax):
@@ -345,7 +345,7 @@ def perforated_cube(
 
     Returns
     -------
-    :class:`~sigmaepsilon.mesh.polydata.PolyData`
+    :class:`~sigmaepsilon.mesh.data.polydata.PolyData`
     """
     size = (lx, ly)
     if lmax is not None:

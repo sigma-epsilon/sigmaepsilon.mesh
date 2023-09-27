@@ -65,13 +65,16 @@ PointDataLike = TypeVar("PointDataLike", bound=PointDataProtocol)
 MeshDataLike = TypeVar("MeshDataLike", bound=PolyDataProtocol)
 
 
+__all__ = ["PolyCell"]
+
+
 class PolyCell(
     Generic[MeshDataLike, PointDataLike],
     CellData[MeshDataLike, PointDataLike],
     ABC_PolyCell,
 ):
     """
-    A subclass of :class:`~sigmaepsilon.mesh.celldata.CellData` as a base class
+    A subclass of :class:`~sigmaepsilon.mesh.data.celldata.CellData` as a base class
     for all cell containers.
     """
 

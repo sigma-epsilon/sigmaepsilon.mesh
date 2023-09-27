@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from typing import Tuple
+
 import numpy as np
 from numpy import ndarray
 from numba import njit
@@ -18,7 +20,7 @@ __all__ = ["mesh1d_uniform"]
 @njit(nogil=True, parallel=False, fastmath=True, cache=__cache)
 def _mesh1d_uniform_(
     coords: ndarray, topo: ndarray, eshape: ndarray, N: int, frames: ndarray
-):
+) -> Tuple[ndarray, ndarray, ndarray]:
     origo = np.zeros(1)
     subcoords_, subtopo_ = grid((1,), N, eshape, origo, 0)
     num_node_sub = len(subcoords_)
@@ -52,7 +54,7 @@ def mesh1d_uniform(
     refZ=None,
     return_frames=False,
     **__
-):
+) -> Tuple[ndarray, ndarray]:
     """
     Returns the representation of a uniform 1d mesh as a tuple of numpy arrays.
     """

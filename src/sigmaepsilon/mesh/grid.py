@@ -27,7 +27,7 @@ def grid(
     """
     Crates a 1d, 2d or 3d grid for different patterns and returnes the raw data.
     If you want a more high level mesh object, consider using the :class:`~sigmaepsilon.mesh.grid.Grid`
-    class, which calls this method to generate a :class:`~sigmaepsilon.mesh.polydata.PolyData` instance.
+    class, which calls this method to generate a :class:`~sigmaepsilon.mesh.data.polydata.PolyData` instance.
 
     Parameters
     ----------
@@ -98,10 +98,10 @@ def grid(
     See also
     --------
     :class:`~sigmaepsilon.mesh.grid.Grid`
-    :class:`~sigmaepsilon.mesh.grid.gridQ4`
-    :class:`~sigmaepsilon.mesh.grid.gridQ9`
-    :class:`~sigmaepsilon.mesh.grid.gridH8`
-    :class:`~sigmaepsilon.mesh.grid.gridH27`
+    :func:`~sigmaepsilon.mesh.grid.gridQ4`
+    :func:`~sigmaepsilon.mesh.grid.gridQ9`
+    :func:`~sigmaepsilon.mesh.grid.gridH8`
+    :func:`~sigmaepsilon.mesh.grid.gridH27`
     """
     if size is not None:
         nDime = len(size)
@@ -607,7 +607,7 @@ class Grid(PolyData):
     """
     A class to generate meshes based on grid-like data. All input
     arguments are forwarded to :func:`~sigmaepsilon.mesh.grid.grid`. The difference is that
-    a :class:`~sigmaepsilon.mesh.polydata.PolyData` instance is returned, insted of
+    a :class:`~sigmaepsilon.mesh.data.polydata.PolyData` instance is returned, insted of
     raw mesh data.
 
     Examples

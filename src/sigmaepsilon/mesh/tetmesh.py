@@ -3,6 +3,8 @@ from .data.polydata import PolyData
 from .cells import Tetra
 import numpy as np
 
+__all__ = ["TetMesh"]
+
 
 class TetMesh(PolyData):
     """

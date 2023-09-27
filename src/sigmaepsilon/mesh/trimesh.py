@@ -12,6 +12,9 @@ from .utils.tri import edges_tri
 from .utils.topology import unique_topo_data, T3_to_T6, T6_to_T3
 
 
+__all__ = ["TriMesh"]
+
+
 class TriMesh(PolyData):
     """
     A class to handle triangular meshes.
@@ -56,7 +59,7 @@ class TriMesh(PolyData):
 
     See Also
     --------
-    :class:`~sigmaepsilon.mesh.polydata.PolyData`
+    :class:`~sigmaepsilon.mesh.data.polydata.PolyData`
     :class:`~sigmaepsilon.mesh.space.frame.CartesianFrame`
     """
 

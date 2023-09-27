@@ -22,6 +22,9 @@ PointDataLike = TypeVar("PointDataLike", bound=PointDataProtocol)
 PolyDataLike = TypeVar("PolyDataLike", bound=PolyDataProtocol)
 
 
+__all__ = ["CellData"]
+
+
 class CellData(Generic[PolyDataLike, PointDataLike], AkWrapper):
     """
     A class to handle data related to the cells of a polygonal mesh.

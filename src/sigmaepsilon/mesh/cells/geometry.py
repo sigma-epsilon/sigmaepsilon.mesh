@@ -85,7 +85,7 @@ class PolyCellGeometry(ABC):
         -------
         Define a custom 1d cell with 4 nodes:
 
-        >>> from sigmaepsilon.mesh.core import PolyCellGeometry1d
+        >>> from sigmaepsilon.mesh.cells.geometry import PolyCellGeometry1d
         >>> CustomClass = PolyCellGeometry1d.generate(number_of_nodes=4)
 
         This is equivalent to:

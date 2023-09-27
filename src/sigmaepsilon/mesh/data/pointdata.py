@@ -28,7 +28,7 @@ class PointData(AkWrapper, ABC_AkWrapper):
     """
     A class to handle data related to the pointcloud of a polygonal mesh.
 
-    Technicall this is a wrapper around an :class:`awkward.Record` instance.
+    Technicall this is a wrapper around an `awkward.Record` instance.
 
     If you are not a developer, you probably don't have to ever create any
     instance of this class, but since it operates in the background of every
@@ -233,13 +233,13 @@ class PointData(AkWrapper, ABC_AkWrapper):
         key: str
             A field key to identify data in the databases of the attached
             CellData instances of the blocks.
-        ndf: Union[ndarray, csr_matrix], Optional
+        ndf: Union[numpy.ndarray, csr_matrix], Optional
             The nodal distribution factors to use. If not provided, the
             default factors are used. Default is None.
 
         See Also
         --------
-        :func:`nodal_distribution_factors`
+        :func:`~sigmaepsilon.mesh.data.polydata.PolyData.nodal_distribution_factors`
         :func:`~sigmaepsilon.mesh.utils.utils.collect_nodal_data`
         """
         source: PolyDataProtocol = self.container.source()

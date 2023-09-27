@@ -170,8 +170,8 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
     See also
     --------
     :class:`~sigmaepsilon.mesh.trimesh.TriMesh`
-    :class:`~sigmaepsilon.mesh.pointdata.PointData`
-    :class:`~sigmaepsilon.mesh.celldata.CellData`
+    :class:`~sigmaepsilon.mesh.data.pointdata.PointData`
+    :class:`~sigmaepsilon.mesh.data.celldata.CellData`
     """
 
     _point_array_class_ = PointCloud
@@ -2190,7 +2190,7 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
                 into the Notebook. Default is False.
             theme: str, Optional
                 The theme to use with PyVista. Default is None.
-            scalars: Union[str, ndarray]
+            scalars: Union[str, numpy.ndarray]
                 A string that refers to a field in the celldata objects
                 of the block of the mesh, or a NumPy array with values for
                 each point in the mesh.
