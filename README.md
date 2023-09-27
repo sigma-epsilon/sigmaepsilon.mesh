@@ -1,4 +1,4 @@
-# **SigmaEpsilon.Mesh** - A Python Library for Polygonal Meshes
+# **SigmaEpsilon.Mesh** - Data Structures and Computation for Polygonal Meshes in Python
 
 ![ ](logo.png)
 
@@ -97,9 +97,11 @@ python -m pytest --cov-report html --cov-config=.coveragerc --cov sigmaepsilon.m
 
 Open `htmlcov/index.html` to see the results.
 
-## Versioning
+## Changes and versioning
 
-The project follows the rules of [semantic versioning](https://semver.org/).
+See the [changelog](CHANGELOG.md), for the most notable changes between releases.
+
+The project adheres to [semantic versioning](https://semver.org/).
 
 ## How to contribute?
 
@@ -116,6 +118,8 @@ Contributions are currently expected in any the following ways:
 * sharing is caring
   If you like the library, share it with your friends or colleagues so they can like it too.
 
+In all cases, read the [contributing guidelines](CONTRIBUTING.md) before you do anything.
+
 ## Acknowledgements
 
 Although `sigmaepsilon.mesh` works without `VTK` or `PyVista` being installed, it is highly influenced by these libraries and works best with them around. Also shout-out for the developers of `NumPy`, `Scipy`, `Numba`, `Awkward` and all the third-party libraries involved in the project. Whithout these libraries the concept of writing performant, yet elegant Python code would be much more difficult.
@@ -126,4 +130,4 @@ Also, funding of these libraries is partly based on the size of the community th
 
 ## License
 
-This package is licensed under the [MIT license](https://opensource.org/license/mit/).
+This package is licensed under the [MIT license](LICENSE.txt).
