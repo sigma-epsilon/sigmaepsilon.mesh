@@ -4,6 +4,7 @@ API Reference
 .. toctree::
     :maxdepth: 6
     
+    /api/api_typing
     /api/api_db
     /api/api_space
     /api/api_topo

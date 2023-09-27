@@ -171,7 +171,17 @@ html_theme_options = {
             "icon": "fas fa-box-open",
             "type": "fontawesome",
         },
-    ]
+    ],
+    "logo": {
+        # Because the logo is also a homepage link, including "home" in the alt text is good practice
+        "text": "SigmaEpsilon.Mesh",
+    }
+}
+html_css_files = ["custom.css"]
+
+html_context = {
+   # ...
+   "default_mode": "dark"
 }
 
 # Add any paths that contain custom static files (such as style sheets) here,
@@ -183,7 +193,7 @@ html_static_path = ["_static"]
 
 # This is processed by Jinja2 and inserted before each notebook
 nbsphinx_prolog = r"""
-{% set docname = 'docs/source/' + env.doc2path(env.docname, base=None) %}
+{% set docname = "docs\\source\\" + env.doc2path(env.docname, base=None) %}
 
 .. raw:: html
 
