@@ -4,7 +4,7 @@ import numpy as np
 from numpy import ndarray
 from sympy import symbols
 
-from .geometry import PolyCellGeometry2d
+from ..geometry import PolyCellGeometry2d
 from ..data.polycell import PolyCell
 from ..utils.utils import cells_coords
 from ..utils.cells.t6 import (
@@ -102,7 +102,7 @@ class T6(PolyCell):
 
     @classmethod
     def from_TriMesh(cls, *args, coords=None, topo=None, **kwargs):
-        from sigmaepsilon.mesh.trimesh import TriMesh
+        from sigmaepsilon.mesh.data.trimesh import TriMesh
 
         if len(args) > 0 and isinstance(args[0], TriMesh):
             return T3_to_T6(TriMesh.coords(), TriMesh.topology())

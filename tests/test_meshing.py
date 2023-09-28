@@ -2,7 +2,7 @@
 import numpy as np
 import unittest
 
-from sigmaepsilon.mesh.trimesh import TriMesh
+from sigmaepsilon.mesh.data.trimesh import TriMesh
 from sigmaepsilon.mesh import PolyData
 from sigmaepsilon.mesh.recipes import circular_disk
 from sigmaepsilon.mesh.voxelize import voxelize_cylinder

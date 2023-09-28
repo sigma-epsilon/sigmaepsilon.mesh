@@ -1,15 +1,16 @@
 import numpy as np
+from numpy import ndarray
 
 from sigmaepsilon.math import ascont
 
-from .data.polycell import PolyCell
-from .data.polydata import PolyData
-from .cells import T3, T6, TET4
-from .utils.space import frames_of_surfaces, is_planar_surface as is_planar
-from .extrude import extrude_T3_TET4
-from .triang import triangulate
-from .utils.tri import edges_tri
-from .utils.topology import unique_topo_data, T3_to_T6, T6_to_T3
+from ..typing import PolyCellProtocol
+from .polydata import PolyData
+from ..cells import T3, T6, TET4
+from ..utils.space import frames_of_surfaces, is_planar_surface as is_planar
+from ..extrude import extrude_T3_TET4
+from ..triang import triangulate
+from ..utils.tri import edges_tri
+from ..utils.topology import unique_topo_data, T3_to_T6, T6_to_T3
 
 
 __all__ = ["TriMesh"]
@@ -18,6 +19,12 @@ __all__ = ["TriMesh"]
 class TriMesh(PolyData):
     """
     A class to handle triangular meshes.
+    
+    All positional and keyword arguments not listed here are forwarded to
+    :class:`~sigmaepsilon.mesh.data.polydata.PolyData`.
+    
+    Besides the arguments `coords` and `topo`, this class accepts these
+    using aliases `points` and `triangles`.
 
     Parameters
     ----------
@@ -56,6 +63,11 @@ class TriMesh(PolyData):
     >>> trimesh.normals()
     >>> trimesh.is_planar()
     True
+    
+    Create a circular disk
+    
+    >>> from sigmaepsilon.mesh.recipes import circular_disk
+    >>> trimesh = circular_disk(120, 60, 5, 25)
 
     See Also
     --------
@@ -69,7 +81,12 @@ class TriMesh(PolyData):
     }
 
     def __init__(
-        self, *args, points=None, triangles=None, celltype: PolyCell = None, **kwargs
+        self,
+        *args,
+        points: ndarray = None,
+        triangles: ndarray = None,
+        celltype: PolyCellProtocol = None,
+        **kwargs,
     ):
         # parent class handles pointdata and celldata creation
         points = points if points is not None else kwargs.get("coords", None)

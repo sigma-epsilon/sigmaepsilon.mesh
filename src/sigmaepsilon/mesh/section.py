@@ -17,8 +17,7 @@ from sectionproperties.analysis.section import Section
 from sigmaepsilon.core.wrapping import Wrapper
 from linkeddeepdict.tools.kwargtools import getallfromkwargs
 from sigmaepsilon.mesh.utils import centralize
-from sigmaepsilon.mesh.trimesh import TriMesh
-from sigmaepsilon.mesh.tetmesh import TetMesh
+from sigmaepsilon.mesh.data import TriMesh, TetMesh
 from sigmaepsilon.mesh.utils.topology import T6_to_T3, detach_mesh_bulk
 
 

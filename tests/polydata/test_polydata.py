@@ -9,7 +9,7 @@ import meshio
 
 from sigmaepsilon.core.testing import SigmaEpsilonTestCase
 from sigmaepsilon.mesh import PolyData, PointData, CartesianFrame
-from sigmaepsilon.mesh.trimesh import TriMesh
+from sigmaepsilon.mesh.data.trimesh import TriMesh
 from sigmaepsilon.mesh.grid import Grid
 from sigmaepsilon.mesh.space import StandardFrame
 from sigmaepsilon.mesh.cells import H8

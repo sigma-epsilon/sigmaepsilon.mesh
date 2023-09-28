@@ -4,7 +4,7 @@ import numpy as np
 from numpy import ndarray
 from sympy import symbols
 
-from .geometry import PolyCellGeometry2d
+from ..geometry import PolyCellGeometry2d
 from ..data.polycell import PolyCell
 from ..utils.cells.numint import Gauss_Legendre_Tri_1
 from ..utils.cells.t3 import (
@@ -88,7 +88,7 @@ class T3(PolyCell):
 
     @classmethod
     def from_TriMesh(cls, *args, coords=None, topo=None, **kwargs):
-        from sigmaepsilon.mesh.trimesh import TriMesh
+        from sigmaepsilon.mesh.data.trimesh import TriMesh
 
         if len(args) > 0 and isinstance(args[0], TriMesh):
             mesh = args[0]

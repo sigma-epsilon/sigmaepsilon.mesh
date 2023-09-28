@@ -5,7 +5,7 @@ import sympy as sy
 
 from sigmaepsilon.math.numint import gauss_points as gp
 
-from .geometry import PolyCellGeometry3d
+from ..geometry import PolyCellGeometry3d
 from ..data.polycell import PolyCell
 from ..utils.utils import cells_coords
 from ..utils.cells.h27 import (

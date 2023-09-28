@@ -4,7 +4,7 @@ import numpy as np
 
 from sigmaepsilon.mesh import PolyData, PointData
 from sigmaepsilon.mesh.cells import T3, Q4, H8
-from sigmaepsilon.mesh.trimesh import TriMesh
+from sigmaepsilon.mesh.data.trimesh import TriMesh
 from sigmaepsilon.mesh.grid import Grid
 from sigmaepsilon.mesh.space import StandardFrame
 from sigmaepsilon.math.logical import isclose
