@@ -28,7 +28,7 @@ sys.path.insert(0, os.path.abspath("../../src"))
 from doc_utils import generate_examples_gallery_rst
 
 generate_examples_gallery_rst(
-    title="Examples", filename="examples_gallery", foldername="examples", reversed=True
+    title="Gallery", filename="examples_gallery", foldername="examples", reversed=True
 )
 
 # -- Project information -----------------------------------------------------

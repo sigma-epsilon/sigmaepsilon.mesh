@@ -1,5 +1,5 @@
-Examples
---------
+Gallery
+-------
 
 .. nbgallery::
     :maxdepth: 1

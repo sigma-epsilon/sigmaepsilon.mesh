@@ -14,6 +14,9 @@
     :parser: myst_parser.sphinx_
 
 
+Contents
+--------
+
 .. grid:: 2
     
     .. grid-item-card::
@@ -90,6 +93,9 @@
 
             To the examples gallery
 
+
+.. include:: examples_gallery.rst
+    
 
 Indices and tables
 ------------------
