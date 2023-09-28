@@ -1,5 +1,5 @@
 ==========================
-Vectors in Euclidean Space
+Vectors in Euclidean space
 ==========================
 
 .. autoclass:: sigmaepsilon.mesh.space.point.Point

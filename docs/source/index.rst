@@ -1,15 +1,18 @@
-###############################
-SigmaEpsilon.Mesh documentation
-###############################
-
 .. toctree::
    :maxdepth: 1
    :hidden:
 
    Install <installation>
+   Getting Started <getting_started>
    User Guide <user_guide>
    Gallery <examples_gallery>
    API Reference <api>
+   Development <development>
+
+
+.. include:: intro.md
+    :parser: myst_parser.sphinx_
+
 
 .. grid:: 2
     
@@ -19,8 +22,8 @@ SigmaEpsilon.Mesh documentation
         Getting Started
         ^^^^^^^^^^^^^^^
 
-        New to NumPy? Check out the Absolute Beginner's Guide. It contains an
-        introduction to NumPy's main concepts and links to additional tutorials.
+        The getting started guide contains a basic introduction to the main concepts 
+        through simple examples.
 
         +++
 
@@ -37,8 +40,8 @@ SigmaEpsilon.Mesh documentation
         User Guide
         ^^^^^^^^^^
 
-        The user guide provides in-depth information on the
-        key concepts of NumPy with useful background information and explanation.
+        The user guide provides a more detailed walkthrough of the library, touching 
+        the key features with useful background information and explanation.
 
         +++
 
@@ -56,7 +59,7 @@ SigmaEpsilon.Mesh documentation
         ^^^^^^^^^^^^^
 
         The reference guide contains a detailed description of the functions,
-        modules, and objects included in NumPy. The reference describes how the
+        modules, and objects included in the library. The reference describes how the
         methods work and which parameters can be used. It assumes that you have an
         understanding of the key concepts.
 
@@ -75,9 +78,8 @@ SigmaEpsilon.Mesh documentation
         Examples Gallery
         ^^^^^^^^^^^^^^^^
 
-        Want to add to the codebase? Can help add translation or a flowchart to the
-        documentation? The contributing guidelines will guide you through the
-        process of improving NumPy.
+        A gallery of examples that illustrate uses cases that involve some
+        kind of visualization.
 
         +++
 

@@ -1,5 +1,5 @@
 ============
-Cell Classes
+Cell classes
 ============
 
 This document summarizes the classes denoted to store and handle data about polygonal cells

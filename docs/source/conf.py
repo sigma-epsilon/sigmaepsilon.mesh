@@ -174,7 +174,7 @@ html_theme_options = {
     ],
     "logo": {
         # Because the logo is also a homepage link, including "home" in the alt text is good practice
-        "text": "SigmaEpsilon.Mesh",
+        "text": f"SigmaEpsilon.Mesh {version}",
     }
 }
 html_css_files = ["custom.css"]

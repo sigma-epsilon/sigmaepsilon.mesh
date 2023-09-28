@@ -1,5 +1,5 @@
 ===============
-Data Structures
+Data structures
 ===============
 
 Every mesh is stored in a :class:`~sigmaepsilon.mesh.data.PolyData` instance, which is a subclass of

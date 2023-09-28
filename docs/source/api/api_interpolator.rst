@@ -1,5 +1,5 @@
 =================
-Cell Approximator
+Cell approximator
 =================
 
 

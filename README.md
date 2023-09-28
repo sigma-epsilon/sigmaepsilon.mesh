@@ -1,4 +1,4 @@
-# **SigmaEpsilon.Mesh** - Data Structures and Computation for Complex Polygonal Meshes in Python
+# **SigmaEpsilon.Mesh** - Data Structures, Computation and Visualization for Complex Polygonal Meshes in Python
 
 ![ ](logo.png)
 

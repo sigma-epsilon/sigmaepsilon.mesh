@@ -1,6 +1,7 @@
 Getting started
 ===============
 
-.. code-block:: sh
+The getting started guide contains a basic introduction to the main concepts 
+through simple examples.
 
-   $ pip install sigmaepsilon.mesh
+.. include:: installation.rst

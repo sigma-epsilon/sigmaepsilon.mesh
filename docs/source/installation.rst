@@ -11,28 +11,13 @@ or chechkout with the following command using GitHub CLI
 
 .. code-block:: sh
 
-   $ gh repo clone sigma-epsilon/sigmaepsilon.meshpip install sigmaepsilon.mesh
+   $ gh repo clone sigma-epsilon/sigmaepsilon.mesh
 
 and install from source by typing
 
 .. code-block:: sh
 
     $ pip install .
-
-If you want to run the tests, you can install the package along with the necessary optional dependencies like this
-
-.. code-block:: sh
-
-    $ pip install ".[test]"
-
-Installation for development
-----------------------------
-
-If you are a developer and want to install the library in development mode, the suggested way is by using this command:
-
-.. code-block:: sh
-
-    $ pip install "-e .[test, dev]"
 
 Check your installation
 -----------------------
