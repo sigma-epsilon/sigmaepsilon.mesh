@@ -9,7 +9,7 @@ SigmaEpsilon.Mesh documentation
    Install <installation>
    User Guide <user_guide>
    Gallery <examples_gallery>
-   API <api>
+   API Reference <api>
 
 .. grid:: 2
     
