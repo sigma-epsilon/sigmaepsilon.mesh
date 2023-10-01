@@ -385,7 +385,7 @@ class CellData(Generic[PolyDataLike, PointDataLike], AkWrapper):
         the part of.
         """
         c = self.container
-        return None if c is None else c.root()
+        return None if c is None else c.root
 
     def source(self) -> PolyDataLike:
         """
