@@ -943,7 +943,7 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
             parameter.
         """
         dtype = PolyData if blocktype is None else blocktype
-        return self.containers(self, inclusive=inclusive, dtype=dtype, deep=deep)
+        return self.containers(inclusive=inclusive, dtype=dtype, deep=deep)
 
     def pointblocks(
         self, *args, **kwargs
