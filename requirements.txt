@@ -1,5 +1,5 @@
 toml
-linkeddeepdict>=1.1.0
+sigmaepsilon.deepdict >=1.2.1, < 2.0.0
 sigmaepsilon.math>=1.0.1
 fsspec>=2023.1.0  # to use awkward.to_parquet
 sectionproperties>=2.1.3
