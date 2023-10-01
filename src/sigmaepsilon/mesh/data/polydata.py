@@ -21,7 +21,7 @@ from scipy.sparse import spmatrix
 import awkward as ak
 from meshio import Mesh as MeshioMesh
 
-from linkeddeepdict import DeepDict
+from sigmaepsilon.deepdict import DeepDict
 from sigmaepsilon.core.warning import SigmaEpsilonPerformanceWarning
 from sigmaepsilon.math.linalg.sparse import csr_matrix
 from sigmaepsilon.math.linalg import Vector, ReferenceFrame as FrameLike
@@ -242,13 +242,13 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
                     imap = self.pd.id
                     self.cd.rewire(imap=imap, invert=True)
             N = len(self.pointdata)
-            GIDs = self.root().pim.generate_np(N)
+            GIDs = self.root.pim.generate_np(N)
             self.pd[pidkey] = GIDs
             self.pd.container = self
 
         if self.celldata is not None:
             N = len(self.celldata)
-            GIDs = self.root().cim.generate_np(N)
+            GIDs = self.root.cim.generate_np(N)
             self.cd[cidkey] = GIDs
             try:
                 pd = self.source().pd
@@ -262,7 +262,7 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
         if self.pointdata is None and coords is not None:
             point_fields = {} if point_fields is None else point_fields
             pointtype = self.__class__._point_class_
-            GIDs = self.root().pim.generate_np(coords.shape[0])
+            GIDs = self.root.pim.generate_np(coords.shape[0])
             point_fields[pidkey] = GIDs
             self.pointdata = pointtype(
                 coords=coords,
@@ -300,7 +300,7 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
             elif isinstance(frame, FrameLike):
                 cell_fields["frames"] = repeat(frame.show(), topo.shape[0])
 
-            GIDs = self.root().cim.generate_np(topo.shape[0])
+            GIDs = self.root.cim.generate_np(topo.shape[0])
             cell_fields[cidkey] = GIDs
             try:
                 pd = self.source().pointdata
@@ -1204,7 +1204,7 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
         target = self.frame
         if from_cells:
             inds_ = np.unique(self.topology())
-            x, inds = self.root().points(from_cells=False, return_inds=True)
+            x, inds = self.root.points(from_cells=False, return_inds=True)
             imap = inds_to_invmap_as_dict(inds)
             inds = remap_topo_1d(inds_, imap)
             coords, inds = x[inds, :], inds_
@@ -2360,7 +2360,7 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
     def __join_parent__(self, parent: DeepDict, key: Hashable = None) -> None:
         super().__join_parent__(parent, key)
         if self.celldata is not None:
-            GIDs = self.root().cim.generate_np(len(self.celldata))
+            GIDs = self.root.cim.generate_np(len(self.celldata))
             self.celldata.id = atleast1d(GIDs)
             if self.celldata.pd is None:
                 self.celldata.pd = self.source().pd
@@ -2368,7 +2368,7 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
 
     def __leave_parent__(self) -> None:
         if self.celldata is not None:
-            self.root().cim.recycle(self.celldata.id)
+            self.root.cim.recycle(self.celldata.id)
             dbkey = self.celldata._dbkey_id_
             del self.celldata._wrapped[dbkey]
         super().__leave_parent__()
