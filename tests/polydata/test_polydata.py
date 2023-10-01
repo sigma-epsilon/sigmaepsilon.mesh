@@ -135,13 +135,7 @@ class TestPolyDataMultiBlock(SigmaEpsilonTestCase):
         self.mesh.to_pv(multiblock=True)
 
     def test_delete(self):
-        def foo():
-            del self.mesh["grids", "Q4"]
-
-        self.assertFailsProperly(RuntimeError, foo)
-        self.mesh.unlock()
-        # FIXME this should go also as del self.mesh["grids", "Q4"]
-        del self.mesh["grids"]["Q4"]
+        del self.mesh["grids", "Q4"]
         self.mesh.lock()
 
         def boo():
