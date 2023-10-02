@@ -1,9 +1,11 @@
+from typing import Iterable, Any, Tuple
+
 import numpy as np
 import scipy.spatial
 
 try:
     from scipy.spatial import Delaunay as spDelaunay
-except Exception:
+except Exception:  # pragma: no cover
     from scipy.spatial.qhull import Delaunay as spDelaunay
 
 from .utils.topology import unique_topo_data
@@ -24,16 +26,16 @@ __all__ = ["triangulate"]
 
 def triangulate(
     *args,
-    points=None,
+    points: np.ndarray = None,
     size: tuple = None,
     shape: tuple = None,
     origo: tuple = None,
-    backend="mpl",
-    random=False,
-    triangles=None,
+    backend: str = "mpl",
+    random: bool = False,
+    triangles: Iterable = None,
     triobj=None,
-    return_lines=False,
-    **kwargs
+    return_lines: bool = False,
+    **kwargs,
 ):
     """
     Crates a triangulation using different backends.
@@ -87,6 +89,7 @@ def triangulate(
     --------
     Triangulate a rectangle of size 800x600 with a subdivision of 10x10
 
+    >>> from sigmaepsilon.mesh import triangulate
     >>> coords, topo, triobj = triangulate(size=(800, 600), shape=(10, 10))
     ...
 
@@ -97,8 +100,9 @@ def triangulate(
     ...
     """
     if len(args) > 0:
-        if is_triobj(args[0]):
+        if _is_triobj(args[0]):
             triobj = args[0]
+
     if triobj is not None:
         points, triangles = get_triobj_data(triobj, *args, **kwargs)
     else:
@@ -108,13 +112,16 @@ def triangulate(
                 "Either a collection of points, or the size of a "
                 "rectangular domain must be provided!"
             )
+
             if origo is None:
                 origo = (0, 0, 0)
             else:
                 if len(origo) == 2:
                     origo = origo + (0,)
+
             if shape is None:
-                shape = (1, 1)
+                shape = (3, 3)
+
             if isinstance(shape, int):
                 if random:
                     x = np.hstack(
@@ -128,7 +135,8 @@ def triangulate(
                         x * size[0] - origo[0], y * size[1] - origo[1], z - origo[2]
                     ]
                 else:
-                    size = (shape, shape)
+                    shape = (shape, shape)
+
             if points is None and isinstance(size, tuple):
                 x = np.linspace(-origo[0], size[0] - origo[0], num=shape[0])
                 y = np.linspace(-origo[1], size[1] - origo[1], num=shape[1])
@@ -145,7 +153,7 @@ def triangulate(
                 triangles = triobj.triangles
             elif backend == "scipy":
                 triobj = scipy.spatial.Delaunay(points[:, 0:2])
-                triangles = triobj.vertices
+                triangles = triobj.simplices
             elif backend == "pv":
                 if not __haspyvista__ or not __hasvtk__:
                     raise ImportError("PyVista must be installed for this.")
@@ -164,18 +172,20 @@ def triangulate(
                 "other backends, only matplotlib."
             )
             triobj = tri.Triangulation(points[:, 0], points[:, 1], triangles=triangles)
+
     if return_lines:
         edges, edgeIDs = unique_topo_data(edges_tri(triangles))
         return points, edges, triangles, edgeIDs, triobj
+
     return points, triangles, triobj
 
 
-def triobj_to_mpl(triobj, *args, **kwargs):
+def triobj_to_mpl(triobj, *args, **kwargs) -> tri.Triangulation:
     """
     Transforms a triangulation into a matplotlib.tri.Triangulation
     object.
     """
-    assert is_triobj(triobj)
+    assert _is_triobj(triobj)
     if isinstance(triobj, tri.Triangulation):
         return triobj
     else:
@@ -185,11 +195,14 @@ def triobj_to_mpl(triobj, *args, **kwargs):
         return triang
 
 
-def get_triobj_data(obj=None, *args, trim2d=True, **kwarg):
+def get_triobj_data(
+    obj: Any = None, *_, trim2d: bool = True, **__
+) -> Tuple[np.ndarray]:
     coords, topo = None, None
+
     if isinstance(obj, spDelaunay):
         coords = obj.points
-        topo = obj.vertices
+        topo = obj.simplices
     elif isinstance(obj, tri.Triangulation):
         coords = np.vstack((obj.x, obj.y)).T
         topo = obj.triangles
@@ -208,12 +221,14 @@ def get_triobj_data(obj=None, *args, trim2d=True, **kwarg):
                     triang.GetCellPoints(cellID, idlist)
                     n = idlist.GetNumberOfIds()
                     topo[cellID] = [idlist.GetId(i) for i in range(n)]
+
     if coords is None or topo is None:
         raise RuntimeError("Failed to recognize a valid input.")
+
     return coords, topo
 
 
-def is_triobj(triobj):
+def _is_triobj(triobj: Any) -> bool:
     try:
         if isinstance(triobj, spDelaunay) or isinstance(triobj, tri.Triangulation):
             return True
@@ -222,5 +237,6 @@ def is_triobj(triobj):
                 if isinstance(triobj, pv.PolyData):
                     if hasattr(triobj, "delaunay_2d"):
                         return True
-    except Exception:
+        return False
+    except Exception:  # pragma: no cover
         return False

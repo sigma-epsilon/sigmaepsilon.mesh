@@ -14,7 +14,7 @@ def monoms_T6(x: ndarray) -> ndarray:
 @njit(nogil=True, cache=__cache)
 def shp_T6(pcoord: ndarray):
     r, s = pcoord[0:2]
-    return np.array(
+    res = np.array(
         [
             2.0 * r ** 2 + 4.0 * r * s - 3.0 * r + 2.0 * s ** 2 - 3.0 * s + 1.0,
             2.0 * r ** 2 - 1.0 * r,
@@ -25,6 +25,7 @@ def shp_T6(pcoord: ndarray):
         ],
         dtype=pcoord.dtype,
     )
+    return res
 
 
 @njit(nogil=True, parallel=True, cache=__cache)
@@ -58,7 +59,7 @@ def shape_function_matrix_T6_multi(pcoords: np.ndarray, ndof: int = 2):
 @njit(nogil=True, cache=__cache)
 def dshp_T6(pcoord):
     r, s = pcoord[0:2]
-    return np.array(
+    res = np.array(
         [
             [4.0 * r + 4.0 * s - 3.0, 4.0 * r + 4.0 * s - 3.0],
             [4.0 * r - 1.0, 0],
@@ -68,6 +69,7 @@ def dshp_T6(pcoord):
             [-4.0 * s, -4.0 * r - 8.0 * s + 4.0],
         ]
     )
+    return res
 
 
 @njit(nogil=True, parallel=True, cache=__cache)

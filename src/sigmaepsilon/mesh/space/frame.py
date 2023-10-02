@@ -158,7 +158,7 @@ class CartesianFrame(Frame):
         Providing with no arguments returns the distance of origin with
         respect to the root frame:
 
-        >>> B.relative_origo()  # same as B.relative_origo(B.root())
+        >>> B.relative_origo()  # same as B.relative_origo(B.root)
         [0.7071, 0.7071, 0.]
         """
         if not isinstance(self._origo, ndarray):

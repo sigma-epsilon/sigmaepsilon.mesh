@@ -120,6 +120,7 @@ def Gauss_Legendre_Tet_11() -> Tuple[ndarray]:
 
 #  HEXAHEDRA
 
+
 def Gauss_Legendre_Hex_Grid(i: int, j: int = None, k: int = None) -> Tuple[ndarray]:
     j = i if j is None else j
     k = j if k is None else k

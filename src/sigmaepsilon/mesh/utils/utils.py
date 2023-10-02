@@ -16,7 +16,7 @@ nbint64A = nbint64[:]
 nbfloat64A = nbtypes.float64[:]
 
 
-def cells_around(*args, **kwargs):
+def cells_around(*args, **kwargs) -> Union[JaggedArray, csr_matrix, dict]:
     """
     Alias for :func:`points_around`.
     """
@@ -30,7 +30,7 @@ def points_around(
     frmt: str = "dict",
     MT: bool = True,
     n_max: int = 10,
-):
+) -> Union[JaggedArray, csr_matrix, dict]:
     """
     Returns neighbouring points for each entry in `points` that are
     closer than the distance `r_max`. The results are returned in
@@ -716,7 +716,7 @@ def avg_cell_data(data: np.ndarray, topo: np.ndarray) -> ndarray:
 @njit(nogil=True, parallel=True, cache=__cache)
 def jacobian_matrix_single(dshp: ndarray, ecoords: ndarray) -> ndarray:
     """
-    Returns Jacobian matrix of local to global transformation for for one cell and 
+    Returns Jacobian matrix of local to global transformation for for one cell and
     multiple evaluation pointsd.
 
     Parameters
@@ -727,7 +727,7 @@ def jacobian_matrix_single(dshp: ndarray, ecoords: ndarray) -> ndarray:
     ecoords: numpy.ndarray
         A 2d numpy array of shape (nNE, nD), where nNE and nD
         are the number of nodes and spatial dimensions.
-            
+
     Returns
     -------
     numpy.ndarray
@@ -944,7 +944,7 @@ def pcoords_to_coords_1d(pcoords: ndarray, ecoords: ndarray) -> ndarray:
     Parameters
     ----------
     pcoords: numpy.ndarray
-        1d float array of length nP, coordinates in the range [-1 , 1].
+        1d float array of length nP, coordinates in the range [0 , 1].
     ecoords: numpy.ndarray
         3d float array of shape (nE, 2+, nD) of cell coordinates.
 

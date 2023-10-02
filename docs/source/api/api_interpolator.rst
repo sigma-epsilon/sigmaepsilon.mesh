@@ -1,7 +1,7 @@
 =================
-Cell Interpolator
+Cell approximator
 =================
 
 
-.. automodule:: sigmaepsilon.mesh.cells.base.interpolator
+.. automodule:: sigmaepsilon.mesh.cellapproximator
     :members:

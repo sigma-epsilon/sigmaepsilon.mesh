@@ -1,20 +1,17 @@
-import importlib.metadata
+from os.path import dirname, abspath
+from importlib.metadata import metadata
 
-from .space import PointCloud
-from .space import CartesianFrame
-from .polydata import PolyData
-from .linedata import LineData
-from .linedata import LineData as PolyData1d
-from .pointdata import PointData
+from sigmaepsilon.core.config import namespace_package_name
+
+from .space import PointCloud, CartesianFrame
+from .data import PolyData, PointData, LineData, TriMesh, TetMesh, Grid
+from .data import LineData as PolyData1d
 from .utils import k_nearest_neighbours as KNN
 from .topoarray import TopologyArray
-from .trimesh import TriMesh
-from .tetmesh import TetMesh
 from .triang import triangulate
-from .grid import grid, Grid
+from .grid import grid
 from .tetrahedralize import tetrahedralize
-from .config import load_pyproject_config
-
+from .cellapproximator import LagrangianCellApproximator
 
 __all__ = [
     "PointCloud",
@@ -31,10 +28,11 @@ __all__ = [
     "grid",
     "Grid",
     "tetrahedralize",
+    "LagrangianCellApproximator",
 ]
 
-# _config = load_pyproject_config()
-
-__pkg_name__ = "sigmaepsilon.mesh"
-__version__ = importlib.metadata.version(__pkg_name__)
-__description__ = "A Python package to build, manipulate and analyze polygonal meshes."
+__pkg_name__ = namespace_package_name(dirname(abspath(__file__)), 10)
+__pkg_metadata__ = metadata(__pkg_name__)
+__version__ = __pkg_metadata__["version"]
+__description__ = __pkg_metadata__["summary"]
+del __pkg_metadata__

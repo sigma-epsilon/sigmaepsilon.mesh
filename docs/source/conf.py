@@ -28,7 +28,7 @@ sys.path.insert(0, os.path.abspath("../../src"))
 from doc_utils import generate_examples_gallery_rst
 
 generate_examples_gallery_rst(
-    title="Examples", filename="examples_gallery", foldername="examples", reversed=True
+    title="Gallery", filename="examples_gallery", foldername="examples", reversed=True
 )
 
 # -- Project information -----------------------------------------------------
@@ -121,7 +121,7 @@ intersphinx_mapping = {
     "pandas": (r"https://pandas.pydata.org/pandas-docs/stable/", None),
     "sigmaepsilon.core": (r"https://sigmaepsiloncore.readthedocs.io/en/latest/", None),
     "sigmaepsilon.math": (r"https://sigmaepsilonmath.readthedocs.io/en/latest/", None),
-    "linkeddeepdict": (r"https://linkeddeepdict.readthedocs.io/en/latest/", None),
+    "sigmaepsilon.deepdict": (r"https://sigmaepsilondeepdict.readthedocs.io/en/latest/", None),
 }
 
 # -- bibtex configuration -------------------------------------------------
@@ -156,11 +156,44 @@ warnings.filterwarnings(
 
 html_theme = "pydata_sphinx_theme"
 
+html_theme_options = {
+    "show_prev_next": True,
+    "icon_links": [
+        {
+            "name": "GitHub",
+            "url": f"https://github.com/sigma-epsilon/{project}",
+            "icon": "fab fa-github",
+            "type": "fontawesome",
+        },
+        {
+            "name": "PyPi",
+            "url": f"https://pypi.org/project/{project}/",
+            "icon": "fas fa-box-open",
+            "type": "fontawesome",
+        },
+    ],
+    "logo": {
+        # Because the logo is also a homepage link, including "home" in the alt text is good practice
+        "text": "SigmaEpsilon.Mesh",
+    }
+}
+html_css_files = ["custom.css"]
+
+html_context = {
+   # ...
+   "default_mode": "dark"
+}
+
+# Add any paths that contain custom static files (such as style sheets) here,
+# relative to this directory. They are copied after the builtin static files,
+# so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ["_static"]
+
+# -- nbsphinx configuration -------------------------------------------------
 
 # This is processed by Jinja2 and inserted before each notebook
 nbsphinx_prolog = r"""
-{% set docname = 'docs/source/' + env.doc2path(env.docname, base=None) %}
+{% set docname = "docs\\source\\" + env.doc2path(env.docname, base=None) %}
 
 .. raw:: html
 

@@ -8,7 +8,7 @@ __cache = True
 @njit(nogil=True, cache=__cache)
 def monoms_W18_single(x: ndarray) -> ndarray:
     r, s, t = x
-    return np.array(
+    res = np.array(
         [
             1,
             r,
@@ -31,6 +31,7 @@ def monoms_W18_single(x: ndarray) -> ndarray:
         ],
         dtype=x.dtype,
     )
+    return res
 
 
 @njit(nogil=True, parallel=True, cache=__cache)

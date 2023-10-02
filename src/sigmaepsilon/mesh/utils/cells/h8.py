@@ -69,7 +69,7 @@ def _pip_H8_bulk_knn_(x: ndarray, knn: ndarray, tol: float = 1e-12) -> ndarray:
 @njit(nogil=True, cache=__cache)
 def shp_H8(pcoord: ndarray) -> ndarray:
     r, s, t = pcoord
-    return np.array(
+    res = np.array(
         [
             -0.125 * r * s * t
             + 0.125 * r * s
@@ -137,6 +137,7 @@ def shp_H8(pcoord: ndarray) -> ndarray:
             + 0.125,
         ]
     )
+    return res
 
 
 @njit(nogil=True, parallel=True, cache=__cache)
@@ -170,7 +171,7 @@ def shape_function_matrix_H8_multi(pcoords: ndarray, ndof: int = 3) -> ndarray:
 @njit(nogil=True, cache=__cache)
 def dshp_H8(pcoord: ndarray) -> ndarray:
     r, s, t = pcoord
-    return np.array(
+    res = np.array(
         [
             [
                 -0.125 * s * t + 0.125 * s + 0.125 * t - 0.125,
@@ -214,6 +215,7 @@ def dshp_H8(pcoord: ndarray) -> ndarray:
             ],
         ]
     )
+    return res
 
 
 @njit(nogil=True, parallel=True, cache=__cache)

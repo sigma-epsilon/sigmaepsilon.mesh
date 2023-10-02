@@ -2,7 +2,7 @@
 import numpy as np
 import unittest
 
-from sigmaepsilon.mesh.trimesh import TriMesh
+from sigmaepsilon.mesh.data.trimesh import TriMesh
 from sigmaepsilon.mesh import CartesianFrame
 from sigmaepsilon.mesh.recipes import circular_disk
 from sigmaepsilon.mesh.cells import T3, TET4, TET10
@@ -42,15 +42,19 @@ class TestTet(unittest.TestCase):
         self.assertTrue(test_vol_cylinder_TET4(1.0, 10.0, 10.0, 120, 80, 5))
 
     def test_shp_TET4(self):
-        pcoords = TET4.lcoords()
-        shpf, shpmf, dshpf = TET4.generate_class_functions(return_symbolic=False)
+        pcoords = TET4.Geometry.master_coordinates()
+        shpf, shpmf, dshpf = TET4.Geometry.generate_class_functions(
+            return_symbolic=False
+        )
         shpf(pcoords)
         shpmf(pcoords)
         dshpf(pcoords)
 
     def test_shp_TET10(self):
-        pcoords = TET10.lcoords()
-        shpf, shpmf, dshpf = TET10.generate_class_functions(return_symbolic=False)
+        pcoords = TET10.Geometry.master_coordinates()
+        shpf, shpmf, dshpf = TET10.Geometry.generate_class_functions(
+            return_symbolic=False
+        )
         shpf(pcoords)
         shpmf(pcoords)
         dshpf(pcoords)

@@ -1,11 +1,12 @@
-from typing import Union
+from typing import Union, Callable, Tuple, Optional
+from numbers import Number
+
 import numpy as np
 from numpy import ndarray
 
-from .pointdata import PointData
+from .typing import PolyCellProtocol
+from .data import PointData, PolyData, TriMesh
 from .grid import grid
-from .polydata import PolyData
-from .trimesh import TriMesh
 from .cells import H8, H27, TET4, TET10, T3, W6, W18
 from .space import CartesianFrame
 from .triang import triangulate
@@ -15,7 +16,13 @@ from .extrude import extrude_T3_TET4, extrude_T3_W6
 from .voxelize import voxelize_cylinder
 
 
-def circular_helix(a=None, b=None, *args, slope=None, pitch=None):
+def circular_helix(
+    a: Optional[Union[Number, None]] = None,
+    b: Optional[Union[Number, None]] = None,
+    *,
+    slope: Optional[Union[Number, None]] = None,
+    pitch: Optional[Union[Number, None]] = None,
+) -> Callable[[Number], Tuple[float, float, float]]:
     """
     Returns the function :math:`f(t) = [a \cdot cos(t), a \cdot sin(t), b \cdot t]`,
     which describes a circular helix of radius a and slope a/b (or pitch 2πb).
@@ -26,7 +33,7 @@ def circular_helix(a=None, b=None, *args, slope=None, pitch=None):
         a = a if a is not None else slope * b
         b = b if b is not None else slope / a
 
-    def inner(t):
+    def inner(t: Number) -> Tuple[float, float, float]:
         """
         Evaluates :math:`f(t) = [a \cdot cos(t), a \cdot sin(t), b \cdot t]`.
         """
@@ -36,7 +43,11 @@ def circular_helix(a=None, b=None, *args, slope=None, pitch=None):
 
 
 def circular_disk(
-    nangles: int, nradii: int, rmin: float, rmax: float, frame=None
+    nangles: int,
+    nradii: int,
+    rmin: float,
+    rmax: float,
+    frame: Optional[Union[CartesianFrame, None]] = None,
 ) -> TriMesh:
     """
     Returns the triangulation of a circular disk.
@@ -89,8 +100,8 @@ def cylinder(
     *,
     regular: bool = True,
     voxelize: bool = False,
-    celltype=None,
-    frame: CartesianFrame = None,
+    celltype: Optional[Union[PolyCellProtocol, None]] = None,
+    frame: Optional[Union[CartesianFrame, None]] = None,
     **kwargs,
 ) -> PolyData:
     """
@@ -128,7 +139,7 @@ def cylinder(
 
     Returns
     -------
-    :class:`~sigmaepsilon.mesh.polydata.PolyData`
+    :class:`~sigmaepsilon.mesh.data.polydata.PolyData`
     """
     if celltype is None:
         celltype = H8 if voxelize else TET4
@@ -143,7 +154,7 @@ def cylinder(
         radius = np.array([0, radius])
     elif not isinstance(radius, ndarray):
         radius = np.array(radius)
-    etype = celltype.__label__ if etype is None else etype
+    etype = celltype.label if etype is None else etype
     if voxelize:
         if isinstance(size[0], int):
             size_ = (radius[1] - radius[0]) / size[0]
@@ -245,7 +256,7 @@ def ribbed_plate(
 
     Returns
     -------
-    :class:`~sigmaepsilon.mesh.polydata.PolyData`
+    :class:`~sigmaepsilon.mesh.data.polydata.PolyData`
     """
 
     def subdivide(bins, lmax):
@@ -345,7 +356,7 @@ def perforated_cube(
 
     Returns
     -------
-    :class:`~sigmaepsilon.mesh.polydata.PolyData`
+    :class:`~sigmaepsilon.mesh.data.polydata.PolyData`
     """
     size = (lx, ly)
     if lmax is not None:

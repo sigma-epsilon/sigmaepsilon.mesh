@@ -16,6 +16,9 @@ __scipy_version__ = sp.__version__
 __cache = True
 
 
+__all__ = ["k_nearest_neighbours", "knn_to_lines"]
+
+
 def k_nearest_neighbours(
     X: ndarray,
     Y: ndarray = None,
