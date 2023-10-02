@@ -80,7 +80,7 @@ class PolyCell(
 
     label: ClassVar[Optional[str]] = None
     Geometry: ClassVar[GeometryProtocol]
-        
+
     @CellData.frames.getter
     def frames(self) -> ndarray:
         """Returns local coordinate frames of the cells."""
@@ -99,7 +99,7 @@ class PolyCell(
                 raise TypeError(
                     "Invalid Geometry class. The 'number of spatial dimensions'"
                     " must be 1, 2 or 3."
-                    )
+                )
         return super().frames
 
     def to_triangles(self) -> ndarray:
@@ -451,7 +451,7 @@ class PolyCell(
         """
         return self.points_of_cells(*args, **kwargs)
 
-    def topology(self) -> TopologyArray:
+    def topology(self) -> Union[TopologyArray, None]:
         """
         Returns the numerical representation of the topology of
         the cells.
