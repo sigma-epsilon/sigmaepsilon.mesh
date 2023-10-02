@@ -1,5 +1,6 @@
-from typing import Union, Iterable, Generic, TypeVar
+from typing import Union, Iterable, Generic, TypeVar, Optional
 from copy import deepcopy
+import contextlib
 
 import numpy as np
 from numpy import ndarray
@@ -74,17 +75,17 @@ class CellData(Generic[PolyDataLike, PointDataLike], AkWrapper):
     def __init__(
         self,
         *args,
-        pointdata: PointDataLike = None,
-        wrap: AwkwardLike = None,
-        topo: ndarray = None,
-        fields: dict = None,
-        activity: ndarray = None,
-        frames: Union[ndarray, ReferenceFrame] = None,
-        areas: Union[ndarray, float] = None,
-        t: Union[ndarray, float] = None,
-        db: AwkwardLike = None,
-        container: PolyDataLike = None,
-        i: ndarray = None,
+        pointdata: Optional[Union[PointDataLike, None]] = None,
+        wrap: Optional[Union[AwkwardLike, None]] = None,
+        topo: Optional[Union[ndarray, None]] = None,
+        fields: Optional[Union[dict, None]] = None,
+        activity: Optional[Union[ndarray, None]] = None,
+        frames: Optional[Union[ndarray, ReferenceFrame, None]] = None,
+        areas: Optional[Union[ndarray, float, None]] = None,
+        t: Optional[Union[ndarray, float, None]] = None,
+        db: Optional[Union[AwkwardLike, None]] = None,
+        container: Optional[Union[PolyDataLike, None]] = None,
+        i: Optional[Union[ndarray, None]] = None,
         **kwargs,
     ):
         fields = {} if fields is None else fields
@@ -402,19 +403,20 @@ class CellData(Generic[PolyDataLike, PointDataLike], AkWrapper):
         """
         if attr in self.__dict__:
             return getattr(self, attr)
+
         try:
             return getattr(self._wrapped, attr)
         except AttributeError:
-            try:
+            with contextlib.suppress(Exception):
                 if self.pointdata is not None:
                     if attr in self.pointdata.fields:
                         data = self.pointdata[attr].to_numpy()
                         topo = self.nodes
                         return avg_cell_data(data, topo)
-            except:
-                pass
+
             name = self.__class__.__name__
             raise AttributeError(f"'{name}' object has no attribute called {attr}")
+
         except Exception:
             name = self.__class__.__name__
             raise AttributeError(f"'{name}' object has no attribute called {attr}")
