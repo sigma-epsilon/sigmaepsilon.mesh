@@ -28,3 +28,8 @@ class PointDataProtocol(Protocol):
         """Ought to return the coordinates of the associated pointcloud
         as a 2d float array, where the first axis runs along the points."""
         ...
+        
+    def pull(self) -> ndarray:
+        """Collects data at the points from the cells meeting at thenodes
+        and aggregates it"""
+        ...
