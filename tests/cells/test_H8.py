@@ -4,7 +4,6 @@ import unittest
 
 from sigmaepsilon.mesh import PolyData, PointData, CartesianFrame
 from sigmaepsilon.mesh.grid import grid
-from sigmaepsilon.mesh.grid import Grid
 from sigmaepsilon.mesh.cells import H8
 
 
@@ -12,7 +11,10 @@ class TestHex(unittest.TestCase):
     def test_H8(self):
         def test_H8_volume(Lx, Ly, Lz, nx, ny, nz):
             try:
-                mesh = Grid(size=(Lx, Ly, Lz), shape=(nx, ny, nz), eshape="H8")
+                coords, topo = grid(size=(Lx, Ly, Lz), shape=(nx, ny, nz), eshape="H8")
+                pd = PointData(coords=coords)
+                cd = H8(topo=topo)
+                mesh = PolyData(pd, cd)
                 assert np.isclose(mesh.volume(), Lx * Ly * Lz)
                 return True
             except AssertionError:

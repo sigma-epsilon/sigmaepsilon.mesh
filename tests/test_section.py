@@ -5,7 +5,7 @@ from numpy import ndarray
 
 import sigmaepsilon.mesh.section
 from sigmaepsilon.mesh.section import LineSection, get_section
-from sigmaepsilon.mesh import TriMesh, TetMesh, CartesianFrame
+from sigmaepsilon.mesh import TriMesh, CartesianFrame, PolyData
 
 
 def load_tests(loader, tests, ignore):  # pragma: no cover
@@ -73,7 +73,7 @@ class TestSection(unittest.TestCase):
     def test_extrude(self):
         frame = CartesianFrame(dim=3)
         section = LineSection("CHS", d=1.0, t=0.5, n=16)
-        self.assertIsInstance(section.extrude(length=1.0, N=2, frame=frame), TetMesh)
+        self.assertIsInstance(section.extrude(length=1.0, N=2, frame=frame), PolyData)
 
     def test_coverage_plus(self):
         """Extra tests for coverage."""

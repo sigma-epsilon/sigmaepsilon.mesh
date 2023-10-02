@@ -17,8 +17,12 @@ from sectionproperties.analysis.section import Section
 from sigmaepsilon.core.wrapping import Wrapper
 from linkeddeepdict.tools.kwargtools import getallfromkwargs
 from sigmaepsilon.mesh.utils import centralize
-from sigmaepsilon.mesh.data import TriMesh, TetMesh
+from sigmaepsilon.mesh.data import TriMesh, PolyData
 from sigmaepsilon.mesh.utils.topology import T6_to_T3, detach_mesh_bulk
+
+from .cells import T3
+from .data import PointData
+from .space import CartesianFrame
 
 
 def generate_mesh(
@@ -309,9 +313,13 @@ class LineSection(Wrapper):
                 points, triangles = detach_mesh_bulk(points, triangles[:, :3])
         else:
             raise NotImplementedError
-        return TriMesh(points=points, triangles=triangles, **kwargs)
+        
+        frame = kwargs.get("frame", CartesianFrame(dim=3))
+        pd = PointData(coords=points, frame=frame)
+        cd = T3(topo=triangles, frames=frame)
+        return TriMesh(pd, cd)
 
-    def extrude(self, *, length=None, frame=None, N=None, **__) -> TetMesh:
+    def extrude(self, *, length=None, frame=None, N=None, **__) -> PolyData:
         """
         Creates a 3d tetragonal mesh from the section.
 
@@ -326,7 +334,7 @@ class LineSection(Wrapper):
 
         Returns
         -------
-        :class:`~sigmaepsilon.mesh.tetmesh.TetMesh`
+        :class:`~sigmaepsilon.mesh.data.polydata.PolyData`
         """
         return self.trimesh(frame=frame).extrude(h=length, N=N)
 

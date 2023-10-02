@@ -90,8 +90,10 @@ def circular_disk(
     triangles = triang.get_masked_triangles()
     points = np.stack((triang.x, triang.y, np.zeros(nP)), axis=1)
     points, triangles = detach(points, triangles)
-    frame = CartesianFrame(dim=3) if frame is None else frame
-    return TriMesh(points=points, triangles=triangles, celltype=T3, frame=frame)
+    frame = CartesianFrame(dim=3) if frame is None else frame  
+    pd = PointData(coords=points, frame=frame)
+    cd = T3(topo=triangles, frames=frame)
+    return TriMesh(pd, cd)
 
 
 def cylinder(
@@ -199,7 +201,9 @@ def cylinder(
             topo = grid.cells_dict[10].astype(int)
 
     frame = CartesianFrame(dim=3) if frame is None else frame
-    return PolyData(coords=coords, topo=topo, celltype=celltype, frame=frame)
+    pd = PointData(coords=coords, frame=frame)
+    cd = celltype(topo=topo, frames=frame)
+    return PolyData(pd, cd)
 
 
 def ribbed_plate(
@@ -346,8 +350,7 @@ def ribbed_plate(
     frame = CartesianFrame(dim=3)
     pd = PointData(coords=coords, frame=frame)
     cd = celltype(topo=topo, frames=frame)
-
-    return PolyData(pd, cd, frame=frame)
+    return PolyData(pd, cd)
 
 
 def perforated_cube(
@@ -430,4 +433,4 @@ def perforated_cube(
     frame = CartesianFrame(dim=3)
     pd = PointData(coords=coords, frame=frame)
     cd = celltype(topo=topo, frames=frame)
-    return PolyData(pd, cd, frame=frame)
+    return PolyData(pd, cd)

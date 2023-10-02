@@ -4,7 +4,7 @@ from importlib.metadata import metadata
 from sigmaepsilon.core.config import namespace_package_name
 
 from .space import PointCloud, CartesianFrame
-from .data import PolyData, PointData, LineData, TriMesh, TetMesh, Grid
+from .data import PolyData, PointData, LineData, TriMesh
 from .data import LineData as PolyData1d
 from .utils import k_nearest_neighbours as KNN
 from .topoarray import TopologyArray
@@ -23,10 +23,8 @@ __all__ = [
     "KNN",
     "TopologyArray",
     "TriMesh",
-    "TetMesh",
     "triangulate",
     "grid",
-    "Grid",
     "tetrahedralize",
     "LagrangianCellApproximator",
 ]

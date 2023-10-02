@@ -1,4 +1,4 @@
-from typing import Union, Iterable
+from typing import Union, Iterable, Optional
 from copy import deepcopy
 
 import numpy as np
@@ -46,15 +46,15 @@ class PointData(AkWrapper, ABC_AkWrapper):
     def __init__(
         self,
         *args,
-        points: ndarray = None,
-        coords: ndarray = None,
-        wrap: akRecord = None,
-        fields: Iterable = None,
-        frame: FrameLike = None,
-        newaxis: int = 2,
-        activity: ndarray = None,
-        db: akRecord = None,
-        container: PolyDataProtocol = None,
+        points: Optional[Union[ndarray, None]] = None,
+        coords: Optional[Union[ndarray, None]] = None,
+        wrap: Optional[Union[akRecord, None]] = None,
+        fields: Optional[Union[Iterable, None]] = None,
+        frame: Optional[Union[FrameLike, None]] = None,
+        newaxis: Optional[int] = 2,
+        activity: Optional[Union[ndarray, None]] = None,
+        db: Optional[Union[akRecord, None]] = None,
+        container: Optional[Union[PolyDataProtocol, None]] = None,
         **kwargs,
     ):
         if db is not None:
@@ -66,14 +66,19 @@ class PointData(AkWrapper, ABC_AkWrapper):
             # set pointcloud
             point_cls = self.__class__._point_cls_
             X = None
+
             if len(args) > 0:
                 if isinstance(args[0], np.ndarray):
                     X = args[0]
             else:
                 X = points if coords is None else coords
-            assert isinstance(
-                X, np.ndarray
-            ), "Coordinates must be specified as a numpy array!"
+                
+            if X is None:
+                raise ValueError("Coordinates must be specified.")
+            
+            if not isinstance(X, ndarray):
+                raise TypeError("Coordinates must be specified as a NumPy array!")
+            
             nP, nD = X.shape
             if nD == 2:
                 inds = [0, 1, 2]
@@ -88,6 +93,7 @@ class PointData(AkWrapper, ABC_AkWrapper):
                         X = point_cls(X, frame=frame).show()
             elif nD == 3:
                 X = point_cls(X, frame=frame).show()
+
             fields[self._dbkey_x_] = X
 
             if activity is None:
@@ -96,6 +102,7 @@ class PointData(AkWrapper, ABC_AkWrapper):
                 assert (
                     isboolarray(activity) and len(activity.shape) == 1
                 ), "'activity' must be a 1d boolean numpy array!"
+
             fields[self._dbkey_activity_] = activity
 
             for k, v in kwargs.items():
@@ -107,6 +114,7 @@ class PointData(AkWrapper, ABC_AkWrapper):
         if not isinstance(frame, FrameLike):
             if coords is not None:
                 frame = gen_frame(coords)
+
         self._frame = frame
 
         super().__init__(*args, wrap=wrap, fields=fields, **kwargs)
@@ -126,6 +134,7 @@ class PointData(AkWrapper, ABC_AkWrapper):
 
         db = copy_function(self.db)
         f = self.frame
+
         if f is not None:
             axes = copy_function(f.axes)
             if is_deep:
@@ -136,10 +145,12 @@ class PointData(AkWrapper, ABC_AkWrapper):
             frame = None
 
         result = cls(db=db, frame=frame)
+
         if is_deep:
             memo[id(self)] = result
 
         result_dict = result.__dict__
+
         for k, v in self.__dict__.items():
             if not k in result_dict:
                 setattr(result, k, copy_function(v))
@@ -190,8 +201,6 @@ class PointData(AkWrapper, ABC_AkWrapper):
 
         if isinstance(self._frame, FrameLike):
             result = self._frame
-        elif self.container is not None:
-            result = self.container._frame
 
         if result is None:
             dim = self.x.shape[-1]

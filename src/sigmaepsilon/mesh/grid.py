@@ -5,12 +5,11 @@ from numba import njit, prange
 
 from .utils.topology import unique_topo_data, detach_mesh_bulk, transform_topology
 from .utils import center_of_points, k_nearest_neighbours as knn, knn_to_lines
-from .data.polydata import PolyData
 
 __cache = True
 
 
-__all__ = ["grid", "gridQ4", "gridQ9", "gridH8", "gridH27", "knngridL2", "Grid"]
+__all__ = ["grid", "gridQ4", "gridQ9", "gridH8", "gridH27", "knngridL2"]
 
 
 def grid(
@@ -601,30 +600,3 @@ def knngridL2(
     di = T[:, 0] - T[:, -1]
     inds = np.where(di != 0)[0]
     return detach_mesh_bulk(X, T[inds, :])
-
-
-class Grid(PolyData):
-    """
-    A class to generate meshes based on grid-like data. All input
-    arguments are forwarded to :func:`~sigmaepsilon.mesh.grid.grid`. The difference is that
-    a :class:`~sigmaepsilon.mesh.data.polydata.PolyData` instance is returned, insted of
-    raw mesh data.
-
-    Examples
-    --------
-    >>> from sigmaepsilon.mesh.grid import Grid
-    >>> size = 80, 60, 20
-    >>> shape = 8, 6, 2
-    >>> grid = Grid(size=size, shape=shape, eshape='H8')
-
-    See also
-    --------
-    :func:`~sigmaepsilon.mesh.grid.grid`
-    """
-
-    def __init__(self, *args, celltype=None, frame=None, eshape=None, **kwargs):
-        # parent class handles pointdata and celldata creation
-        coords, topo = grid(*args, eshape=eshape, **kwargs)
-        super().__init__(
-            *args, coords=coords, topo=topo, celltype=celltype, frame=frame, **kwargs
-        )

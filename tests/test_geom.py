@@ -4,7 +4,7 @@ import unittest
 
 from sigmaepsilon.math.linalg import Vector
 
-from sigmaepsilon.mesh import PolyData, grid, PointCloud, CartesianFrame
+from sigmaepsilon.mesh import PointData, PolyData, grid, PointCloud, CartesianFrame
 from sigmaepsilon.mesh.grid import grid
 from sigmaepsilon.mesh import PolyData, PointData
 from sigmaepsilon.mesh.space import StandardFrame
@@ -36,9 +36,11 @@ class TestPolyData(unittest.TestCase):
         coords2, topo2 = grid(size=size, shape=shape, eshape="H27", origo=(0, 0, 100))
         coords = np.vstack([coords1, coords2])
         topo2 += coords1.shape[0]
-        pd = PolyData(coords=coords)
-        pd["group1"]["mesh1"] = PolyData(topo=topo1, vtkCellType=29)
-        pd["group2", "mesh2"] = PolyData(topo=topo2, vtkCellType=29)
+        A = CartesianFrame(dim=3)
+        _pd = PointData(coords=coords, frame=A)
+        pd = PolyData(_pd)
+        pd["group1"]["mesh1"] = PolyData(cd=H27(topo=topo1))
+        pd["group2", "mesh2"] = PolyData(cd=H27(topo=topo2))
         pd.center()
         pd.move(np.array([1.0, 0.0, 0.0]))
         pd.centralize()
@@ -48,10 +50,12 @@ class TestPolyData(unittest.TestCase):
         size = 100, 100, 100
         shape = 10, 10, 10
         coords, topo = grid(size=size, shape=shape, eshape="H27")
-        pd = PolyData(coords=coords)
-        pd["A"]["Part1"] = PolyData(topo=topo[:10])
-        pd["B"]["Part2"] = PolyData(topo=topo[10:-10])
-        pd["C"]["Part3"] = PolyData(topo=topo[-10:])
+        A = CartesianFrame(dim=3)
+        _pd = PointData(coords=coords, frame=A)
+        pd = PolyData(_pd)
+        pd["A"]["Part1"] = PolyData(H27(topo=topo[:10]))
+        pd["B"]["Part2"] = PolyData(H27(topo=topo[10:-10]))
+        pd["C"]["Part3"] = PolyData(H27(topo=topo[-10:]))
 
     def test_cube(self):
         size = Lx, Ly, Lz = 100, 100, 100
@@ -59,8 +63,7 @@ class TestPolyData(unittest.TestCase):
         coords, topo = grid(size=size, shape=shape, eshape="H27")
         GlobalFrame = StandardFrame(dim=3)
         pd = PointData(coords=coords, frame=GlobalFrame)
-        cd = H27(topo=topo, frames=GlobalFrame)
-        mesh = PolyData(pd, frame=GlobalFrame)
+        mesh = PolyData(pd)
 
         part1 = H27(topo=topo[:10], frames=GlobalFrame)
         part2 = H27(topo=topo[10:-10], frames=GlobalFrame)

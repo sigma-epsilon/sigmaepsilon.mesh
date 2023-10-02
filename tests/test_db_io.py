@@ -2,10 +2,10 @@ import unittest
 import os
 import numpy as np
 
-from sigmaepsilon.mesh import PolyData, PointData
+from sigmaepsilon.mesh import PolyData, PointData, triangulate
 from sigmaepsilon.mesh.cells import T3, Q4, H8
 from sigmaepsilon.mesh.data.trimesh import TriMesh
-from sigmaepsilon.mesh.grid import Grid
+from sigmaepsilon.mesh.grid import grid
 from sigmaepsilon.mesh.space import StandardFrame
 from sigmaepsilon.math.logical import isclose
 
@@ -21,11 +21,22 @@ class TestIO(unittest.TestCase):
         block data.
         """
         A = StandardFrame(dim=3)
-        tri = TriMesh(size=(100, 100), shape=(10, 10), frame=A)
-        grid2d = Grid(size=(100, 100), shape=(10, 10), eshape="Q4", frame=A)
-        grid3d = Grid(size=(100, 100, 100), shape=(8, 6, 2), eshape="H8", frame=A)
-
-        mesh = PolyData(frame=A)
+        coords, topo, _ = triangulate(size=(100, 100), shape=(10, 10))
+        pd = PointData(coords=coords, frame=A)
+        cd = T3(topo=topo)
+        tri = TriMesh(pd, cd)
+        
+        coords, topo = grid(size=(100, 100), shape=(10, 10), eshape="Q4")
+        pd = PointData(coords=coords, frame=A)
+        cd = Q4(topo=topo, frames=A)
+        grid2d = PolyData(pd, cd)
+        
+        coords, topo = grid(size=(100, 100, 20), shape=(8, 6, 2), eshape="H8")
+        pd = PointData(coords=coords, frame=A)
+        cd = H8(topo=topo, frames=A)
+        grid3d = PolyData(pd, cd)
+        
+        mesh = PolyData()
         mesh["tri", "T3"] = tri.move(np.array([0.0, 0.0, -50]))
         mesh["grids", "Q4"] = grid2d.move(np.array([0.0, 0.0, 150]))
         mesh["grids", "H8"] = grid3d
@@ -55,16 +66,16 @@ class TestIO(unittest.TestCase):
             "cdH8.parquet",
         ]
 
-        mesh = PolyData(frame=A)
+        mesh = PolyData()
         pdT3 = PointData.from_parquet("pdT3.parquet")
         cdT3 = T3.from_parquet("cdT3.parquet")
-        mesh["tri", "T3"] = PolyData(pdT3, cdT3, frame=A)
+        mesh["tri", "T3"] = PolyData(pdT3, cdT3)
         pdQ4 = PointData.from_parquet("pdQ4.parquet")
         cdQ4 = Q4.from_parquet("cdQ4.parquet")
-        mesh["grids", "Q4"] = PolyData(pdQ4, cdQ4, frame=A)
+        mesh["grids", "Q4"] = PolyData(pdQ4, cdQ4)
         pdH8 = PointData.from_parquet("pdH8.parquet")
         cdH8 = H8.from_parquet("cdH8.parquet")
-        mesh["grids", "H8"] = PolyData(pdH8, cdH8, frame=A)
+        mesh["grids", "H8"] = PolyData(pdH8, cdH8)
 
         self.assertTrue(isclose(volume, mesh.volume(), atol=1e-5, rtol=None))
 

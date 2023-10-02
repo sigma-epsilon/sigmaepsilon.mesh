@@ -8,20 +8,32 @@ from pyvista import examples
 import meshio
 
 from sigmaepsilon.core.testing import SigmaEpsilonTestCase
-from sigmaepsilon.mesh import PolyData, PointData, CartesianFrame
+from sigmaepsilon.mesh import PolyData, PointData, CartesianFrame, triangulate
 from sigmaepsilon.mesh.data.trimesh import TriMesh
-from sigmaepsilon.mesh.grid import Grid
 from sigmaepsilon.mesh.space import StandardFrame
-from sigmaepsilon.mesh.cells import H8
+from sigmaepsilon.mesh.cells import H8, Q4, T3
 from sigmaepsilon.mesh.grid import grid
 
 
 class TestPolyDataMultiBlock(SigmaEpsilonTestCase):
     def setUp(self) -> None:
         A = StandardFrame(dim=3)
-        tri = TriMesh(size=(100, 100), shape=(4, 4), frame=A)
-        grid2d = Grid(size=(100, 100), shape=(4, 4), eshape="Q4", frame=A)
-        grid3d = Grid(size=(100, 100, 20), shape=(4, 4, 2), eshape="H8", frame=A)
+        
+        coords, topo, _ = triangulate(size=(100, 100), shape=(4, 4))
+        pd = PointData(coords=coords, frame=A)
+        cd = T3(topo=topo, frames=A)
+        tri = TriMesh(pd, cd)
+        
+        coords, topo = grid(size=(100, 100), shape=(4, 4), eshape="Q4")
+        pd = PointData(coords=coords, frame=A)
+        cd = Q4(topo=topo, frames=A)
+        grid2d = PolyData(pd, cd)
+        
+        coords, topo = grid(size=(100, 100, 20), shape=(4, 4, 2), eshape="H8")
+        pd = PointData(coords=coords, frame=A)
+        cd = H8(topo=topo, frames=A)
+        grid3d = PolyData(pd, cd)
+        
         mesh = PolyData(frame=A)
         mesh["tri", "T3"] = tri.move(np.array([0.0, 0.0, -50]))
         mesh["grids", "Q4"] = grid2d.move(np.array([0.0, 0.0, 50]))
@@ -57,8 +69,8 @@ class TestPolyDataMultiBlock(SigmaEpsilonTestCase):
         self.assertIsInstance(mesh.point_fields, Iterable)
         self.assertIsInstance(mesh.cell_fields, Iterable)
 
-        self.assertIsInstance(mesh["grids", "Q4"].frames, np.ndarray)
-        mesh["grids", "Q4"].frames = mesh["grids", "Q4"].frames
+        self.assertIsInstance(mesh["grids", "Q4"].cd.frames, np.ndarray)
+        mesh["grids", "Q4"].cd.frames = mesh["grids", "Q4"].cd.frames
 
     def test_coordinates(self):
         mesh: PolyData = self.mesh

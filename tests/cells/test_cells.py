@@ -2,7 +2,7 @@ import numpy as np
 import unittest
 
 from sigmaepsilon.mesh.cells import H8, TET10
-from sigmaepsilon.mesh import grid, PolyData, CartesianFrame
+from sigmaepsilon.mesh import grid, PolyData, CartesianFrame, PointData
 
 
 class TestGeneratedExpressions(unittest.TestCase):
@@ -41,11 +41,13 @@ class TestPIP(unittest.TestCase):
         bins = xbins, ybins, zbins
         coords, topo = grid(bins=bins, eshape="H8")
         frame = CartesianFrame(dim=3)
-        pd = PolyData(coords=coords, topo=topo, celltype=H8, frame=frame)
-        self.assertTrue(pd.cd.pip(coords[0, :], tol=1e-12))
-        self.assertTrue(pd.cd.pip(coords[-1, :], tol=1e-12))
-        self.assertFalse(pd.cd.pip(coords[0, :] - 1, tol=1e-12))
-        self.assertFalse(pd.cd.pip(coords[-1, :] + 1, tol=1e-12))
+        pd = PointData(coords=coords, frame=frame)
+        cd = H8(topo=topo, frames=frame)
+        mesh = PolyData(pd, cd)
+        self.assertTrue(mesh.cd.pip(coords[0, :], tol=1e-12))
+        self.assertTrue(mesh.cd.pip(coords[-1, :], tol=1e-12))
+        self.assertFalse(mesh.cd.pip(coords[0, :] - 1, tol=1e-12))
+        self.assertFalse(mesh.cd.pip(coords[-1, :] + 1, tol=1e-12))
 
 
 if __name__ == "__main__":

@@ -2,12 +2,13 @@ import numpy as np
 import unittest
 
 from linkeddeepdict import LinkedDeepDict
-from sigmaepsilon.mesh import PolyData
+from sigmaepsilon.mesh import PolyData, PointData
 from sigmaepsilon.mesh.space import StandardFrame, PointCloud
 from sigmaepsilon.mesh.utils import centralize, center_of_points
 from sigmaepsilon.math.linalg import linspace
 from sigmaepsilon.mesh.triang import triangulate
 from sigmaepsilon.mesh.grid import grid
+from sigmaepsilon.mesh.cells import Q4, T3
 from sigmaepsilon.mesh.utils.tri import get_points_inside_triangles
 from sigmaepsilon.mesh.utils.topology import remap_topo
 from sectionproperties.pre.library.steel_sections import circular_hollow_section as CHS
@@ -152,7 +153,10 @@ class TestScenario2(unittest.TestCase):
         coords_grid, topo_grid = grid(
             size=(Lx * 0.99, Ly * 0.99), shape=(N, N), eshape="Q4", centralize=True
         )
-        Grid = PolyData(coords=coords_grid, topo=topo_grid, frame=GlobalFrame)
+        
+        pd = PointData(coords=coords_grid, frame=GlobalFrame)
+        cd = Q4(topo=topo_grid)
+        Grid = PolyData(pd, cd)
         grid_centers = Grid.centers()[:, :2]
 
         for face in frames:
@@ -226,9 +230,11 @@ class TestScenario2(unittest.TestCase):
             database[face]["topo"] = f_topo
 
         cubepoints = np.vstack(points)
-        cube = PolyData(coords=cubepoints, frame=GlobalFrame)
+        pd = PointData(coords=cubepoints, frame=GlobalFrame)
+        cube = PolyData(pd)
         for face in frames:
-            cube[face] = PolyData(topo=database[face]["topo"])
+            cd = T3(topo=database[face]["topo"])
+            cube[face] = PolyData(cd)
 
 
 if __name__ == "__main__":
