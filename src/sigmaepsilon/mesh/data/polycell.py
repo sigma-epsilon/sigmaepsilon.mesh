@@ -50,7 +50,7 @@ from ..utils.topology.topo import detach_mesh_bulk, rewire
 from ..utils.topology import transform_topology
 from ..utils.tri import triangulate_cell_coords, area_tri_bulk, _pip_tri_bulk_
 from ..utils.knn import k_nearest_neighbours
-from ..utils.space import index_of_closest_point
+from ..utils.space import index_of_closest_point, frames_of_lines, frames_of_surfaces
 from ..utils import cell_centers_bulk
 from ..vtkutils import mesh_to_UnstructuredGrid as mesh_to_vtk
 from ..topoarray import TopologyArray
@@ -80,6 +80,27 @@ class PolyCell(
 
     label: ClassVar[Optional[str]] = None
     Geometry: ClassVar[GeometryProtocol]
+        
+    @CellData.frames.getter
+    def frames(self) -> ndarray:
+        """Returns local coordinate frames of the cells."""
+        if not self.has_frames:
+            if (nD := self.Geometry.number_of_spatial_dimensions) == 1:
+                coords = self.source_coords()
+                topo = self.topology().to_numpy()
+                self.frames = frames_of_lines(coords, topo)
+            elif nD == 2:
+                coords = self.source_coords()
+                topo = self.topology().to_numpy()
+                self.frames = frames_of_surfaces(coords, topo)
+            elif nD == 3:
+                self.frames = self.source_frame()
+            else:  # pragma: no cover
+                raise TypeError(
+                    "Invalid Geometry class. The 'number of spatial dimensions'"
+                    " must be 1, 2 or 3."
+                    )
+        return super().frames
 
     def to_triangles(self) -> ndarray:
         """
