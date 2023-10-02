@@ -70,7 +70,7 @@ class TestScenario1(unittest.TestCase):
         mesh = PolyData()
 
         base = self._generate_base_mesh().centralize()
-        coords, topo = base.coords(), base.topology()
+        coords, topo = base.coords(), base.topology().to_numpy()
 
         mesh["mesh_1"] = PolyData(
             PointData(coords=coords), H8(topo=topo), frame=frame_1

@@ -73,7 +73,7 @@ class TestPolyDataMultiBlock(SigmaEpsilonTestCase):
     def test_topology(self):
         mesh: PolyData = self.mesh
         self.assertTrue(mesh.topology().is_jagged())
-        self.assertIsInstance(mesh["grids", "Q4"].topology(), np.ndarray)
+        self.assertIsInstance(mesh["grids", "Q4"].topology().to_numpy(), np.ndarray)
 
         topo, _ = mesh.topology(return_inds=True)
         mesh.cell_indices()

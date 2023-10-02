@@ -144,17 +144,23 @@ def cylinder(
     if celltype is None:
         celltype = H8 if voxelize else TET4
     etype = None
+
     if isinstance(size, float) or isinstance(size, int):
         size = [size]
+
     if voxelize:
         regular = True
         etype = "H8"
+
     radius, angle, h = shape
+
     if isinstance(radius, int):
         radius = np.array([0, radius])
     elif not isinstance(radius, ndarray):
         radius = np.array(radius)
+
     etype = celltype.label if etype is None else etype
+
     if voxelize:
         if isinstance(size[0], int):
             size_ = (radius[1] - radius[0]) / size[0]
@@ -167,7 +173,7 @@ def cylinder(
                 min_radius, max_radius = radius
                 n_radii, n_angles, n_z = size
                 mesh = circular_disk(n_angles, n_radii, min_radius, max_radius)
-                points, triangles = mesh.coords(), mesh.topology()
+                points, triangles = mesh.coords(), mesh.topology().to_numpy()
                 coords, topo = extrude_T3_TET4(points, triangles, h, n_z)
             else:
                 raise NotImplementedError("Celltype not supported!")
@@ -286,6 +292,7 @@ def ribbed_plate(
             zbins.append(ex - hx / 2)
         if (ex + hx / 2) > (t / 2):
             zbins.append(ex + hx / 2)
+
     if wy is not None and hy is not None:
         ey = 0.0 if ey is None else ey
         xbins.extend([-wy / 2, wy / 2])
@@ -312,14 +319,17 @@ def ribbed_plate(
 
     centers = cell_centers_bulk(coords, topo)
     mask = (centers[:, 2] > (-t / 2)) & (centers[:, 2] < (t / 2))
+
     if wx is not None and hx is not None:
         m = (centers[:, 1] > (-wx / 2)) & (centers[:, 1] < (wx / 2))
         m = m & (centers[:, 2] > (ex - hx / 2)) & (centers[:, 2] < (ex + hx / 2))
         mask = mask | m
+
     if wy is not None and hy is not None:
         m = (centers[:, 0] > (-wy / 2)) & (centers[:, 0] < (wy / 2))
         m = m & (centers[:, 2] > (ey - hy / 2)) & (centers[:, 2] < (ey + hy / 2))
         mask = mask | m
+
     topo = topo[mask, :]
 
     if tetrahedralize:
@@ -336,6 +346,7 @@ def ribbed_plate(
     frame = CartesianFrame(dim=3)
     pd = PointData(coords=coords, frame=frame)
     cd = celltype(topo=topo, frames=frame)
+
     return PolyData(pd, cd, frame=frame)
 
 

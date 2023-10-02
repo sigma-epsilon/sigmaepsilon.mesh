@@ -23,7 +23,7 @@ class TestScenario3(unittest.TestCase):
         grid.centralize()
 
         coords = grid.coords()
-        topo = grid.topology()
+        topo = grid.topology().to_numpy()
         centers = grid.centers()
 
         b_left = centers[:, 0] < 0

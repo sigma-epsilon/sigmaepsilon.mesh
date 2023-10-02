@@ -19,10 +19,10 @@ __all__ = ["TriMesh"]
 class TriMesh(PolyData):
     """
     A class to handle triangular meshes.
-    
+
     All positional and keyword arguments not listed here are forwarded to
     :class:`~sigmaepsilon.mesh.data.polydata.PolyData`.
-    
+
     Besides the arguments `coords` and `topo`, this class accepts these
     using aliases `points` and `triangles`.
 
@@ -63,9 +63,9 @@ class TriMesh(PolyData):
     >>> trimesh.normals()
     >>> trimesh.is_planar()
     True
-    
+
     Create a circular disk
-    
+
     >>> from sigmaepsilon.mesh.recipes import circular_disk
     >>> trimesh = circular_disk(120, 60, 5, 25)
 

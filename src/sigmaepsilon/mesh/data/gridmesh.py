@@ -6,9 +6,9 @@ __all__ = ["Grid"]
 
 class Grid(PolyData):
     """
-    A class to generate meshes based on grid-like data. All input arguments are 
+    A class to generate meshes based on grid-like data. All input arguments are
     forwarded to :func:`~sigmaepsilon.mesh.grid.grid`. The difference is that
-    a :class:`~sigmaepsilon.mesh.data.polydata.PolyData` instance is returned, 
+    a :class:`~sigmaepsilon.mesh.data.polydata.PolyData` instance is returned,
     insted of raw mesh data.
 
     Examples
