@@ -115,7 +115,7 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
     The `PolyData` class is the most important class in the library
     and a backbone of all mesh classes.
 
-    The implementation is based on the `awkward` library, which provides
+    The implementation is based on the `Awkward` library, which provides
     memory-efficient, numba-jittable data classes to deal with dense, sparse,
     complete or incomplete data. These data structures are managed in pure
     Python by the `DeepDict` class.
@@ -1012,16 +1012,25 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
     @property
     def frame(self) -> FrameLike:
         """Returns the frame of the underlying pointcloud."""
-        # there is a reference in PointData to the variable `self._frame`
+        # NOTE there is a reference in PointData to the variable `self._frame`
         result = None
+
         if self._frame is not None:
             result = self._frame
         elif self.pd is not None:
             if self.pd.has_x:
                 result = self.pd.frame
+
         if result is None:
             if self.parent is not None:
                 result = self.parent.frame
+
+        # If the frame is still None, it means that the entire mesh
+        # has no frame, not even the root object. In this case we assign
+        # a default frame to the root.
+        if result is None:
+            self.root._frame = result = CartesianFrame()
+
         return result
 
     @property
