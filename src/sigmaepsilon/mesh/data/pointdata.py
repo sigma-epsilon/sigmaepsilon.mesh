@@ -55,7 +55,7 @@ class PointData(AkWrapper, ABC_AkWrapper):
         activity: ndarray = None,
         db: akRecord = None,
         container: PolyDataProtocol = None,
-        **kwargs
+        **kwargs,
     ):
         if db is not None:
             wrap = db
@@ -187,13 +187,16 @@ class PointData(AkWrapper, ABC_AkWrapper):
         Returns the frame of the underlying pointcloud.
         """
         result = None
+
         if isinstance(self._frame, FrameLike):
             result = self._frame
         elif self.container is not None:
             result = self.container._frame
+
         if result is None:
             dim = self.x.shape[-1]
             result = self._frame_class_(dim=dim)
+
         return result
 
     @property
@@ -243,21 +246,27 @@ class PointData(AkWrapper, ABC_AkWrapper):
         :func:`~sigmaepsilon.mesh.utils.utils.collect_nodal_data`
         """
         source: PolyDataProtocol = self.container.source()
+
         if ndf is None:
             ndf = source.nodal_distribution_factors()
+
         if isinstance(ndf, ndarray):
             ndf = csr_matrix(ndf)
+
         blocks = list(source.cellblocks(inclusive=True))
         b = blocks.pop(0)
         cids = b.cd.id
         topo = b.cd.nodes
         celldata = b.cd.db[key].to_numpy()
+
         if len(celldata.shape) == 1:
             nE, nNE = topo.shape
             celldata = np.repeat(celldata, nNE).reshape(nE, nNE)
+
         shp = [len(self)] + list(celldata.shape[2:])
         res = np.zeros(shp, dtype=float)
         collect_nodal_data(celldata, topo, cids, ndf, res)
+
         for b in blocks:
             cids = b.cd.id
             topo = b.cd.nodes
@@ -266,4 +275,5 @@ class PointData(AkWrapper, ABC_AkWrapper):
                 nE, nNE = topo.shape
                 celldata = np.repeat(celldata, nNE).reshape(nE, nNE)
             collect_nodal_data(celldata, topo, cids, ndf, res)
+
         return res
