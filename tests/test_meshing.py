@@ -31,7 +31,7 @@ class TestMeshing(unittest.TestCase):
         zres = 20
         mesh = circular_disk(n_angles, n_radii, min_radius, max_radius)
         points = mesh.coords()
-        triangles = mesh.topology()
+        triangles = mesh.topology().to_numpy()
         points, triangles = detach_mesh_bulk(points, triangles)
         coords, topo = extrude_T3_TET4(points, triangles, h, zres)
 
@@ -56,7 +56,7 @@ class TestMeshing(unittest.TestCase):
         zres = 20
         mesh = circular_disk(n_angles, n_radii, min_radius, max_radius)
         points = mesh.coords()
-        triangles = mesh.topology()
+        triangles = mesh.topology().to_numpy()
         points, triangles = detach_mesh_bulk(points, triangles)
         coords, topo = extrude_T3_W6(points, triangles, h, zres)
 
