@@ -71,7 +71,7 @@ class PolyCellProtocol(
     ) -> ndarray:
         """
         Maps local coordinates in the master domain to global cooridnates.
-        The basis of the transformation is 'ec', which is the node coordinates 
+        The basis of the transformation is 'ec', which is the node coordinates
         array of the cells of shape (nE, nNE, nD), where 'nE', 'nNE' and 'nD' are
         the number of cells, nodes per cell and local spatial dimensions.
         """
