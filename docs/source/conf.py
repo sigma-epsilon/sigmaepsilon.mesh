@@ -121,7 +121,7 @@ intersphinx_mapping = {
     "pandas": (r"https://pandas.pydata.org/pandas-docs/stable/", None),
     "sigmaepsilon.core": (r"https://sigmaepsiloncore.readthedocs.io/en/latest/", None),
     "sigmaepsilon.math": (r"https://sigmaepsilonmath.readthedocs.io/en/latest/", None),
-    "linkeddeepdict": (r"https://linkeddeepdict.readthedocs.io/en/latest/", None),
+    "sigmaepsilon.deepdict": (r"https://sigmaepsilondeepdict.readthedocs.io/en/latest/", None),
 }
 
 # -- bibtex configuration -------------------------------------------------
@@ -174,7 +174,7 @@ html_theme_options = {
     ],
     "logo": {
         # Because the logo is also a homepage link, including "home" in the alt text is good practice
-        "text": f"SigmaEpsilon.Mesh {version}",
+        "text": "SigmaEpsilon.Mesh",
     }
 }
 html_css_files = ["custom.css"]

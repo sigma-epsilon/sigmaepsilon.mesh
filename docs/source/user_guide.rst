@@ -3,8 +3,6 @@ User Guide
 The user guide provides in-depth information on the key concepts of the library with 
 useful background information and explanation.
 
-.. include:: installation.rst
-
 .. toctree::
     :maxdepth: 2
     

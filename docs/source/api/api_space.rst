@@ -1,12 +1,10 @@
-==========================
-Vectors in Euclidean space
-==========================
+=====
+Space
+=====
 
-.. autoclass:: sigmaepsilon.mesh.space.point.Point
+The module includes classes and routines for operations involving points, pointclouds and reference
+frames in Euclidean space.
+
+.. automodule:: sigmaepsilon.mesh.space
     :members:
-
-.. autoclass:: sigmaepsilon.mesh.space.PointCloud
-    :members: 
-
-.. autoclass:: sigmaepsilon.mesh.space.CartesianFrame
-    :members: 
+ 
