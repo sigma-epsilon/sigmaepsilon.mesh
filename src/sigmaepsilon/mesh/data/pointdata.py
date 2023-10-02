@@ -72,13 +72,13 @@ class PointData(AkWrapper, ABC_AkWrapper):
                     X = args[0]
             else:
                 X = points if coords is None else coords
-                
+
             if X is None:
                 raise ValueError("Coordinates must be specified.")
-            
+
             if not isinstance(X, ndarray):
                 raise TypeError("Coordinates must be specified as a NumPy array!")
-            
+
             nP, nD = X.shape
             if nD == 2:
                 inds = [0, 1, 2]

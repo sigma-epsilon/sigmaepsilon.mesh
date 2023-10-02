@@ -313,14 +313,14 @@ class CellData(Generic[PolyDataLike, PointDataLike], AkWrapper):
             frames = value
         else:
             raise TypeError(f"Expected ndarray or FrameLike, got {type(value)}.")
-            
+
         frames = atleast3d(frames)
-        
+
         if len(frames) == 1:
             frames = repeat(frames[0], len(self._wrapped))
         else:
             assert len(frames) == len(self._wrapped)
-        
+
         self._wrapped[self._dbkey_frames_] = frames
 
     @property

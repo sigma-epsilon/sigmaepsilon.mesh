@@ -25,17 +25,17 @@ class TestIO(unittest.TestCase):
         pd = PointData(coords=coords, frame=A)
         cd = T3(topo=topo)
         tri = TriMesh(pd, cd)
-        
+
         coords, topo = grid(size=(100, 100), shape=(10, 10), eshape="Q4")
         pd = PointData(coords=coords, frame=A)
         cd = Q4(topo=topo, frames=A)
         grid2d = PolyData(pd, cd)
-        
+
         coords, topo = grid(size=(100, 100, 20), shape=(8, 6, 2), eshape="H8")
         pd = PointData(coords=coords, frame=A)
         cd = H8(topo=topo, frames=A)
         grid3d = PolyData(pd, cd)
-        
+
         mesh = PolyData()
         mesh["tri", "T3"] = tri.move(np.array([0.0, 0.0, -50]))
         mesh["grids", "Q4"] = grid2d.move(np.array([0.0, 0.0, 150]))

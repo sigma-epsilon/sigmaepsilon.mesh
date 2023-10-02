@@ -6,6 +6,7 @@ from sigmaepsilon.mesh.recipes import circular_disk
 from sigmaepsilon.mesh.cells import T3, T6
 from sigmaepsilon.mesh.utils.topology.tr import T3_to_T6
 
+
 class TestTri(unittest.TestCase):
     def test_area_T3(self):
         def test_area_T3(Lx, Ly, nx, ny):

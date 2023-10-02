@@ -153,7 +153,7 @@ class TestScenario2(unittest.TestCase):
         coords_grid, topo_grid = grid(
             size=(Lx * 0.99, Ly * 0.99), shape=(N, N), eshape="Q4", centralize=True
         )
-        
+
         pd = PointData(coords=coords_grid, frame=GlobalFrame)
         cd = Q4(topo=topo_grid)
         Grid = PolyData(pd, cd)

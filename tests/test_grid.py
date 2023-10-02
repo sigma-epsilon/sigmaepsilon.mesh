@@ -12,7 +12,6 @@ def load_tests(loader, tests, ignore):  # pragma: no cover
 
 
 class TestGrid(unittest.TestCase):
-
     def test_grid_H8(self):
         size = 80, 60, 20
         shape = 8, 6, 2

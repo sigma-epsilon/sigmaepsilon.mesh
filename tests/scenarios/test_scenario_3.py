@@ -101,8 +101,8 @@ class TestScenario3(unittest.TestCase):
         )
 
         scalars = mesh.pd.pull("scalars")  # or simply pd.pull('scalars')
-        #print(scalars.shape)
-        #print(mesh.coords().shape)
+        # print(scalars.shape)
+        # print(mesh.coords().shape)
         self.assertEqual(scalars.shape, (27,))
         self.assertEqual(mesh.coords().shape, (27, 3))
 
@@ -123,8 +123,8 @@ class TestScenario3(unittest.TestCase):
         mesh.pd.db["scalars"] = scalars_on_points
 
         hex_data = mesh["hex"].cd.pull("scalars")
-        #print(hex_data.shape)
-        #print(mesh["hex"].topology().shape)
+        # print(hex_data.shape)
+        # print(mesh["hex"].topology().shape)
         self.assertEqual(hex_data.shape, (2, 8, 1))
         self.assertEqual(mesh["hex"].topology().shape, (2, 8))
 

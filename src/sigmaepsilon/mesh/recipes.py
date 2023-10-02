@@ -90,7 +90,7 @@ def circular_disk(
     triangles = triang.get_masked_triangles()
     points = np.stack((triang.x, triang.y, np.zeros(nP)), axis=1)
     points, triangles = detach(points, triangles)
-    frame = CartesianFrame(dim=3) if frame is None else frame  
+    frame = CartesianFrame(dim=3) if frame is None else frame
     pd = PointData(coords=points, frame=frame)
     cd = T3(topo=triangles, frames=frame)
     return TriMesh(pd, cd)

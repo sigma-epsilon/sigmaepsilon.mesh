@@ -18,22 +18,22 @@ from sigmaepsilon.mesh.grid import grid
 class TestPolyDataMultiBlock(SigmaEpsilonTestCase):
     def setUp(self) -> None:
         A = StandardFrame(dim=3)
-        
+
         coords, topo, _ = triangulate(size=(100, 100), shape=(4, 4))
         pd = PointData(coords=coords, frame=A)
         cd = T3(topo=topo, frames=A)
         tri = TriMesh(pd, cd)
-        
+
         coords, topo = grid(size=(100, 100), shape=(4, 4), eshape="Q4")
         pd = PointData(coords=coords, frame=A)
         cd = Q4(topo=topo, frames=A)
         grid2d = PolyData(pd, cd)
-        
+
         coords, topo = grid(size=(100, 100, 20), shape=(4, 4, 2), eshape="H8")
         pd = PointData(coords=coords, frame=A)
         cd = H8(topo=topo, frames=A)
         grid3d = PolyData(pd, cd)
-        
+
         mesh = PolyData(frame=A)
         mesh["tri", "T3"] = tri.move(np.array([0.0, 0.0, -50]))
         mesh["grids", "Q4"] = grid2d.move(np.array([0.0, 0.0, 50]))

@@ -117,7 +117,7 @@ class TriMesh(PolyData):
         """
         if not self.is_planar():
             raise RuntimeError("Only planar surfaces can be extruded!")
-        
+
         frame = ReferenceFrame(self.cd.frames[0])
         x = self.coords(target=frame)[:, :2]
         x, topo = extrude_T3_TET4(x, self.topology().to_numpy()[:, :3], h, N)

@@ -181,7 +181,7 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
         self._pointdata = None
         self._celldata = None
         self._init_config_()
-        
+
         self.point_index_manager = IndexManager()
         self.cell_index_manager = IndexManager()
 
@@ -256,16 +256,16 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
         # self
         if self.pointdata is not None:
             result.pointdata = copy_function(self.pointdata)
-            
+
         if self.celldata is not None:
             result.celldata = copy_function(self.celldata)
-            
+
         for k, v in self.items():
             if not isinstance(v, PolyData):
                 result[k] = copy_function(v)
-                
+
         result_dict = result.__dict__
-        
+
         for k, v in self.__dict__.items():
             if not k in result_dict:
                 setattr(result, k, copy_function(v))
@@ -275,7 +275,7 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
         for b in self.blocks(inclusive=False, deep=True):
             pd, cd, bframe = None, None, None
             addr = b.address
-            
+
             if len(addr) > l0:
                 # pointdata
                 if b.pointdata is not None:
@@ -283,27 +283,27 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
                     # block frame
                     f = b.frame
                     ax = copy_function(f.axes)
-                    
+
                     if is_deep:
                         memo[id(f.axes)] = ax
-                        
+
                     bframe = frame_cls(ax)
-                    
+
                 # celldata
                 if b.celldata is not None:
                     cd = copy_function(b.cd)
-                    
+
                 # mesh object
                 pd_result = PolyData(pd, cd, frame=bframe)
                 result[addr[l0:]] = pd_result
-                
+
                 # other data
                 for k, v in b.items():
                     if not isinstance(v, PolyData):
                         pd_result[k] = copy_function(v)
-                        
+
                 pd_result_dict = pd_result.__dict__
-                
+
                 for k, v in b.__dict__.items():
                     if not k in pd_result_dict:
                         setattr(pd_result, k, copy_function(v))
@@ -536,9 +536,9 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
         >>> from sigmaepsilon.mesh import PolyData
         >>> bunny = examples.download_bunny_coarse()
         >>> mesh = PolyData.from_pv(bunny)
-        """        
+        """
         coords, cells_dict = None, None
-        
+
         if isinstance(pvobj, pv.UnstructuredGrid):
             coords = pvobj.points.astype(float)
             cells_dict = pvobj.cells_dict
@@ -548,7 +548,7 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
                 return PolyData.from_pv(ugrid)
             except Exception:
                 raise TypeError(f"Can't import from type {type(pvobj)}.")
-                    
+
         GlobalFrame = CartesianFrame(dim=3)
         pd = PointData(coords=coords, frame=GlobalFrame)
         polydata = PolyData(pd)  # this fails without a frame
@@ -568,7 +568,9 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
                 cd = celltype(topo=vtktopo, frames=frames)
                 polydata[vtkid] = PolyData(cd)
             else:
-                msg = f"The element type with vtkId <{vtkid}> is not yet supported here."
+                msg = (
+                    f"The element type with vtkId <{vtkid}> is not yet supported here."
+                )
                 raise NotImplementedError(msg)
 
         return polydata
@@ -947,7 +949,7 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
             result = CartesianFrame()
 
         return result
-    
+
     def _reset_point_data(self):
         self.pointdata = None
         self.cell_index_manager = None
@@ -1041,17 +1043,17 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
         # merge points and point related data
         # + decorate the points with globally unique ids
         dpf = defaultdict(lambda: np.nan)
-        
+
         if isinstance(default_point_fields, dict):
             dpf.update(default_point_fields)
-            
+
         pim = IndexManager()
         pointtype = self.__class__._point_class_
         pointblocks = list(self.pointblocks(inclusive=True, deep=True))
         m = map(lambda pb: pb.pointdata.fields, pointblocks)
         fields = set(np.concatenate(list(m)))
         frame = self.frame
-        
+
         data = {f: [] for f in fields}
         for pb in pointblocks:
             id = pim.generate_np(len(pb.pointdata))
@@ -1062,13 +1064,13 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
                     data[f].append(pb.pointdata[f].to_numpy())
                 else:
                     data[f].append(np.full(len(pb.pd), dpf[f]))
-                    
+
         X = np.concatenate(data.pop(PointData._dbkey_x_), axis=0)
-        
+
         point_fields = {}
         for f in data.keys():
             point_fields[f] = np.concatenate(data[f], axis=0)
-            
+
         self.pointdata = pointtype(
             coords=X, frame=frame, fields=point_fields, container=self
         )
@@ -1246,13 +1248,13 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
         s = self.source()
         pd = PolyData(s.pd, frame=s.frame)
         l0 = len(self.address)
-        
+
         if self.celldata is not None:
             db = deepcopy(self.cd.db)
             cd = self.celltype(pointdata=pd, db=db)
             pd.celldata = cd
             pd.celltype = self.celltype
-            
+
         for cb in self.cellblocks(inclusive=False):
             addr = cb.address
             if len(addr) > l0:
@@ -1261,10 +1263,10 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
                 assert cd is not None
                 pd[addr[l0:]] = PolyData(None, cd)
                 assert pd[addr[l0:]].celldata is not None
-                
+
         if nummrg:
             pd.nummrg()
-            
+
         return pd
 
     def nummrg(self: PolyDataLike) -> PolyDataLike:
@@ -1347,7 +1349,7 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
         >>> bunny.rotate("Space", [0, 0, np.pi/2], "xyz")
         """
         subject = self if inplace else self.deepcopy()
-        
+
         if subject.is_source():
             pc = subject.points()
             source = subject
@@ -1355,11 +1357,11 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
             source = subject.source()
             inds = np.unique(subject.topology())
             pc = source.points()[inds]
-            
+
         pc.rotate(*args, **kwargs)
         subject._rotate_attached_cells_(*args, **kwargs)
         source.pointdata.x = pc.show(subject.frame)
-        
+
         return subject
 
     def spin(self: PolyDataLike, *args, inplace: bool = True, **kwargs) -> PolyDataLike:
@@ -1387,7 +1389,7 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
         >>> bunny.spin("Space", [0, 0, np.pi/2], "xyz")
         """
         subject = self if inplace else self.deepcopy()
-        
+
         if subject.is_source():
             pc = subject.points()
             source = subject
@@ -1395,14 +1397,14 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
             source = subject.source()
             inds = np.unique(subject.topology())
             pc = source.points()[inds]
-            
+
         center = pc.center()
         pc.centralize()
         pc.rotate(*args, **kwargs)
         pc.move(center)
         subject._rotate_attached_cells_(*args, **kwargs)
         source.pointdata.x = pc.show(subject.frame)
-        
+
         return subject
 
     def cells_at_nodes(self, *args, **kwargs) -> Iterable:
@@ -1420,13 +1422,13 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
         :func:`cells_at_nodes`
         """
         topo = self.topology()
-        
+
         if isinstance(topo, TopologyArray):
             if topo.is_jagged():
                 topo = topo.to_csr()
             else:
                 topo = topo.to_numpy()
-                
+
         return cells_at_nodes(topo, *args, **kwargs)
 
     def cells_around_cells(self, radius: float, frmt: str = "dict"):
@@ -1459,13 +1461,13 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
         :func:`~sigmaepsilon.mesh.utils.topology.topo.nodal_adjacency`
         """
         topo = self.topology(jagged=True).to_array()
-        
+
         if isinstance(topo, ak.Array):
             topo = ak.values_astype(topo, "int64")
         else:
             assert isinstance(topo, ndarray)
             topo = topo.astype(np.int64)
-            
+
         return nodal_adjacency(topo, *args, **kwargs)
 
     def nodal_adjacency_matrix(self) -> spmatrix:
@@ -1690,25 +1692,25 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
         """
         assert self.is_source(), "This can only be called on objects with PointData."
         topo = self.topology()
-        
+
         if isinstance(topo, TopologyArray):
             if topo.is_jagged():
                 topo = topo.to_csr()
             else:
                 topo = topo.to_numpy()
-                
+
         if isinstance(weights, str):
             if weights == "volume":
                 weights = self.volumes()
             elif weights == "uniform":
                 weights = np.ones(topo.shape[0], dtype=float)
-                
+
         assert isinstance(weights, ndarray), "'weights' must be a NumPy array!"
         assert len(weights) == topo.shape[0], (
             "Mismatch in shape. The weights must have the same number of "
             + "values as cells in the block."
         )
-        
+
         return nodal_distribution_factors(topo, weights)
 
     def _rotate_attached_cells_(self, *args, **kwargs):

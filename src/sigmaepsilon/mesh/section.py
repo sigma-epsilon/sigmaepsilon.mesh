@@ -313,7 +313,7 @@ class LineSection(Wrapper):
                 points, triangles = detach_mesh_bulk(points, triangles[:, :3])
         else:
             raise NotImplementedError
-        
+
         frame = kwargs.get("frame", CartesianFrame(dim=3))
         pd = PointData(coords=points, frame=frame)
         cd = T3(topo=triangles, frames=frame)
