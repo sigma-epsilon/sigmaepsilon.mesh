@@ -79,7 +79,7 @@ class TopologyArray(JaggedArray):
 
     See Also
     --------
-    :class:`~sigmaepsilon.math.linalg.sparse.JaggedArray`
+    :class:`~sigmaepsilon.math.linalg.sparse.jaggedarray.JaggedArray`
     """
 
     def __init__(self, *topo, cuts: Iterable = None, force_numpy: bool = True):
