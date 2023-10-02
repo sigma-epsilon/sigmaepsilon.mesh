@@ -13,10 +13,10 @@ __all__ = ["TetMesh"]
 class TetMesh(PolyData):
     """
     A class to handle tetrahedral meshes.
-    
+
     All positional and keyword arguments are forwarded to
     :class:`~sigmaepsilon.mesh.data.polydata.PolyData`.
-    
+
     Parameters
     ----------
 
@@ -55,9 +55,9 @@ class TetMesh(PolyData):
                     (
                         f"Invalid type {type(topo)} for topology."
                         "It must be a list of integers or a numpy integer array."
-                        )
+                    )
                 )
-                
+
             nNode = topo.shape[1]
             if nNode == 4:
                 celltype = Tetra
@@ -65,6 +65,6 @@ class TetMesh(PolyData):
                 celltype = TET10
             else:
                 raise ValueError("Tetrahedra must have 4 or 10 nodes.")
-            
+
         assert celltype is not None
         super().__init__(*args, celltype=celltype, topo=topo, **kwargs)
