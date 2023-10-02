@@ -1301,9 +1301,7 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
 
         return self.__class__(pd, cd, frame=frame)
 
-    def topology(
-        self, *args, return_inds: bool = False, jagged: bool = None, **kwargs
-    ) -> Union[ndarray, TopologyArray]:
+    def topology(self, *args, return_inds: bool = False, **kwargs) -> TopologyArray:
         """
         Returns the topology.
 
@@ -1311,24 +1309,14 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
         ----------
         return_inds: bool, Optional
             Returns the indices of the points. Default is False.
-        jagged: bool, Optional
-            If True, returns the topology as a :class:`~sigmaepsilon.mesh.topoarray.TopologyArray`
-            instance, even if the mesh is regular. Default is False.
 
         Returns
         -------
-        Union[numpy.ndarray, :class:`~sigmaepsilon.mesh.topoarray.TopologyArray`]
-            The topology as a 2d integer array.
+        :class:`~sigmaepsilon.mesh.topoarray.TopologyArray`
         """
         blocks = list(self.cellblocks(*args, inclusive=True, **kwargs))
         topo = list(map(lambda i: i.celldata.topology(), blocks))
-        widths = np.concatenate(list(map(lambda t: t.widths(), topo)))
-        jagged = False if not isinstance(jagged, bool) else jagged
-        needs_jagged = not np.all(widths == widths[0])
-        if jagged or needs_jagged:
-            topo = np.vstack(topo)
-        else:
-            topo = np.vstack([t.to_numpy() for t in topo])
+        topo = np.vstack(topo)
 
         if return_inds:
             inds = list(map(lambda i: i.celldata.id, blocks))
@@ -1591,7 +1579,7 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
 
     def cells_coords(self, *, _topo=None, **kwargs) -> ndarray:
         """Returns the coordiantes of the cells in explicit format."""
-        _topo = self.topology() if _topo is None else _topo
+        _topo = self.topology().to_numpy() if _topo is None else _topo
         return cells_coords(self.source().coords(), _topo)
 
     def center(self, target: FrameLike = None) -> ndarray:
@@ -1820,7 +1808,7 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
         for block in blocks:
             source = block.source()
             coords = source.coords()
-            topo = block.topology()
+            topo = block.topology().to_numpy()
 
             point_data = None
             if isinstance(data, ndarray):
@@ -2105,7 +2093,7 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
                     if show_edges:
                         scene += k3d.mesh(c, t, wireframe=True, color=0)
                 elif NDIM == 3:
-                    topo = b.surface().topology()
+                    topo = b.surface().topology().to_numpy()
 
                     if isinstance(scalars, ndarray):
                         c, d, t = detach_mesh_data_bulk(coords, topo, scalars)
