@@ -1,10 +1,13 @@
 from typing import Iterable, Union, Any, Callable
 from functools import partial
+import warnings
 
 import numpy as np
 from numpy import ndarray
 
+from sigmaepsilon.core.warning import SigmaEpsilonPerformanceWarning
 from sigmaepsilon.math.linalg import generalized_inverse
+
 from .utils.cells.approximator import _approximate_multi
 
 __all__ = ["LagrangianCellApproximator"]
@@ -41,6 +44,17 @@ def _approximator(
     if shp_source_inverse is None:
         assert isinstance(x_source, Iterable)
         shp_source = shp_fnc(x_source)  # (nP_source, nNE)
+        
+        num_rows, num_columns = shp_source.shape
+        rank = np.linalg.matrix_rank(shp_source)
+        square_and_full_rank = (num_rows == num_columns) and rank == num_columns == num_rows
+        if not square_and_full_rank:  # pragma: no cover
+            warnings.warn(
+                "The approximation involves the calculation of a generalized inverse "
+                "which probably results in loss of precision.",
+                SigmaEpsilonPerformanceWarning
+            )
+        
         shp_source_inverse = generalized_inverse(shp_source)
 
     if not isinstance(values_source, ndarray):
