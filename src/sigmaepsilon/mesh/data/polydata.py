@@ -22,7 +22,7 @@ import awkward as ak
 from meshio import Mesh as MeshioMesh
 
 from sigmaepsilon.deepdict import DeepDict
-from sigmaepsilon.core.warning import SigmaEpsilonPerformanceWarning
+from sigmaepsilon.core.warning import SigmaEpsilonWarning, SigmaEpsilonPerformanceWarning
 from sigmaepsilon.math.linalg.sparse import csr_matrix
 from sigmaepsilon.math.linalg import Vector, ReferenceFrame as FrameLike
 from sigmaepsilon.math import atleast1d, minmax
@@ -65,7 +65,6 @@ from ..utils.topology import (
     detach_mesh_bulk,
     cells_at_nodes,
 )
-from ..warnings import SigmaEpsilonMeshImportWarning
 from ..helpers import meshio_to_celltype, vtk_to_celltype
 from ..config import __hasvtk__, __haspyvista__, __hask3d__, __hasmatplotlib__
 
@@ -516,7 +515,7 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
                 if cbtype != "vertex":  # pragma: no cover
                     warnings.warn(
                         f"Cells of type '{cbtype}' are not supported here.",
-                        SigmaEpsilonMeshImportWarning
+                        SigmaEpsilonWarning
                     )
 
         return polydata
