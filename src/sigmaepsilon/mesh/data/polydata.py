@@ -65,6 +65,7 @@ from ..utils.topology import (
     detach_mesh_bulk,
     cells_at_nodes,
 )
+from ..warnings import SigmaEpsilonMeshImportWarning
 from ..helpers import meshio_to_celltype, vtk_to_celltype
 from ..config import __hasvtk__, __haspyvista__, __hask3d__, __hasmatplotlib__
 
@@ -512,9 +513,11 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
                 cd = celltype(topo=topo, frames=frames)
                 polydata[cbtype] = PolyData(cd)
             else:
-                # FIXME needs warning and logging
-                msg = f"Cells of type '{cbtype}' are not supported here."
-                raise NotImplementedError(msg)
+                if cbtype != "vertex":  # pragma: no cover
+                    warnings.warn(
+                        f"Cells of type '{cbtype}' are not supported here.",
+                        SigmaEpsilonMeshImportWarning
+                    )
 
         return polydata
 
@@ -1037,13 +1040,13 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
             is `numpy.nan`.
         """
         assert self.is_root(), "This must be called on he root object!"
+        
         if not inplace:
             return deepcopy(self).to_standard_form(inplace=True)
 
         # merge points and point related data
         # + decorate the points with globally unique ids
         dpf = defaultdict(lambda: np.nan)
-
         if isinstance(default_point_fields, dict):
             dpf.update(default_point_fields)
 
@@ -1080,6 +1083,7 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
         dcf = defaultdict(lambda: np.nan)
         if isinstance(default_cell_fields, dict):
             dcf.update(default_cell_fields)
+            
         cim = IndexManager()
         cellblocks = list(self.cellblocks(inclusive=True, deep=True))
         m = map(lambda pb: pb.celldata.fields, cellblocks)
@@ -1096,10 +1100,11 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
         # free resources
         for pb in self.pointblocks(inclusive=False, deep=True):
             pb._reset_point_data()
+            
         return self
 
     def points(
-        self, *, return_inds: bool = False, from_cells: bool = False
+        self, *, return_inds: Optional[bool] = False, from_cells: Optional[bool] = False
     ) -> PointCloud:
         """
         Returns the points as a :class:`~sigmaepsilon.mesh.space.pointcloud.PointCloud` instance.
@@ -1111,10 +1116,14 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
 
         See Also
         --------
-        :class:`~sigmaepsilon.mesh.space.pointcloud.PointCloud`
         :func:`coords`
+
+        Returns
+        -------
+        :class:`~sigmaepsilon.mesh.space.pointcloud.PointCloud`
         """
-        target = self.frame
+        global_frame = self.root.frame
+        
         if from_cells:
             inds_ = np.unique(self.topology())
             x, inds = self.root.points(from_cells=False, return_inds=True)
@@ -1128,13 +1137,19 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
                 x = pb.pd.x
                 fr = pb.frame
                 i = pb.pd.id
-                v = Vector(x, frame=fr)
-                coords.append(v.show(target))
+                v = PointCloud(x, frame=fr)
+                coords.append(v.show(global_frame))
                 inds.append(i)
+            
+            if len(coords) == 0:
+                raise Exception("There are no points belonging to this block")
+            
             coords = np.vstack(list(coords))
             inds = np.concatenate(inds).astype(int)
+        
         __cls__ = self.__class__._point_array_class_
-        points = __cls__(coords, frame=target, inds=inds)
+        points = __cls__(coords, frame=global_frame, inds=inds)
+        
         if return_inds:
             return points, inds
         return points
@@ -1515,13 +1530,11 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
         numpy.ndarray
             A one dimensional float array.
         """
-        if self.is_source():
-            return self.points().center(target)
-        else:
-            source = self.source()
-            inds = np.unique(self.topology())
-            pc = source.points()[inds]
-            return pc.center(target)
+        centers = self.centers(target)
+        return np.array(
+            [np.mean(centers[:, i]) for i in range(centers.shape[1])],
+            dtype=centers.dtype,
+        )
 
     def centers(self, target: FrameLike = None) -> ndarray:
         """
@@ -1542,7 +1555,7 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
         coords = source.coords()
         blocks = self.cellblocks(inclusive=True)
 
-        def foo(b: PolyData):
+        def foo(b: PolyData[PointData, PolyCell]):
             t = b.cd.topology().to_numpy()
             return cell_centers_bulk(coords, t)
 
@@ -1846,12 +1859,12 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
 
         def to_pv(
             self,
-            deepcopy: bool = False,
-            multiblock: bool = False,
-            scalars: Union[str, ndarray] = None,
+            deepcopy: Optional[bool] = False,
+            multiblock: Optional[bool] = False,
+            scalars: Optional[Union[str, ndarray, None]] = None,
         ) -> Union[pv.UnstructuredGrid, pv.MultiBlock]:
             """
-            Returns the mesh as a `PyVista` oject, optionally set up with data.
+            Returns the mesh as a `PyVista` object, optionally set up with data.
 
             Parameters
             ----------

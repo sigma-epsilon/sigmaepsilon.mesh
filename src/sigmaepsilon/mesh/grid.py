@@ -1,10 +1,16 @@
 from typing import Tuple, Union, Iterable
+
 import numpy as np
 from numpy import ndarray
 from numba import njit, prange
 
 from .utils.topology import unique_topo_data, detach_mesh_bulk, transform_topology
-from .utils import center_of_points, k_nearest_neighbours as knn, knn_to_lines
+from .utils import (
+    center_of_points,
+    k_nearest_neighbours as knn,
+    knn_to_lines,
+    xy_to_xyz,
+)
 
 __cache = True
 
@@ -21,7 +27,7 @@ def grid(
     bins: Iterable = None,
     centralize: bool = False,
     path: Iterable = None,
-    **kwargs
+    **kwargs,
 ) -> Tuple[ndarray, ndarray]:
     """
     Crates a 1d, 2d or 3d grid for different patterns and returnes the raw data.
@@ -123,7 +129,7 @@ def grid(
                 start=start,
                 centralize=centralize,
                 bins=bins,
-                **kwargs
+                **kwargs,
             )
         elif eshape == "Q9":
             return gridQ9(
@@ -133,7 +139,7 @@ def grid(
                 start=start,
                 centralize=centralize,
                 bins=bins,
-                **kwargs
+                **kwargs,
             )
         elif eshape == "H8":
             return gridH8(
@@ -143,7 +149,7 @@ def grid(
                 start=start,
                 centralize=centralize,
                 bins=bins,
-                **kwargs
+                **kwargs,
             )
         elif eshape == "H27":
             return gridH27(
@@ -153,7 +159,7 @@ def grid(
                 start=start,
                 centralize=centralize,
                 bins=bins,
-                **kwargs
+                **kwargs,
             )
         else:
             raise NotImplementedError
@@ -184,7 +190,7 @@ def grid(
         path = np.array(path, dtype=int)
         topo = transform_topology(topo, path)
 
-    return coords, topo
+    return xy_to_xyz(coords), topo
 
 
 def gridQ4(*args, **kwargs) -> Tuple[ndarray, ndarray]:
@@ -211,7 +217,7 @@ def gridQ4(*args, **kwargs) -> Tuple[ndarray, ndarray]:
     """
     coords, topo = grid(*args, eshape=(2, 2), **kwargs)
     path = np.array([0, 2, 3, 1], dtype=int)
-    return coords, transform_topology(topo, path)
+    return xy_to_xyz(coords), transform_topology(topo, path)
 
 
 def gridQ9(*args, **kwargs) -> Tuple[ndarray, ndarray]:
@@ -225,7 +231,7 @@ def gridQ9(*args, **kwargs) -> Tuple[ndarray, ndarray]:
     """
     coords, topo = grid(*args, eshape=(3, 3), **kwargs)
     path = np.array([0, 6, 8, 2, 3, 7, 5, 1, 4], dtype=int)
-    return coords, transform_topology(topo, path)
+    return xy_to_xyz(coords), transform_topology(topo, path)
 
 
 def gridH8(*args, **kwargs) -> Tuple[ndarray, ndarray]:
@@ -239,7 +245,7 @@ def gridH8(*args, **kwargs) -> Tuple[ndarray, ndarray]:
     """
     coords, topo = grid(*args, eshape=(2, 2, 2), **kwargs)
     path = np.array([0, 4, 6, 2, 1, 5, 7, 3], dtype=int)
-    return coords, transform_topology(topo, path)
+    return xy_to_xyz(coords), transform_topology(topo, path)
 
 
 # fmt: off

@@ -51,8 +51,6 @@ class PointData(AkWrapper, ABC_AkWrapper):
         wrap: Optional[Union[akRecord, None]] = None,
         fields: Optional[Union[Iterable, None]] = None,
         frame: Optional[Union[FrameLike, None]] = None,
-        newaxis: Optional[int] = 2,
-        activity: Optional[Union[ndarray, None]] = None,
         db: Optional[Union[akRecord, None]] = None,
         container: Optional[Union[PolyDataProtocol, None]] = None,
         **kwargs,
@@ -63,8 +61,6 @@ class PointData(AkWrapper, ABC_AkWrapper):
             fields = {} if fields is None else fields
             assert isinstance(fields, dict)
 
-            # set pointcloud
-            point_cls = self.__class__._point_cls_
             X = None
 
             if len(args) > 0:
@@ -79,31 +75,8 @@ class PointData(AkWrapper, ABC_AkWrapper):
             if not isinstance(X, ndarray):
                 raise TypeError("Coordinates must be specified as a NumPy array!")
 
-            nP, nD = X.shape
-            if nD == 2:
-                inds = [0, 1, 2]
-                inds.pop(newaxis)
-                if isinstance(frame, FrameLike):
-                    if len(frame) == 3:
-                        _c = np.zeros((nP, 3))
-                        _c[:, inds] = X
-                        X = _c
-                        X = point_cls(X, frame=frame).show()
-                    elif len(frame) == 2:
-                        X = point_cls(X, frame=frame).show()
-            elif nD == 3:
-                X = point_cls(X, frame=frame).show()
-
             fields[self._dbkey_x_] = X
-
-            if activity is None:
-                activity = np.ones(nP, dtype=bool)
-            else:
-                assert (
-                    isboolarray(activity) and len(activity.shape) == 1
-                ), "'activity' must be a 1d boolean numpy array!"
-
-            fields[self._dbkey_activity_] = activity
+            nP = len(X)
 
             for k, v in kwargs.items():
                 if isinstance(v, np.ndarray):
@@ -214,7 +187,12 @@ class PointData(AkWrapper, ABC_AkWrapper):
 
     @activity.setter
     def activity(self, value: ndarray):
-        assert isinstance(value, ndarray)
+        if not isinstance(value, ndarray):
+            raise TypeError(f"Expected a NumPy array, got {type(value)}.")
+        
+        if not isboolarray(value):
+            raise ValueError(f"Expected a boolean array, got {value.dtype}.")
+        
         self._wrapped[self._dbkey_activity_] = value
 
     @property

@@ -7,7 +7,7 @@ from numba import njit, prange
 from numba.typed import Dict as nbDict
 from numba import types as nbtypes
 
-from sigmaepsilon.math import matrixform
+from sigmaepsilon.math import matrixform, atleast2d
 from sigmaepsilon.math.linalg.sparse import JaggedArray, csr_matrix
 
 __cache = True
@@ -1057,3 +1057,16 @@ def global_shape_function_derivatives(dshp: ndarray, jac: ndarray) -> ndarray:
             invJ = np.linalg.inv(jac[iE, iP])
             res[iE, iP] = dshp[iP] @ invJ
     return res
+
+
+def xy_to_xyz(x: ndarray) -> ndarray:
+    x = atleast2d(x, back=True)
+    if (N := x.shape[-1]) == 3:
+        return x
+    else:
+        res = np.zeros((x.shape[0], 3), dtype=x.dtype)
+        if N == 2:
+            res[:, :2] = x
+        elif N == 1:
+            res[:, 0] = x
+        return res

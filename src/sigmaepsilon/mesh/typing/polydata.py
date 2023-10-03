@@ -5,6 +5,7 @@ from numpy import ndarray
 from sigmaepsilon.math.linalg import ReferenceFrame as FrameLike
 from sigmaepsilon.math.linalg.sparse import csr_matrix
 
+from ..space import CartesianFrame
 from ..topoarray import TopologyArray
 
 __all__ = ["PolyDataProtocol"]
@@ -22,7 +23,7 @@ class PolyDataProtocol(
     """Protocol for polygonal meshes."""
 
     @property
-    def frame(self) -> FrameLike:
+    def frame(self) -> Union[FrameLike, CartesianFrame]:
         """Ought to return the frame of the attached pointdata"""
 
     @property

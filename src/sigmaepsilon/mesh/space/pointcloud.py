@@ -169,7 +169,7 @@ class PointCloud(Vector):
         return PointCloud(arr, frame=self.frame, inds=inds)
 
     @property
-    def frame(self) -> FrameLike:
+    def frame(self) -> Union[CartesianFrame, FrameLike]:
         """
         Returns the frame the points are embedded in.
         """
