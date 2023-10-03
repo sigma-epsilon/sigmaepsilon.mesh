@@ -12,6 +12,8 @@ from .triang import triangulate
 from .grid import grid
 from .tetrahedralize import tetrahedralize
 from .cellapproximator import LagrangianCellApproximator
+from .io import from_pv, from_meshio, to_vtk, to_pv, to_k3d
+from .plotting import pvplot
 
 __all__ = [
     "PointCloud",
@@ -20,13 +22,23 @@ __all__ = [
     "LineData",
     "PolyData1d",
     "PointData",
-    "KNN",
-    "TopologyArray",
     "TriMesh",
+    #
+    "TopologyArray",
+    "LagrangianCellApproximator",
+    #
+    "KNN",
     "triangulate",
     "grid",
     "tetrahedralize",
-    "LagrangianCellApproximator",
+    #
+    "from_pv",
+    "from_meshio",
+    "to_pv",
+    "to_vtk",
+    "to_k3d",
+    #
+    "pvplot",
 ]
 
 __pkg_name__ = namespace_package_name(dirname(abspath(__file__)), 10)

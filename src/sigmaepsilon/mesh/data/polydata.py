@@ -7,13 +7,12 @@ from typing import (
     Tuple,
     Any,
     Generic,
-    TypeVar,
     Optional,
+    Callable,
 )
 from collections import defaultdict
 import functools
 import warnings
-from contextlib import suppress
 
 from numpy import ndarray
 import numpy as np
@@ -22,15 +21,16 @@ import awkward as ak
 from meshio import Mesh as MeshioMesh
 
 from sigmaepsilon.deepdict import DeepDict
-from sigmaepsilon.core.warning import SigmaEpsilonWarning, SigmaEpsilonPerformanceWarning
+from sigmaepsilon.core.warning import SigmaEpsilonPerformanceWarning
 from sigmaepsilon.math.linalg.sparse import csr_matrix
 from sigmaepsilon.math.linalg import Vector, ReferenceFrame as FrameLike
 from sigmaepsilon.math import atleast1d, minmax
 
 from ..typing import (
-    PointDataProtocol,
-    PolyCellProtocol,
     PolyDataProtocol as PDP,
+    PolyDataLike,
+    PointDataLike,
+    PolyCellLike
 )
 
 from .akwrapper import AkWrapper
@@ -51,13 +51,11 @@ from ..utils.utils import (
     nodal_distribution_factors,
 )
 from ..utils.knn import k_nearest_neighbours as KNN
-from ..vtkutils import mesh_to_UnstructuredGrid as mesh_to_vtk
 from ..cells import T3 as Triangle
 from ..utils.space import (
     index_of_closest_point,
     index_of_furthest_point,
     frames_of_surfaces,
-    frames_of_lines,
 )
 from ..utils.topology import (
     nodal_adjacency,
@@ -65,7 +63,7 @@ from ..utils.topology import (
     detach_mesh_bulk,
     cells_at_nodes,
 )
-from ..helpers import meshio_to_celltype, vtk_to_celltype
+from ..helpers import importers, exporters, plotters
 from ..config import __hasvtk__, __haspyvista__, __hask3d__, __hasmatplotlib__
 
 if __hasvtk__:
@@ -74,27 +72,17 @@ if __hasvtk__:
 if __hask3d__:
     import k3d
 
-if __hasmatplotlib__:
-    import matplotlib as mpl
-
-NoneType = type(None)
-
 if __haspyvista__:
     import pyvista as pv
-    from pyvista import themes
 
     pyVistaLike = Union[pv.PolyData, pv.PointGrid, pv.UnstructuredGrid]
 else:  # pragma: no cover
-    pyVistaLike = NoneType
+    pyVistaLike = Any
 
 
 VectorLike = Union[Vector, ndarray]
 
 __all__ = ["PolyData"]
-
-PolyDataLike = TypeVar("PolyDataLike", bound="PolyData")
-PointDataLike = TypeVar("PointDataLike", bound=PointDataProtocol)
-PolyCellLike = TypeVar("PolyCellLike", bound=PolyCellProtocol)
 
 
 class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
@@ -481,44 +469,16 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
     @classmethod
     def from_meshio(cls: PolyDataLike, mesh: MeshioMesh) -> PolyDataLike:
         """
-        Returns a :class:`~sigmaepsilon.mesh.polydata.PolyData` instance from a :class:`meshio.Mesh` instance.
+        Returns a :class:`~sigmaepsilon.mesh.polydata.PolyData` instance from
+        a :class:`meshio.Mesh` instance.
 
         .. note::
             See https://github.com/nschloe/meshio for formats supported by
             ``meshio``. Be sure to install ``meshio`` with ``pip install
             meshio`` if you wish to use it.
         """
-        GlobalFrame = CartesianFrame(dim=3)
-
-        coords = mesh.points
-        pd = PointData(coords=coords, frame=GlobalFrame)
-        polydata = PolyData(pd)
-
-        for cb in mesh.cells:
-            cd = None
-            cbtype = cb.type
-            celltype: PolyCell = meshio_to_celltype.get(cbtype, None)
-            if celltype:
-                topo = np.array(cb.data, dtype=int)
-
-                NDIM = celltype.Geometry.number_of_spatial_dimensions
-                if NDIM == 1:
-                    frames = frames_of_lines(coords, topo)
-                elif NDIM == 2:
-                    frames = frames_of_surfaces(coords, topo)
-                elif NDIM == 3:
-                    frames = GlobalFrame
-
-                cd = celltype(topo=topo, frames=frames)
-                polydata[cbtype] = PolyData(cd)
-            else:
-                if cbtype != "vertex":  # pragma: no cover
-                    warnings.warn(
-                        f"Cells of type '{cbtype}' are not supported here.",
-                        SigmaEpsilonWarning
-                    )
-
-        return polydata
+        importer: Callable = importers["meshio"]
+        return importer(mesh)
 
     @classmethod
     def from_pv(cls: PolyDataLike, pvobj: pyVistaLike) -> PolyDataLike:
@@ -539,43 +499,8 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
         >>> bunny = examples.download_bunny_coarse()
         >>> mesh = PolyData.from_pv(bunny)
         """
-        coords, cells_dict = None, None
-
-        if isinstance(pvobj, pv.UnstructuredGrid):
-            coords = pvobj.points.astype(float)
-            cells_dict = pvobj.cells_dict
-        else:
-            try:
-                ugrid = pvobj.cast_to_unstructured_grid()
-                return PolyData.from_pv(ugrid)
-            except Exception:
-                raise TypeError(f"Can't import from type {type(pvobj)}.")
-
-        GlobalFrame = CartesianFrame(dim=3)
-        pd = PointData(coords=coords, frame=GlobalFrame)
-        polydata = PolyData(pd)  # this fails without a frame
-
-        for vtkid, vtktopo in cells_dict.items():
-            if vtkid in vtk_to_celltype:
-                celltype: PolyCell = vtk_to_celltype[vtkid]
-
-                NDIM = celltype.Geometry.number_of_spatial_dimensions
-                if NDIM == 1:
-                    frames = frames_of_lines(coords, vtktopo)
-                elif NDIM == 2:
-                    frames = frames_of_surfaces(coords, vtktopo)
-                elif NDIM == 3:
-                    frames = GlobalFrame
-
-                cd = celltype(topo=vtktopo, frames=frames)
-                polydata[vtkid] = PolyData(cd)
-            else:
-                msg = (
-                    f"The element type with vtkId <{vtkid}> is not yet supported here."
-                )
-                raise NotImplementedError(msg)
-
-        return polydata
+        importer: Callable = importers["PyVista"]
+        return importer(pvobj)
 
     def to_dataframe(
         self,
@@ -1039,7 +964,7 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
             is `numpy.nan`.
         """
         assert self.is_root(), "This must be called on he root object!"
-        
+
         if not inplace:
             return deepcopy(self).to_standard_form(inplace=True)
 
@@ -1082,7 +1007,7 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
         dcf = defaultdict(lambda: np.nan)
         if isinstance(default_cell_fields, dict):
             dcf.update(default_cell_fields)
-            
+
         cim = IndexManager()
         cellblocks = list(self.cellblocks(inclusive=True, deep=True))
         m = map(lambda pb: pb.celldata.fields, cellblocks)
@@ -1099,7 +1024,7 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
         # free resources
         for pb in self.pointblocks(inclusive=False, deep=True):
             pb._reset_point_data()
-            
+
         return self
 
     def points(
@@ -1122,7 +1047,7 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
         :class:`~sigmaepsilon.mesh.space.pointcloud.PointCloud`
         """
         global_frame = self.root.frame
-        
+
         if from_cells:
             inds_ = np.unique(self.topology())
             x, inds = self.root.points(from_cells=False, return_inds=True)
@@ -1139,16 +1064,16 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
                 v = PointCloud(x, frame=fr)
                 coords.append(v.show(global_frame))
                 inds.append(i)
-            
+
             if len(coords) == 0:
                 raise Exception("There are no points belonging to this block")
-            
+
             coords = np.vstack(list(coords))
             inds = np.concatenate(inds).astype(int)
-        
+
         __cls__ = self.__class__._point_array_class_
         points = __cls__(coords, frame=global_frame, inds=inds)
-        
+
         if return_inds:
             return points, inds
         return points
@@ -1690,7 +1615,7 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
 
         Returns
         -------
-        numpy.ndarray or csr_matrix
+        numpy.ndarray or sigmaepsilon.math.linalg.sparse.csr.csr_matrix
             An array with the same shape as the topology.
 
         Note
@@ -1831,28 +1756,8 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
             -------
             vtk.vtkUnstructuredGrid or vtk.vtkMultiBlockDataSet
             """
-            if not __hasvtk__:  # pragma: no cover
-                raise ImportError("VTK must be installed for this!")
-
-            ugrids = []
-            for block, c, t, _ in self._detach_block_data_():
-                vtk_cell_id = block.celltype.Geometry.vtk_cell_id
-                ugrid = mesh_to_vtk(c, t, vtk_cell_id, deepcopy)
-                ugrids.append(ugrid)
-
-            if multiblock:
-                mb = vtk.vtkMultiBlockDataSet()
-                mb.SetNumberOfBlocks(len(ugrids))
-
-                for i, ugrid in enumerate(ugrids):
-                    mb.SetBlock(i, ugrid)
-
-                return mb
-            else:
-                if len(ugrids) > 1:
-                    return ugrids
-                else:
-                    return ugrids[0]
+            exporter: Callable = exporters["vtk"]
+            return exporter(self, deepcopy=deepcopy, multiblock=multiblock)
 
     if __hasvtk__ and __haspyvista__:
 
@@ -1879,63 +1784,16 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
             -------
             pyvista.UnstructuredGrid or pyvista.MultiBlock
             """
-            if not __hasvtk__:  # pragma: no cover
-                raise ImportError("VTK must be installed for this!")
-
-            if not __haspyvista__:  # pragma: no cover
-                raise ImportError("PyVista must be installed for this!")
-
-            ugrids = []
-            data = []
-            for block, c, t, d in self._detach_block_data_(scalars):
-                vtk_cell_id = block.celltype.Geometry.vtk_cell_id
-                ugrid = mesh_to_vtk(c, t, vtk_cell_id, deepcopy)
-                ugrids.append(ugrid)
-                data.append(d)
-
-            if multiblock:
-                mb = vtk.vtkMultiBlockDataSet()
-                mb.SetNumberOfBlocks(len(ugrids))
-
-                for i, ugrid in enumerate(ugrids):
-                    mb.SetBlock(i, ugrid)
-
-                mb = pv.wrap(mb)
-
-                with suppress(AttributeError):
-                    mb.wrap_nested()
-
-                return mb
-            else:
-                if scalars is None:
-                    return [pv.wrap(ugrid) for ugrid in ugrids]
-                else:
-                    res = []
-                    for ugrid, d in zip(ugrids, data):
-                        pvobj = pv.wrap(ugrid)
-                        if isinstance(d, ndarray):
-                            if isinstance(scalars, str):
-                                pvobj[scalars] = d
-                            else:
-                                pvobj["scalars"] = d
-                        res.append(pvobj)
-                    return res
-
+            exporter: Callable = exporters["PyVista"]
+            return exporter(self, deepcopy=deepcopy, multiblock=multiblock, scalars=scalars)
+            
     if __hask3d__:
 
-        def to_k3d(
-            self,
-            *,
-            scene: object = None,
-            deep: bool = True,
-            config_key: str = None,
-            menu_visibility: bool = True,
-            cmap: list = None,
-            show_edges: bool = True,
-            scalars: ndarray = None,
-        ):
+        def to_k3d(self, *args, **kwargs) -> object:
             """
-            Returns the mesh as a k3d mesh object.
+            Returns the mesh as a k3d mesh object. All arguments are forwarded to
+            :func:~`sigmaepsilon.mesh.io.to_k3d.to_k3d`, refer to its documentation
+            for the details.
 
             :: warning:
                 Calling this method raises a UserWarning inside the `traittypes`
@@ -1946,104 +1804,9 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
             -------
             object
                 A K3D Plot Widget, which is a result of a call to `k3d.plot`.
-
-            See also
-            --------
-            :func:`k3d.lines`
-            :func:`k3d.mesh`
             """
-            if not __hask3d__:  # pragma: no cover
-                raise ImportError(
-                    "The python package 'k3d' must be installed for this."
-                )
-
-            if scene is None:
-                scene = k3d.plot(menu_visibility=menu_visibility)
-
-            source = self.source()
-            coords = source.coords()
-
-            if isinstance(scalars, ndarray):
-                color_range = minmax(scalars)
-                color_range = [scalars.min() - 1, scalars.max() + 1]
-
-            k3dparams = dict(wireframe=False)
-            if config_key is None:
-                config_key = self.__class__._k3d_config_key_
-
-            for b in self.cellblocks(inclusive=True, deep=deep):
-                NDIM = b.celltype.Geometry.number_of_spatial_dimensions
-                params = copy(k3dparams)
-                config = b._get_config_(config_key)
-                params.update(config)
-
-                if "color" in params:
-                    if isinstance(params["color"], str):
-                        hexstr = mpl.colors.to_hex(params["color"])
-                        params["color"] = int("0x" + hexstr[1:], 16)
-
-                if cmap is not None:
-                    params["color_map"] = cmap
-
-                if NDIM == 1:
-                    topo = b.cd.topology().to_numpy()
-
-                    if isinstance(scalars, ndarray):
-                        c, d, t = detach_mesh_data_bulk(coords, topo, scalars)
-                        params["attribute"] = d
-                        params["color_range"] = color_range
-                        params["indices_type"] = "segment"
-                    else:
-                        c, t = detach_mesh_bulk(coords, topo)
-                        params["indices_type"] = "segment"
-
-                    c = c.astype(np.float32)
-                    t = t.astype(np.uint32)
-                    scene += k3d.lines(c, t, **params)
-                elif NDIM == 2:
-                    topo = b.cd.to_triangles()
-
-                    if isinstance(scalars, ndarray):
-                        c, d, t = detach_mesh_data_bulk(coords, topo, scalars)
-                        params["attribute"] = d
-                        params["color_range"] = color_range
-                    else:
-                        c, t = detach_mesh_bulk(coords, topo)
-
-                    c = c.astype(np.float32)
-                    t = t.astype(np.uint32)
-
-                    if "side" in params:
-                        if params["side"].lower() == "both":
-                            params["side"] = "front"
-                            scene += k3d.mesh(c, t, **params)
-                            params["side"] = "back"
-                            scene += k3d.mesh(c, t, **params)
-                        else:
-                            scene += k3d.mesh(c, t, **params)
-                    else:
-                        scene += k3d.mesh(c, t, **params)
-
-                    if show_edges:
-                        scene += k3d.mesh(c, t, wireframe=True, color=0)
-                elif NDIM == 3:
-                    topo = b.surface().topology().to_numpy()
-
-                    if isinstance(scalars, ndarray):
-                        c, d, t = detach_mesh_data_bulk(coords, topo, scalars)
-                        params["attribute"] = d
-                        params["color_range"] = color_range
-                    else:
-                        c, t = detach_mesh_bulk(coords, topo)
-
-                    c = c.astype(np.float32)
-                    t = t.astype(np.uint32)
-                    scene += k3d.mesh(c, t, **params)
-
-                    if show_edges:
-                        scene += k3d.mesh(c, t, wireframe=True, color=0)
-
-            return scene
+            exporter: Callable = exporters["k3d"]
+            return exporter(self, *args, **kwargs)
 
         def k3dplot(self, scene=None, *, menu_visibility: bool = True, **kwargs):
             """
@@ -2076,85 +1839,16 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
 
     if __haspyvista__:
 
-        def pvplot(
-            self,
-            *,
-            deepcopy: bool = False,
-            jupyter_backend: str = "pythreejs",
-            show_edges: bool = True,
-            notebook: bool = False,
-            theme: str = None,
-            scalars: Union[str, ndarray] = None,
-            window_size: Tuple = None,
-            return_plotter: bool = False,
-            config_key: Tuple = None,
-            plotter: pv.Plotter = None,
-            cmap: Union[str, Iterable] = None,
-            camera_position: Tuple = None,
-            lighting: bool = False,
-            edge_color: str = None,
-            return_img: bool = False,
-            show_scalar_bar: Union[bool, None] = None,
-            **kwargs,
-        ) -> Union[None, pv.Plotter, np.ndarray]:
+        def pvplot(self, *args, **kwargs) -> Union[None, pv.Plotter, np.ndarray]:
             """
-            Plots the mesh using PyVista. The parameters listed here only grasp
-            a fraction of what PyVista provides. The idea is to have a function
-            that narrows down the parameters as much as possible to the ones that
-            are most commonly used. If you want more control, create a plotter
-            prior to calling this function and provide it using the parameter
-            `plotter`. Then by setting `return_plotter` to `True`, the function
-            adds the cells to the plotter and returns it for further customization.
+            Convenience function for plotting the mesh using PyVista. All arguments are
+            forwarded to :func:~`sigmaepsilon.mesh.plotting.pvplot.pvplot`, refer the
+            documentation of this function for the details.
 
-            Parameters
-            ----------
-            deepcopy: bool, Optional
-                If True, a deep copy is created. Default is False.
-            jupyter_backend: str, Optional
-                The backend to use when plotting in a Jupyter enviroment.
-                Default is 'pythreejs'.
-            show_edges: bool, Optional
-                If True, the edges of the mesh are shown as a wireframe.
-                Default is True.
-            notebook: bool, Optional
-                If True and in a Jupyter enviroment, the plot is embedded
-                into the Notebook. Default is False.
-            theme: str, Optional
-                The theme to use with PyVista. Default is None.
-            scalars: Union[str, numpy.ndarray]
-                A string that refers to a field in the celldata objects
-                of the block of the mesh, or a NumPy array with values for
-                each point in the mesh.
-            window_size: tuple, Optional
-                The size of the window, only is `notebook` is `False`.
-                Default is None.
-            return_plotter: bool, Optional
-                If True, an instance of :class:`pyvista.Plotter` is returned
-                without being shown. Default is False.
-            config_key: tuple, Optional
-                A tuple of strings that refer to a configuration for PyVista.
-            plotter: pyvista.Plotter, Optional
-                A plotter to use. If not provided, a plotter is created in the
-                background. Default is None.
-            cmap: Union[str, Iterable], Optional
-                A color map for plotting. See PyVista's docs for the details.
-                Default is None.
-            camera_position: tuple, Optional
-                Camera position. See PyVista's docs for the details. Default is None.
-            lighting: bool, Optional
-                Whether to use lighting or not. Default is None.
-            edge_color: str, Optional
-                The color of the edges if `show_edges` is `True`. Default is None,
-                which equals to the default PyVista setting.
-            return_img: bool, Optional
-                If True, a screenshot is returned as an image. Default is False.
-            show_scalar_bar: Union[bool, None], Optional
-                Whether to show the scalar bar or not. A `None` value means that the option
-                is governed by the configurations of the blocks. If a boolean is provided here,
-                it overrides the configurations of the blocks. Default is None.
-            **kwargs
-                Extra keyword arguments passed to `pyvista.Plotter`, it the plotter
-                has to be created.
+            .. note::
+                See https://github.com/pyvista/pyvista for more examples with
+                ``pyvista``. Be sure to install ``pyvista`` with ``pip install
+                pyvista`` if you wish to use it.
 
             Returns
             -------
@@ -2167,89 +1861,8 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
             :func:`to_pv`
             :func:`to_vtk`
             """
-            if not __haspyvista__:  # pragma: no cover
-                raise ImportError("You need to install `pyVista` for this.")
-
-            polys = self.to_pv(deepcopy=deepcopy, multiblock=False, scalars=scalars)
-
-            if isinstance(theme, str):
-                try:
-                    new_theme_type = pv.themes._ALLOWED_THEMES[theme].value
-                    theme = new_theme_type()
-                except Exception:
-                    if theme == "dark":
-                        theme = themes.DarkTheme()
-                        theme.lighting = False
-                    elif theme == "bw":
-                        theme = themes.Theme()
-                        theme.color = "black"
-                        theme.lighting = True
-                        theme.edge_color = "white"
-                        theme.background = "white"
-                    elif theme == "document":
-                        theme = themes.DocumentTheme()
-
-            if theme is None:
-                theme = pv.global_theme
-
-            theme.show_edges = show_edges
-
-            if lighting is not None:
-                theme.lighting = lighting
-
-            if edge_color is not None:
-                theme.edge_color = edge_color
-
-            if plotter is None:
-                pvparams = dict()
-                if window_size is not None:
-                    pvparams.update(window_size=window_size)
-                pvparams.update(kwargs)
-                pvparams.update(notebook=notebook)
-                pvparams.update(theme=theme)
-                if "title" not in pvparams:
-                    pvparams["title"] = "sigmaepsilon.mesh"
-                plotter = pv.Plotter(**pvparams)
-
-            if camera_position is not None:
-                plotter.camera_position = camera_position
-
-            pvparams = dict()
-            blocks = self.cellblocks(inclusive=True, deep=True)
-
-            blocks_have_data = self._has_plot_scalars_(scalars)
-
-            if config_key is None:
-                config_key = self.__class__._pv_config_key_
-
-            for block, poly, has_data in zip(blocks, polys, blocks_have_data):
-                NDIM = block.cd.Geometry.number_of_spatial_dimensions
-                params = copy(pvparams)
-                config = block._get_config_(config_key)
-                if has_data:
-                    config.pop("color", None)
-                params.update(config)
-                if cmap is not None:
-                    params["cmap"] = cmap
-                if NDIM > 1:
-                    params["show_edges"] = show_edges
-                if isinstance(show_scalar_bar, bool):
-                    params["show_scalar_bar"] = show_scalar_bar
-                plotter.add_mesh(poly, **params)
-
-            if return_plotter:
-                return plotter
-
-            show_params = dict()
-            if notebook:
-                show_params.update(jupyter_backend=jupyter_backend)
-            else:
-                if return_img:
-                    plotter.show(auto_close=False)
-                    plotter.show(screenshot=True)
-                    return plotter.last_image
-
-            return plotter.show(**show_params)
+            plotter: Callable = plotters["PyVista"]
+            return plotter(self, *args, **kwargs)
 
     def plot(
         self,
@@ -2258,7 +1871,7 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
         backend: str = "pyvista",
         config_key: str = None,
         **kwargs,
-    ):
+    ) -> Any:
         """
         Plots the mesh using supported backends. The default backend is PyVista.
 
