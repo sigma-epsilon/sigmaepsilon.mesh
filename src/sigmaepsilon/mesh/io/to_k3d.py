@@ -126,7 +126,7 @@ if __hask3d__ and __hasmatplotlib__:
 
         return scene
 
-else:
+else: # pragma: no cover
 
     def to_k3d(*_, **__):
         raise ImportError(
