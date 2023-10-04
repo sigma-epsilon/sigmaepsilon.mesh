@@ -527,7 +527,7 @@ class PointCloud(Vector):
         return f"PointCloud({self._array})"
 
 
-class PointCloudType(nbtypes.Type):
+class PointCloudType(nbtypes.Type):  # pragma: no cover
     """Numba type."""
 
     def __init__(self, datatype, indstype=nbtypes.NoneType):
@@ -541,7 +541,7 @@ make_attribute_wrapper(PointCloudType, "inds", "inds")
 
 
 @overload_attribute(PointCloudType, "x")
-def attr_x(arr):
+def attr_x(arr):  # pragma: no cover
     def get(arr):
         return arr.data[:, 0]
 
@@ -549,7 +549,7 @@ def attr_x(arr):
 
 
 @overload_attribute(PointCloudType, "y")
-def attr_y(arr):
+def attr_y(arr):  # pragma: no cover
     def get(arr):
         return arr.data[:, 1]
 
@@ -557,7 +557,7 @@ def attr_y(arr):
 
 
 @overload_attribute(PointCloudType, "z")
-def attr_z(arr):
+def attr_z(arr):  # pragma: no cover
     def get(arr):
         return arr.data[:, 2]
 
@@ -565,7 +565,7 @@ def attr_z(arr):
 
 
 @typeof_impl.register(PointCloud)
-def type_of_impl(val, context):
+def type_of_impl(val, context):  # pragma: no cover
     """`val` is the Python object being typed"""
     datatype = typeof_impl(val._array, context)
     indstype = typeof_impl(val.inds, context)
@@ -573,7 +573,7 @@ def type_of_impl(val, context):
 
 
 @type_callable(PointCloud)
-def type_of_callable(context):
+def type_of_callable(context):  # pragma: no cover
     def typer(data, inds=None):
         datatype = typeof_impl(data, context)
         indstype = typeof_impl(inds, context) if inds is not None else nbtypes.NoneType
@@ -583,7 +583,7 @@ def type_of_callable(context):
 
 
 @register_model(PointCloudType)
-class StructModel(models.StructModel):
+class StructModel(models.StructModel):  # pragma: no cover
     """Data model for nopython mode."""
 
     def __init__(self, dmm, fe_type):
@@ -598,7 +598,7 @@ class StructModel(models.StructModel):
 
 
 @overload(operator.getitem)
-def overload_getitem(obj, idx):
+def overload_getitem(obj, idx):  # pragma: no cover
     if isinstance(obj, PointCloudType):
 
         def dummy_getitem_impl(obj, idx):
@@ -608,7 +608,7 @@ def overload_getitem(obj, idx):
 
 
 @lower_builtin(PointCloud, nbtypes.Array)
-def lower_type(context, builder, sig, args):
+def lower_type(context, builder, sig, args):  # pragma: no cover
     typ = sig.return_type
     data, inds = args
     obj = cgutils.create_struct_proxy(typ)(context, builder)
@@ -618,7 +618,7 @@ def lower_type(context, builder, sig, args):
 
 
 @unbox(PointCloudType)
-def unbox_type(typ, obj, c):
+def unbox_type(typ, obj, c):  # pragma: no cover
     """Convert a python object to a numba-native structure."""
     data_obj = c.pyapi.object_getattr_string(obj, "_array")
     inds_obj = c.pyapi.object_getattr_string(obj, "inds")
@@ -632,7 +632,7 @@ def unbox_type(typ, obj, c):
 
 
 @box(PointCloudType)
-def box_type(typ, val, c):
+def box_type(typ, val, c):  # pragma: no cover
     """Convert a numba-native structure to a python object."""
     native_obj = cgutils.create_struct_proxy(typ)(c.context, c.builder, value=val)
     class_obj = c.pyapi.unserialize(c.pyapi.serialize_object(PointCloud))
