@@ -34,6 +34,22 @@ if __hasplotly__:
             The size of the balls at the point coordinates. Default is 1.
         scalar_labels: Iterable[str], Optional
             The labels for the columns in 'scalars'. Default is None.
+            
+        Example
+        -------
+        .. plotly::
+        
+            from sigmaepsilon.mesh.plotting import scatter_points_plotly
+            import numpy as np
+            points = np.array([
+                [0, 0, 0],
+                [1, 0, 0],
+                [0, 1, 0],
+                [0, 0, 1]
+            ])
+            data = np.random.rand(len(points))
+            scalar_labels=["random data"]
+            scatter_points_plotly(points, scalars=data, scalar_labels=scalar_labels)
         """
         x = coords[:, 0]
         y = coords[:, 1]

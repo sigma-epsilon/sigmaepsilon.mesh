@@ -96,6 +96,15 @@ if __haspyvista__:
         Union[None, pv.Plotter, numpy.ndarray]
             A PyVista plotter if `return_plotter` is `True`, a NumPy array if
             `return_img` is `True`, or nothing.
+            
+        Example
+        -------
+        .. pyvista-plot::
+        
+            from sigmaepsilon.mesh.plotting import pvplot
+            from sigmaepsilon.mesh.downloads import download_gt40
+            mesh = download_gt40(read=True)
+            pvplot(mesh)
         """
         if not __haspyvista__:  # pragma: no cover
             raise ImportError("You need to install `pyVista` for this.")

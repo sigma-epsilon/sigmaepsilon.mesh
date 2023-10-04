@@ -44,6 +44,46 @@ if __hasplotly__:
         marker_symbol: str = "circle",
         **kwargs,
     ) -> go.Figure:
+        """
+        Plots points and lines in 3d space optionally with data defined on the points.
+        If data is provided, the values are shown in a tooltip when howering above a point.
+        
+        .. note:
+            Currently only 2 noded linear lines are supported.
+        
+        Parameters
+        ----------
+        coords: numpy.ndarray
+            The coordinates of the points, where the first axis runs along the points, the
+            second along spatial dimensions.
+        topo: numpy.ndarray
+            The topology of the lines, where the first axis runs along the lines, the
+            second along the nodes. 
+        scalars: numpy.ndarray
+            The values to show in the tooltips of the points as a 1d or 2d NumPy array.
+            The length of the array must equal the number of points. Default is None.
+        marker_symbol: str, Optional
+            The symbol to use for the points. Refer to Plotly's documentation for the 
+            possible options. Default is "circle".
+            
+        Example
+        -------
+        .. plotly::
+        
+            from sigmaepsilon.mesh.plotting import plot_lines_plotly
+            from sigmaepsilon.mesh import grid
+            from sigmaepsilon.mesh.utils.topology.tr import H8_to_L2
+            import numpy as np
+            gridparams = {
+                "size": (10, 10, 10),
+                "shape": (4, 4, 4),
+                "eshape": "H8",
+            }
+            coords, topo = grid(**gridparams)
+            coords, topo = H8_to_L2(coords, topo)
+            data = np.random.rand(len(coords), 2)
+            plot_lines_plotly(coords, topo, scalars=data, scalar_labels=["X", "Y"])
+        """
         n2 = topo[:, [0, -1]].max() + 1
         _scalars = scalars[:n2] if scalars is not None else None
 

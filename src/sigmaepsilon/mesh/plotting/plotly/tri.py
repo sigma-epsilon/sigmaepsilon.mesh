@@ -18,7 +18,7 @@ if __hasplotly__:
         edges: Optional[Union[bool, None]] = None,
     ) -> go.Figure:
         """
-        Plots a triangulation with attached field data in 3d.
+        Plots a triangulation optionally with edges and attached field data in 3d.
 
         Parameters
         ----------
@@ -29,11 +29,30 @@ if __hasplotly__:
         plot_edges: bool, Optional
             If True, plots the edges of the mesh. Default is False.
         edges: numpy.ndarray, Optional
-            The edges to plot, only if `plot_edges` is `True`.
+            The edges to plot. If provided, `plot_edges` is ignored. Default is None.
+        
         Returns
         -------
         figure: :class:`plotly.graph_objects.Figure`
             The figure object.
+            
+        Example
+        -------
+        .. plotly::
+        
+            from sigmaepsilon.mesh.plotting import triplot_plotly
+            from sigmaepsilon.mesh import grid
+            from sigmaepsilon.mesh.utils.topology.tr import Q4_to_T3
+            import numpy as np
+            gridparams = {
+                "size": (1200, 600),
+                "shape": (4, 4),
+                "eshape": (2, 2),
+            }
+            coords, topo = grid(**gridparams)
+            points, triangles = Q4_to_T3(coords, topo, path="grid")
+            data = np.random.rand(len(points))
+            triplot_plotly(points, triangles, data, plot_edges=True)
         """
         x = points[:, 0]
         y = points[:, 1]
