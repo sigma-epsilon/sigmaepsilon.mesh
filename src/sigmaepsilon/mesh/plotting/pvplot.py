@@ -100,7 +100,8 @@ if __haspyvista__:
         Example
         -------
         .. pyvista-plot::
-        
+
+            # doctest: +SKIP
             from sigmaepsilon.mesh.plotting import pvplot
             from sigmaepsilon.mesh.downloads import download_gt40
             mesh = download_gt40(read=True)
