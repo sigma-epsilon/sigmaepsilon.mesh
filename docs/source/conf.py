@@ -15,6 +15,8 @@ import os
 from datetime import date
 import warnings
 
+import pyvista
+
 import sigmaepsilon.mesh as library
 
 from sphinx.config import Config
@@ -37,11 +39,6 @@ generate_examples_gallery_rst(
 project = library.__pkg_name__
 copyright = "2014-%s, Bence Balogh" % date.today().year
 author = "Bence Balogh"
-
-
-def setup(app: Config):
-    app.add_config_value("project_name", project, "html")
-
 
 # The short X.Y version.
 version = library.__version__
@@ -67,6 +64,7 @@ extensions = [
     #'sphinx_gallery.gen_gallery',
     #'sphinx_gallery.load_style',  # load CSS for gallery (needs SG >= 0.6)
     "nbsphinx",  # to handle jupyter notebooks
+    #"numpydoc",
     # "nbsphinx_link",  # for including notebook files from outside the sphinx source root
     "sphinx_copybutton",  # for "copy to clipboard" buttons
     "sphinx.ext.mathjax",  # for math equations
@@ -81,7 +79,9 @@ extensions = [
     "sphinx.ext.mathjax",
     "sphinx_design",
     "sphinx_inline_tabs",
-    "matplotlib.sphinxext.plot_directive",
+    "pyvista.ext.plot_directive",
+    "sphinx_plotly_directive",
+    #"matplotlib.sphinxext.plot_directive",
 ]
 
 autosummary_generate = True
@@ -127,7 +127,7 @@ intersphinx_mapping = {
     "sigmaepsilon.deepdict": (r"https://sigmaepsilondeepdict.readthedocs.io/en/latest/", None),
 }
 
-# napoleon config
+# napoleon config ---------------------------------------------------------
 
 napoleon_numpy_docstring = True
 napoleon_include_init_with_doc = True
@@ -151,7 +151,7 @@ mathjax3_config = {
 
 # -- Image scapers configuration -------------------------------------------------
 
-image_scrapers = ("matplotlib",)
+image_scrapers = (pyvista.Scraper(), "matplotlib",)
 
 # Remove matplotlib agg warnings from generated doc when using plt.show
 warnings.filterwarnings(
@@ -187,10 +187,15 @@ html_theme_options = {
         "text": "SigmaEpsilon.Mesh",
     }
 }
+
+html_js_files = [
+    "require.min.js",
+    "custom.js",
+]
+
 html_css_files = ["custom.css"]
 
 html_context = {
-   # ...
    "default_mode": "dark"
 }
 
@@ -228,3 +233,6 @@ nbsphinx_epilog = r"""
     \textcolor{gray}{\dotfill\ \sphinxcode{\sphinxupquote{\strut
     {{ docname | escape_latex }}}} ends here.}}
 """
+
+def setup(app: Config):
+    app.add_config_value("project_name", project, "html")
