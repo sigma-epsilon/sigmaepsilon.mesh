@@ -5,7 +5,7 @@ from sigmaepsilon.core.testing import SigmaEpsilonTestCase
 from sigmaepsilon.mesh.plotting import parallel_mpl, aligned_parallel_mpl
 
 
-class TestParallel(SigmaEpsilonTestCase):
+class TestMplParallel(SigmaEpsilonTestCase):
     def test_parallel_mpl_plot_1(self):
         colors = np.random.rand(5, 3)
         labels = [str(i) for i in range(10)]

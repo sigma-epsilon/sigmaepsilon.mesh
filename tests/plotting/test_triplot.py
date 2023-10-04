@@ -14,7 +14,7 @@ from sigmaepsilon.mesh.plotting import (
 import matplotlib.tri as mpltri 
 
 
-class TestTriplot(SigmaEpsilonTestCase):
+class TestMplTriplot(SigmaEpsilonTestCase):
     def test_triplot(self):
         gridparams = {
             "size": (1200, 600),

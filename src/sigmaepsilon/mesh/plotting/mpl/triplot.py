@@ -388,19 +388,19 @@ else:  # pragma: no cover
 
     def triplot_mpl_mesh(*_, **__):
         raise ImportError(
-            "You need both Matplotlib for this. Install it with 'pip install matplotlib'. "
+            "You need Matplotlib for this. Install it with 'pip install matplotlib'. "
             "You may also need to restart your kernel and reload the package."
         )
 
     def triplot_mpl_hinton(*_, **__):
         raise ImportError(
-            "You need both Matplotlib for this. Install it with 'pip install matplotlib'. "
+            "You need Matplotlib for this. Install it with 'pip install matplotlib'. "
             "You may also need to restart your kernel and reload the package."
         )
 
     def triplot_mpl_data(*_, **__):
         raise ImportError(
-            "You need both Matplotlib for this. Install it with 'pip install matplotlib'. "
+            "You need Matplotlib for this. Install it with 'pip install matplotlib'. "
             "You may also need to restart your kernel and reload the package."
         )
 

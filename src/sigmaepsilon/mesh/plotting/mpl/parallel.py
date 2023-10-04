@@ -178,8 +178,8 @@ def parallel_mpl(
 
 
 def aligned_parallel_mpl(
-    data,
-    datapos,
+    data: Union[ndarray, dict],
+    datapos: Iterable[float],
     *,
     yticks=None,
     labels=None,
@@ -204,9 +204,9 @@ def aligned_parallel_mpl(
         The values to plot. If it is a NumPy array, labels must be provided
         with the argument `labels`, if it is a sictionary, the keys of the
         dictionary are used as labels.
-    datapos: Iterable
+    datapos: Iterable[float]
         Positions of the provided data values.
-    yticks: Iterable, Optional
+    yticks: Iterable[float], Optional
         Positions of ticks on the vertical axes. Default is None.
     labels: Iterable, Optional
         An iterable of strings specifying labels for the datasets.
@@ -214,7 +214,7 @@ def aligned_parallel_mpl(
     sharelimits: bool, Optional
         If True, the axes share limits of the vertical axes.
         Default is False.
-    texlabels: Itrable, Optional
+    texlabels: Itrable[str], Optional
         TeX-formatted labels. If provided, it must have the same length as
         `labels`. Default is None.
     xticksrotation: int, Optional
@@ -227,10 +227,10 @@ def aligned_parallel_mpl(
         Default is False.
     slider_label: str, Optional
         A label for the slider. Only if `slider` is true. Default is None.
-    hlines: Iterable, Optional
+    hlines: Iterable[float], Optional
         A list of data values where horizontal lines are to be added to the axes.
         Default is None.
-    vlines: Iterable, Optional
+    vlines[float]: Iterable, Optional
         A list of data values where vertical lines are to be added to the axes.
         Default is None.
     y0: float or int, Optional
