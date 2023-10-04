@@ -28,7 +28,7 @@ class TestPointCloud(unittest.TestCase):
 
         @njit
         def numba_nopython(arr):
-            return arr[0], arr.x, arr.data, arr.inds
+            return arr[0], arr.x, arr.y, arr.z, arr.data, arr.inds
 
         c = np.array([[0, 0, 0], [0, 0, 1.0], [0, 0, 0]])
         COORD = PointCloud(c, inds=np.array([0, 1, 2, 3]))

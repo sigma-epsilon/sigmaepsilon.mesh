@@ -177,7 +177,7 @@ class TestPolyDataPlot(unittest.TestCase):
             window_size=(600, 400),
             config_key=["pyvista", "plot"],
             cmap="jet",
-            theme=themes.DefaultTheme(),
+            theme=themes.Theme(),
             return_plotter=True,
         )
 
