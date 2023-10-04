@@ -142,7 +142,7 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
 
     See also
     --------
-    :class:`~sigmaepsilon.mesh.trimesh.TriMesh`
+    :class:`~sigmaepsilon.mesh.data.trimesh.TriMesh`
     :class:`~sigmaepsilon.mesh.data.pointdata.PointData`
     :class:`~sigmaepsilon.mesh.data.celldata.CellData`
     """
@@ -807,7 +807,7 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
         See also
         --------
         :func:`blocks`
-        :class:`~sigmaepsilon.mesh.core.pointdata.PointData`
+        :class:`~sigmaepsilon.mesh.data.pointdata.PointData`
         """
         return filter(lambda i: i.pd is not None, self.blocks(*args, **kwargs))
 
@@ -824,7 +824,7 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
         See also
         --------
         :func:`blocks`
-        :class:`~sigmaepsilon.mesh.core.celldata.CellData`
+        :class:`~sigmaepsilon.mesh.data.celldata.CellData`
         """
         return filter(lambda i: i.cd is not None, self.blocks(*args, **kwargs))
 
