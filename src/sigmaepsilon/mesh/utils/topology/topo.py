@@ -56,7 +56,7 @@ def rewire(topo: TopoLike, imap: MappingLike, invert: bool = False) -> Iterable:
 
     Parameters
     ----------
-    topo: numpy.ndarray array or sigmaepsilon.math.linalg.sparse.JaggedArray
+    topo: numpy.ndarray or sigmaepsilon.math.linalg.sparse.JaggedArray
         1d or 2d integer array representing topological data of a mesh.
     imap: MappingLike
         Inverse mapping on the index sets from global to local.
