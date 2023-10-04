@@ -81,6 +81,7 @@ extensions = [
     "sphinx.ext.mathjax",
     "sphinx_design",
     "sphinx_inline_tabs",
+    "matplotlib.sphinxext.plot_directive",
 ]
 
 autosummary_generate = True
@@ -115,14 +116,23 @@ highlight_language = "python3"
 intersphinx_mapping = {
     "python": (r"https://docs.python.org/{.major}".format(sys.version_info), None),
     "numpy": (r"https://numpy.org/doc/stable/", None),
-    "scipy": (r"http://docs.scipy.org/doc/scipy/reference", None),
+    "scipy": (r"https://docs.scipy.org/doc/scipy/", None),
+    "awkward": (r"https://awkward-array.org/doc/main/", None),
     "matplotlib": (r"https://matplotlib.org/stable", None),
+    "k3d": (r"http://k3d-jupyter.org/", None),
     "sphinx": (r"https://www.sphinx-doc.org/en/master", None),
     "pandas": (r"https://pandas.pydata.org/pandas-docs/stable/", None),
     "sigmaepsilon.core": (r"https://sigmaepsiloncore.readthedocs.io/en/latest/", None),
     "sigmaepsilon.math": (r"https://sigmaepsilonmath.readthedocs.io/en/latest/", None),
     "sigmaepsilon.deepdict": (r"https://sigmaepsilondeepdict.readthedocs.io/en/latest/", None),
 }
+
+# napoleon config
+
+napoleon_numpy_docstring = True
+napoleon_include_init_with_doc = True
+napoleon_use_admonition_for_examples = True
+napoleon_use_ivar = True
 
 # -- bibtex configuration -------------------------------------------------
 # https://sphinxcontrib-bibtex.readthedocs.io/en/latest/usage.html
