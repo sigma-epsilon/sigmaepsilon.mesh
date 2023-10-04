@@ -1,40 +1,110 @@
-from typing import Any
-from functools import partial
-
 import numpy as np
-from numpy import ndarray
 
-from matplotlib.patches import Polygon
 from mpl_toolkits.axes_grid1 import make_axes_locatable
-from matplotlib.collections import PatchCollection
 import matplotlib.tri as mpltri
-from matplotlib.figure import Figure
 
-from sigmaepsilon.core.typing import issequence
 from sigmaepsilon.math.utils import minmax
 from sigmaepsilon.mesh.triang import triobj_to_mpl, get_triobj_data, triangulate
 from sigmaepsilon.mesh.utils.tri import offset_tri
 from sigmaepsilon.mesh.utils import cells_coords, explode_mesh_data_bulk
 
-from .utils import get_fig_axes, decorate_ax
+from .utils import decorate_ax, triplotter, TriPatchCollection
+
+__all__ = ["triplot_mpl_hinton", "triplot_mpl_mesh", "triplot_mpl_data"]
 
 
-__all__ = ["triplot_mpl"]
-
-
-def triplot_mpl(
-    triobj: Any,
+@triplotter
+def triplot_mpl_hinton(
+    triobj,
+    ax,
+    data,
     *args,
-    hinton: bool = False,
-    data: ndarray = None,
-    title: str = None,
-    label: str = None,
-    fig: Figure = None,
-    ax: Any = None,
-    axes: Any = None,
-    fig_kw: dict = None,
+    lw=0.5,
+    fcolor="b",
+    ecolor="k",
+    title=None,
+    suptitle=None,
+    label=None,
     **kwargs,
-) -> Any:
+):
+    axobj = None
+    tri = triobj_to_mpl(triobj)
+    points, triangles = get_triobj_data(tri, *args, trim2d=True, **kwargs)
+    cellcoords = offset_tri(points, triangles, data)
+    axobj = TriPatchCollection(cellcoords, fc=fcolor, ec=ecolor, lw=lw)
+    ax.add_collection(axobj)
+    decorate_ax(
+        ax=ax, points=points, title=title, suptitle=suptitle, label=label, **kwargs
+    )
+    return axobj
+
+
+@triplotter
+def triplot_mpl_mesh(
+    triobj,
+    ax,
+    *args,
+    lw=0.5,
+    marker="b-",
+    zorder=None,
+    fcolor=None,
+    ecolor="k",
+    fig=None,
+    title=None,
+    suptitle=None,
+    label=None,
+    **kwargs,
+):
+    axobj = None
+    tri = triobj_to_mpl(triobj)
+    points, triangles = get_triobj_data(tri, trim2d=True)
+
+    if fcolor is None:
+        if zorder is not None:
+            axobj = ax.triplot(tri, marker, lw=lw, zorder=zorder, **kwargs)
+        else:
+            axobj = ax.triplot(tri, marker, lw=lw, **kwargs)
+    else:
+        cellcoords = cells_coords(points, triangles)
+        axobj = TriPatchCollection(cellcoords, fc=fcolor, ec=ecolor, lw=lw)
+        ax.add_collection(axobj)
+    decorate_ax(
+        fig=fig,
+        ax=ax,
+        points=points,
+        title=title,
+        suptitle=suptitle,
+        label=label,
+        **kwargs,
+    )
+    return axobj
+
+
+@triplotter
+def triplot_mpl_data(
+    triobj,
+    ax,
+    data,
+    *args,
+    cmap="winter",
+    fig=None,
+    ecolor="k",
+    lw=0.1,
+    title=None,
+    suptitle=None,
+    label=None,
+    nlevels=None,
+    refine=False,
+    refiner=None,
+    colorbar=True,
+    subdiv=3,
+    cbpad="2%",
+    cbsize="5%",
+    cbpos="right",
+    draw_contours=True,
+    shading="flat",
+    **kwargs,
+):
     """
     Creates plots over triangulations using `matplotlib`.
 
@@ -115,150 +185,12 @@ def triplot_mpl(
 
     >>> triplot_mpl(triobj, data=data, cmap='Set1', axis='off')
     """
-    fig, axes = get_fig_axes(*args, data=data, ax=ax, axes=axes, fig=fig, **kwargs)
-
-    if isinstance(triobj, tuple):
-        coords, topo = triobj
-        triobj = triangulate(points=coords[:, :2], triangles=topo)[-1]
-        coords, topo = None, None
-
-    pdata = partial(triplot_mpl_data, triobj)
-    pgeom = partial(triplot_mpl_mesh, triobj)
-    phint = partial(triplot_mpl_hinton, triobj)
-
-    if data is not None:
-        assert len(data.shape) <= 2, "Data must be a 1 or 2 dimensional array."
-        nD = 1 if len(data.shape) == 1 else data.shape[1]
-        data = data.reshape((data.shape[0], nD))
-        if not issequence(title):
-            title = nD * (title,)
-        if not issequence(label):
-            label = nD * (label,)
-        pfnc = phint if hinton else pdata
-        axobj = [
-            pfnc(
-                ax, data[:, i], *args, fig=fig, title=title[i], label=label[i], **kwargs
-            )
-            for i, ax in enumerate(axes)
-        ]
-        if nD == 1:
-            data = data.reshape(data.shape[0])
-    else:
-        axobj = pgeom(axes[0], *args, fig=fig, title=title, **kwargs)
-    return axobj
-
-
-class TriPatchCollection(PatchCollection):
-    def __init__(self, cellcoords, *args, **kwargs):
-        pmap = map(lambda i: cellcoords[i], np.arange(len(cellcoords)))
-
-        def fnc(points):
-            return Polygon(points, closed=True)
-
-        patches = list(map(fnc, pmap))
-        super().__init__(patches, *args, **kwargs)
-
-
-def triplot_mpl_hinton(
-    triobj,
-    ax,
-    data,
-    *args,
-    lw=0.5,
-    fcolor="b",
-    ecolor="k",
-    title=None,
-    suptitle=None,
-    label=None,
-    **kwargs,
-):
-    axobj = None
-    tri = triobj_to_mpl(triobj)
-    points, triangles = get_triobj_data(tri, *args, trim2d=True, **kwargs)
-    cellcoords = offset_tri(points, triangles, data)
-    axobj = TriPatchCollection(cellcoords, fc=fcolor, ec=ecolor, lw=lw)
-    ax.add_collection(axobj)
-    decorate_ax(
-        ax=ax, points=points, title=title, suptitle=suptitle, label=label, **kwargs
-    )
-    return axobj
-
-
-def triplot_mpl_mesh(
-    triobj,
-    ax,
-    *args,
-    lw=0.5,
-    marker="b-",
-    zorder=None,
-    fcolor=None,
-    ecolor="k",
-    fig=None,
-    title=None,
-    suptitle=None,
-    label=None,
-    **kwargs,
-):
-    axobj = None
-    tri = triobj_to_mpl(triobj)
-    points, triangles = get_triobj_data(tri, trim2d=True)
-
-    if fcolor is None:
-        if zorder is not None:
-            axobj = ax.triplot(tri, marker, lw=lw, zorder=zorder, **kwargs)
-        else:
-            axobj = ax.triplot(tri, marker, lw=lw, **kwargs)
-    else:
-        cellcoords = cells_coords(points, triangles)
-        axobj = TriPatchCollection(cellcoords, fc=fcolor, ec=ecolor, lw=lw)
-        ax.add_collection(axobj)
-    decorate_ax(
-        fig=fig,
-        ax=ax,
-        points=points,
-        title=title,
-        suptitle=suptitle,
-        label=label,
-        **kwargs,
-    )
-    return axobj
-
-
-def triplot_mpl_data(
-    triobj,
-    ax,
-    data,
-    *,
-    cmap="winter",
-    fig=None,
-    ecolor="k",
-    lw=0.1,
-    title=None,
-    suptitle=None,
-    label=None,
-    nlevels=None,
-    refine=False,
-    refiner=None,
-    colorbar=True,
-    subdiv=3,
-    cbpad="2%",
-    cbsize="5%",
-    cbpos="right",
-    draw_contours=True,
-    shading="flat",
-    **kwargs,
-):
-    """
-    Plots data over a triangulation using `matplotlib`. The provided data may be
-    aligned with the points, or it can be defined over the cells. The shape of the
-    data governs the behaviour of the plot.
-    """
 
     axobj = None
     tri = triobj_to_mpl(triobj)
     points, triangles = get_triobj_data(tri, trim2d=True)
     dmin, dmax = minmax(data)
-    
+
     if refiner is not None:
         refine = True
 
@@ -279,12 +211,12 @@ def triplot_mpl_data(
             if refiner is None:
                 refiner = mpltri.UniformTriRefiner(triobj)
             tri, data = refiner.refine_field(data, subdiv=subdiv)
-            
+
         if isinstance(nlevels, int):
             levels = np.linspace(dmin, dmax, nlevels + 1)
             axobj = ax.tricontourf(tri, data, levels=levels, cmap=cmap)
-            #dmin = axobj.get_array().min()
-            #dmax = axobj.get_array().max()
+            # dmin = axobj.get_array().min()
+            # dmax = axobj.get_array().max()
             if draw_contours:
                 ax.tricontour(tri, data, levels=levels)
         else:
