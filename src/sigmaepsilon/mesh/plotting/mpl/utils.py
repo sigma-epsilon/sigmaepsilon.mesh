@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from typing import Iterable, Callable, Any
+from functools import wraps
 
 import numpy as np
 from numpy import ndarray
@@ -24,6 +25,7 @@ class TriPatchCollection(PatchCollection):
 
 
 def triplotter(plotter: Callable) -> Callable:
+    @wraps(plotter)
     def inner(
         triobj: Any,
         *args,
@@ -62,10 +64,9 @@ def triplotter(plotter: Callable) -> Callable:
             axobj = [
                 plotter(
                     triobj,
-                    ax,
                     data[:, i],
-                    *args,
                     fig=fig,
+                    ax=ax,
                     title=title[i],
                     label=label[i],
                     **kwargs,
@@ -75,7 +76,7 @@ def triplotter(plotter: Callable) -> Callable:
             if nD == 1:
                 data = data.reshape(data.shape[0])
         else:
-            axobj = plotter(triobj, axes[0], *args, fig=fig, title=title, **kwargs)
+            axobj = plotter(triobj, ax=axes[0], fig=fig, title=title, **kwargs)
 
         return axobj
 
@@ -95,6 +96,9 @@ def get_fig_axes(
     """
     Returns a figure and an axes object.
     """
+    if isinstance(ax, (tuple, list)):
+        axes = ax
+    
     if fig is not None:
         if axes is not None:
             return fig, axes
@@ -138,7 +142,7 @@ def get_fig_axes(
     return None, None
 
 
-def decorate_ax(
+def decorate_mpl_ax(
     *,
     fig=None,
     ax=None,
@@ -152,7 +156,6 @@ def decorate_ax(
     title=None,
     suptitle=None,
     label=None,
-    **__,
 ):
     """
     Decorates an axis using the most often used modifiers.

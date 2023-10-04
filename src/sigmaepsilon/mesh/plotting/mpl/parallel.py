@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from typing import Iterable, Hashable, Union
+from typing import Iterable, Hashable, Union, Optional
 
 import matplotlib as mpl
 import matplotlib.pyplot as plt
@@ -13,7 +13,7 @@ from numpy import ndarray
 
 from sigmaepsilon.deepdict import DeepDict
 from sigmaepsilon.core.formatting import float_to_str_sig as str_sig
-
+from sigmaepsilon.math import atleast1d
 
 __all__ = ["parallel_mpl", "aligned_parallel_mpl"]
 
@@ -21,15 +21,15 @@ __all__ = ["parallel_mpl", "aligned_parallel_mpl"]
 def parallel_mpl(
     data: Union[dict, Iterable[ndarray], ndarray],
     *,
-    labels: Iterable = None,
-    padding: float = 0.05,
-    colors: Iterable = None,
-    lw: float = 0.2,
-    bezier: bool = True,
-    figsize: tuple = None,
-    title: str = None,
-    ranges: Iterable = None,
-    return_figure: bool = True,
+    labels: Optional[Union[Iterable[str], None]] = None,
+    padding: Optional[float] = 0.05,
+    colors: Optional[Union[Iterable[str], None]] = None,
+    lw: Optional[float] = 0.2,
+    bezier: Optional[bool] = True,
+    figsize: Optional[Union[tuple, None]] = None,
+    title: Optional[Union[str, None]] = None,
+    ranges: Optional[Union[Iterable[float], None]] = None,
+    return_figure: Optional[bool] = True,
     **_,
 ) -> Union[Figure, None]:
     """
@@ -62,21 +62,22 @@ def parallel_mpl(
 
     Example
     -------
-    >>> from sigmaepsilon.mesh.plotting import parallel_mpl
-    >>> import numpy as np
-    >>> colors = np.random.rand(150, 3)
-    >>> labels = [str(i) for i in range(10)]
-    >>> values = [np.random.rand(150) for i in range(10)]
-    >>> parallel_mpl(
-    ...     values,
-    ...     labels=labels,
-    ...     padding=0.05,
-    ...     lw=0.2,
-    ...     colors=colors,
-    ...     title="Parallel Plot with Random Data",
-    ...     return_figure=False
-    ... )
-    <matplotlib.figure.Figure object at ...>
+    .. plot::
+        :include-source: True
+
+        from sigmaepsilon.mesh.plotting import parallel_mpl
+        import numpy as np
+        colors = np.random.rand(150, 3)
+        labels = [str(i) for i in range(10)]
+        values = [np.random.rand(150) for i in range(10)]
+        parallel_mpl(
+            values,
+            labels=labels,
+            padding=0.05,
+            lw=0.2,
+            colors=colors,
+            title="Parallel Plot with Random Data",
+        )
     """
 
     if isinstance(data, dict):
@@ -190,7 +191,7 @@ def aligned_parallel_mpl(
     slider_label=None,
     hlines=None,
     vlines=None,
-    y=None,
+    y0=None,
     xoffset=0.0,
     yoffset=0.0,
     return_figure: bool = True,
@@ -232,7 +233,7 @@ def aligned_parallel_mpl(
     vlines: Iterable, Optional
         A list of data values where vertical lines are to be added to the axes.
         Default is None.
-    y: float or int, Optional
+    y0: float or int, Optional
         Value for the vertical axis. Default is the average of the limits
         of the vertical axis (0.5*(datapos[0] + datapos[-1])).
     xoffset: float, Optional
@@ -245,13 +246,15 @@ def aligned_parallel_mpl(
 
     Example
     -------
-    >>> from sigmaepsilon.mesh.plotting.mpl.parallel import aligned_parallel_mpl
-    >>> import numpy as np
-    >>> labels = ['a', 'b', 'c']
-    >>> values = np.array([np.random.rand(150) for _ in labels]).T
-    >>> datapos = np.linspace(-1, 1, 150)
-    >>> aligned_parallel_mpl(values, datapos, labels=labels, yticks=[-1, 1])
-    <matplotlib.figure.Figure object at ...>
+    .. plot::
+        :include-source: True
+
+        from sigmaepsilon.mesh.plotting.mpl.parallel import aligned_parallel_mpl
+        import numpy as np
+        labels = ['a', 'b', 'c']
+        values = np.array([np.random.rand(150) for _ in labels]).T
+        datapos = np.linspace(-1, 1, 150)
+        aligned_parallel_mpl(values, datapos, labels=labels, yticks=[-1, 1], y0=0.0)
     """
     # init
     fig = plt.figure(**kwargs)
@@ -260,10 +263,7 @@ def aligned_parallel_mpl(
     plotdata = DeepDict()
     axcolor = "lightgoldenrodyellow"
     ymin, ymax = np.min(datapos), np.max(datapos)
-    if y is None:
-        y0 = 0.5 * (ymin + ymax)
-    else:
-        y0 = y
+
     hlines = [] if hlines is None else hlines
     vlines = [] if vlines is None else vlines
 
@@ -271,6 +271,9 @@ def aligned_parallel_mpl(
     if slider:
         if slider_label is None:
             slider_label = ""
+
+        if y0 is None:
+            y0 = 0.5 * (ymin + ymax)
 
     # read data
     if isinstance(data, dict):
@@ -281,6 +284,7 @@ def aligned_parallel_mpl(
         if labels is None:
             labels = list(map(str, range(nData)))
         data = {labels[i]: data[:, i] for i in range(nData)}
+
     for lbl in labels:
         plotdata[lbl]["values"] = data[lbl]
 
@@ -304,9 +308,12 @@ def aligned_parallel_mpl(
         nAxes = nData + 1  # +1 for the Slider
     else:
         nAxes = nData
+
     width_ratios = [1 for i in range(nData)]
+
     if slider:
         width_ratios.append(0.15)
+
     spec = gridspec.GridSpec(
         ncols=nAxes,
         nrows=1,
@@ -333,11 +340,12 @@ def aligned_parallel_mpl(
             ax.set_yticks([])
             ax.set_yticklabels([])
 
-        hline = ax.axhline(y=y0, color="#d62728", linewidth=1)
+        if y0 is not None:
+            hline = ax.axhline(y=y0, color="#d62728", linewidth=1)
+
         bbox = dict(boxstyle="round", ec="black", fc="yellow", alpha=0.8)
         txt = ax.text(
-            0.0, 0.0, "NaN", size=10, ha="center", va="center", 
-            visible=False, bbox=bbox
+            0.0, 0.0, "NaN", size=10, ha="center", va="center", visible=False, bbox=bbox
         )
 
         # horizontal lines
@@ -353,14 +361,12 @@ def aligned_parallel_mpl(
         # store objects
         plotdata[labels[i]]["ax"] = ax
         plotdata[labels[i]]["text"] = txt
-        plotdata[labels[i]]["hline"] = hline
+        if y0:
+            plotdata[labels[i]]["hline"] = hline
 
     # create slider
     if slider:
         sliderax = fig.add_subplot(spec[0, nAxes - 1], fc=axcolor)
-        """sliderax.patch.set_edgecolor('black')
-        sliderax.patch.set_linewidth('1.0')
-        sliderax.patch.zorder = 10"""
         slider_ = Slider(
             sliderax,
             slider_label,
@@ -371,14 +377,7 @@ def aligned_parallel_mpl(
             valfmt="%.3f",
             closedmin=True,
             closedmax=True,
-            # track_color=axcolor, 
-            # color=axcolor
         )
-        """slider_rect = slider_.track
-        s_xy = slider_rect.get_xy() 
-        s_w = slider_rect.get_width() 
-        s_h = slider_rect.get_height()
-        sliderax.add_patch(Rectangle(s_xy, s_w, s_h, fill=False, ec='k'))"""
 
     def _approx_at_y(y: float, plotkey: Hashable):
         lines2D = plotdata[plotkey]["lines"]
@@ -389,7 +388,8 @@ def aligned_parallel_mpl(
     def _set_yval(y):
         for axkey in plotdata.keys():
             if "hline" in plotdata[axkey]:
-                plotdata[axkey]["hline"].set_ydata(y)
+                plotdata[axkey]["hline"].set_ydata(atleast1d(y))
+
             v_at_y = _approx_at_y(y, axkey)
             txtparams = {
                 "visible": True,
@@ -444,7 +444,8 @@ def aligned_parallel_mpl(
         slider_.on_changed(_update_slider)
         fig._slider = slider_  # to keep reference, otherwise slider is not responsive
 
-    _set_yval(y0)
+    if y0 is not None:
+        _set_yval(y0)
 
     if return_figure:
         return fig
