@@ -15,7 +15,7 @@ Plotting with Matplotlib
 
 
 Plotting with Plotly
-========================
+====================
 
 .. automodule:: sigmaepsilon.mesh.plotting.plotly
     :members:
@@ -25,4 +25,11 @@ Plotting with PyVista
 =====================
 
 .. automodule:: sigmaepsilon.mesh.plotting.pvplot
+    :members:
+
+
+Plotting with K3D
+=================
+
+.. automodule:: sigmaepsilon.mesh.plotting.k3dplot
     :members:
