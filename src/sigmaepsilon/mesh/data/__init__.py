@@ -4,8 +4,6 @@ from .celldata import CellData
 from .linedata import LineData
 from .polycell import PolyCell
 from .trimesh import TriMesh
-from .tetmesh import TetMesh
-from .gridmesh import Grid
 
 __all__ = [
     "PointData",
@@ -14,6 +12,4 @@ __all__ = [
     "LineData",
     "PolyCell",
     "TriMesh",
-    "TetMesh",
-    "Grid",
 ]

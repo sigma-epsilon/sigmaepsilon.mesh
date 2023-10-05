@@ -4,7 +4,6 @@ import unittest
 
 from sigmaepsilon.mesh import PolyData, PointData, CartesianFrame
 from sigmaepsilon.mesh.grid import grid
-from sigmaepsilon.mesh.grid import Grid
 from sigmaepsilon.mesh.cells import H27
 from sigmaepsilon.mesh.utils.cells.h27 import (
     monoms_H27,
@@ -51,7 +50,10 @@ class TestH27(unittest.TestCase):
     def test_H27(self):
         def test_H27_volume(Lx, Ly, Lz, nx, ny, nz):
             try:
-                mesh = Grid(size=(Lx, Ly, Lz), shape=(nx, ny, nz), eshape="H27")
+                coords, topo = grid(size=(Lx, Ly, Lz), shape=(nx, ny, nz), eshape="H27")
+                pd = PointData(coords=coords)
+                cd = H27(topo=topo)
+                mesh = PolyData(pd, cd)
                 assert np.isclose(mesh.volume(), Lx * Ly * Lz)
                 return True
             except AssertionError:

@@ -31,7 +31,7 @@ class TestPolyDataPlot(unittest.TestCase):
         cyl = cylinder(shape, size=5.0, voxelize=True, frame=frame)
 
         coords = cyl.coords()
-        topo = cyl.topology()
+        topo = cyl.topology().to_numpy()
         centers = cyl.centers()
 
         cxmin, cxmax = minmax(centers[:, 0])
@@ -50,18 +50,18 @@ class TestPolyDataPlot(unittest.TestCase):
         tH8 = topo[iH8]
 
         pd = PointData(coords=coords, frame=frame)
-        mesh = PolyData(pd, frame=frame)
+        mesh = PolyData(pd)
 
         cdL2 = L2(topo=tL2, frames=frames_of_lines(coords, tL2))
-        mesh["lines", "L2"] = LineData(cdL2, frame=frame)
+        mesh["lines", "L2"] = LineData(cdL2)
 
         cdQ4 = Q4(topo=tQ4, frames=frames_of_surfaces(coords, tQ4))
-        mesh["surfaces", "Q4"] = PolyData(cdQ4, frame=frame)
+        mesh["surfaces", "Q4"] = PolyData(cdQ4)
 
         cH8, tH8 = detach_mesh_bulk(coords, tH8)
         pdH8 = PointData(coords=cH8, frame=frame)
         cdH8 = H8(topo=tH8, frames=frame)
-        mesh["bodies", "H8"] = PolyData(pdH8, cdH8, frame=frame)
+        mesh["bodies", "H8"] = PolyData(pdH8, cdH8)
 
         mesh.to_standard_form()
         mesh.lock(create_mappers=True)
@@ -177,7 +177,7 @@ class TestPolyDataPlot(unittest.TestCase):
             window_size=(600, 400),
             config_key=["pyvista", "plot"],
             cmap="jet",
-            theme=themes.DefaultTheme(),
+            theme=themes.Theme(),
             return_plotter=True,
         )
 

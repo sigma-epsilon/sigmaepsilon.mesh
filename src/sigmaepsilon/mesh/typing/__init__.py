@@ -1,9 +1,15 @@
-from .polydata import PolyDataProtocol
-from .pointdata import PointDataProtocol
-from .celldata import CellDataProtocol
 from .geometry import GeometryProtocol
-from .polycell import PolyCellProtocol
 from .abcpolycell import ABC_PolyCell
+from .data import (
+    PointDataProtocol,
+    CellDataProtocol,
+    PolyCellProtocol,
+    PolyDataProtocol,
+    PolyDataLike,
+    PointDataLike,
+    CellDataLike,
+    PolyCellLike,
+)
 
 __all__ = [
     "PointDataProtocol",
@@ -12,4 +18,8 @@ __all__ = [
     "GeometryProtocol",
     "PolyCellProtocol",
     "ABC_PolyCell",
+    "PolyDataLike",
+    "PointDataLike",
+    "CellDataLike",
+    "PolyCellLike",
 ]

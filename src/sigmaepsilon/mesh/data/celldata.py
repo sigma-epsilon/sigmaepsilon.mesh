@@ -206,19 +206,19 @@ class CellData(Generic[PolyDataLike, PointDataLike], AkWrapper):
         return cls._attr_map_["id"]
 
     @property
-    def has_id(self) -> ndarray:
+    def has_id(self) -> bool:
         return self._dbkey_id_ in self._wrapped.fields
 
     @property
-    def has_frames(self):
+    def has_frames(self) -> bool:
         return self._dbkey_frames_ in self._wrapped.fields
 
     @property
-    def has_thickness(self):
+    def has_thickness(self) -> bool:
         return self._dbkey_thickness_ in self._wrapped.fields
 
     @property
-    def has_areas(self):
+    def has_areas(self) -> bool:
         return self._dbkey_areas_ in self._wrapped.fields
 
     @property
@@ -298,7 +298,7 @@ class CellData(Generic[PolyDataLike, PointDataLike], AkWrapper):
         return self._wrapped[self._dbkey_frames_].to_numpy()
 
     @frames.setter
-    def frames(self, value: ndarray):
+    def frames(self, value: Union[ReferenceFrame, ndarray]):
         """
         Sets local coordinate frames of the cells.
 
@@ -309,14 +309,18 @@ class CellData(Generic[PolyDataLike, PointDataLike], AkWrapper):
         """
         if isinstance(value, ReferenceFrame):
             frames = value.show()
-        else:
-            assert isinstance(value, ndarray)
+        elif isinstance(value, ndarray):
             frames = value
+        else:
+            raise TypeError(f"Expected ndarray or FrameLike, got {type(value)}.")
+
         frames = atleast3d(frames)
+
         if len(frames) == 1:
             frames = repeat(frames[0], len(self._wrapped))
         else:
             assert len(frames) == len(self._wrapped)
+
         self._wrapped[self._dbkey_frames_] = frames
 
     @property

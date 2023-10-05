@@ -17,24 +17,6 @@ __all__ = ["LineData"]
 class LineData(PolyData):
     """Data class for 1d cells."""
 
-    _cell_classes_ = {
-        2: L2,
-        3: L3,
-    }
-
-    def __init__(self, *args, areas=None, **kwargs):
-        super().__init__(*args, **kwargs)
-        if self.celldata is not None:
-            nE = len(self.celldata)
-            if areas is None:
-                areas = np.ones(nE)
-            else:
-                assert (
-                    len(areas.shape) == 1
-                ), "'areas' must be a 1d float or integer numpy array!"
-            dbkey = self.celldata._dbkey_areas_
-            self.celldata.db[dbkey] = areas
-
     def _init_config_(self):
         super()._init_config_()
         key = self.__class__._pv_config_key_
@@ -42,7 +24,7 @@ class LineData(PolyData):
         self.config[key]["line_width"] = 10
         self.config[key]["render_lines_as_tubes"] = True
 
-    def __plot_plotly__(self, *args, scalars=None, fig=None, **kwargs):
+    def __plot_plotly__(self, *, scalars=None, fig=None, **kwargs):
         """
         Plots collections of lines and data provided on the nodes using `plotly`.
 

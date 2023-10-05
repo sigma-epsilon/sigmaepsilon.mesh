@@ -19,5 +19,6 @@ understanding of the key concepts.
     /api/api_meshgen
     /api/api_recipes
     /api/api_downloads
+    /api/api_plotting
     /api/api_utils
     

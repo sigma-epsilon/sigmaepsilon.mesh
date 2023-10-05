@@ -91,7 +91,9 @@ def circular_disk(
     points = np.stack((triang.x, triang.y, np.zeros(nP)), axis=1)
     points, triangles = detach(points, triangles)
     frame = CartesianFrame(dim=3) if frame is None else frame
-    return TriMesh(points=points, triangles=triangles, celltype=T3, frame=frame)
+    pd = PointData(coords=points, frame=frame)
+    cd = T3(topo=triangles, frames=frame)
+    return TriMesh(pd, cd)
 
 
 def cylinder(
@@ -199,7 +201,9 @@ def cylinder(
             topo = grid.cells_dict[10].astype(int)
 
     frame = CartesianFrame(dim=3) if frame is None else frame
-    return PolyData(coords=coords, topo=topo, celltype=celltype, frame=frame)
+    pd = PointData(coords=coords, frame=frame)
+    cd = celltype(topo=topo, frames=frame)
+    return PolyData(pd, cd)
 
 
 def ribbed_plate(
@@ -346,8 +350,7 @@ def ribbed_plate(
     frame = CartesianFrame(dim=3)
     pd = PointData(coords=coords, frame=frame)
     cd = celltype(topo=topo, frames=frame)
-
-    return PolyData(pd, cd, frame=frame)
+    return PolyData(pd, cd)
 
 
 def perforated_cube(
@@ -370,11 +373,13 @@ def perforated_cube(
     :class:`~sigmaepsilon.mesh.data.polydata.PolyData`
     """
     size = (lx, ly)
+    
     if lmax is not None:
         shape = (max([int(lx / lmax), 4]), max([int(ly / lmax), 4]))
     else:
         shape = (4, 4)
     coords, _ = grid(size=size, shape=shape, eshape=(2, 2), centralize=True)
+    
     if lmax is not None:
         where = np.hypot(coords[:, 0], coords[:, 1]) > (radius + lmax)
     else:
@@ -386,12 +391,13 @@ def perforated_cube(
             nangles = max(int(2 * np.pi * radius / lmax), 8)
         else:
             nangles = 16
+            
     angles = np.linspace(0, 2 * np.pi, nangles, endpoint=False)
     x_circle = (radius * np.cos(angles)).flatten()
     y_circle = (radius * np.sin(angles)).flatten()
     circle_coords = np.stack([x_circle, y_circle], axis=1)
 
-    coords = np.vstack([coords, circle_coords])
+    coords = np.vstack([coords[:, :2], circle_coords])
 
     *_, triobj = triangulate(points=coords, backend="mpl")
     triobj.set_mask(
@@ -430,4 +436,4 @@ def perforated_cube(
     frame = CartesianFrame(dim=3)
     pd = PointData(coords=coords, frame=frame)
     cd = celltype(topo=topo, frames=frame)
-    return PolyData(pd, cd, frame=frame)
+    return PolyData(pd, cd)

@@ -3,7 +3,7 @@ import numpy as np
 import unittest, doctest
 
 import sigmaepsilon.mesh.grid
-from sigmaepsilon.mesh.grid import Grid, grid, knngridL2
+from sigmaepsilon.mesh.grid import grid, knngridL2
 
 
 def load_tests(loader, tests, ignore):  # pragma: no cover
@@ -12,12 +12,6 @@ def load_tests(loader, tests, ignore):  # pragma: no cover
 
 
 class TestGrid(unittest.TestCase):
-    def test_Grid_H8(self):
-        Grid(size=(80, 60, 20), shape=(8, 6, 2), eshape="H8")
-
-    def test_Grid_H27(self):
-        Grid(size=(80, 60, 20), shape=(8, 6, 2), eshape="H27")
-
     def test_grid_H8(self):
         size = 80, 60, 20
         shape = 8, 6, 2

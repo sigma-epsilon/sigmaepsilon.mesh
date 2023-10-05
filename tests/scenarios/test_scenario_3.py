@@ -4,10 +4,10 @@ import numpy as np
 
 from sigmaepsilon.mesh import PolyData, PointData, LineData
 from sigmaepsilon.mesh.space import CartesianFrame
-from sigmaepsilon.mesh.grid import Grid
 from sigmaepsilon.mesh.cells import H8, TET4, L2
 from sigmaepsilon.mesh.utils.topology import H8_to_TET4, H8_to_L2
 from sigmaepsilon.mesh.utils.space import frames_of_lines
+from sigmaepsilon.mesh.grid import grid as _grid
 
 import pyvista
 
@@ -19,7 +19,10 @@ class TestScenario3(unittest.TestCase):
     def test_scenario_3(self):
         size = 10, 10, 5
         shape = 2, 2, 2
-        grid = Grid(size=size, shape=shape, eshape="H8")
+        coords, topo = _grid(size=size, shape=shape, eshape="H8")
+        pd = PointData(coords=coords)
+        cd = H8(topo=topo)
+        grid = PolyData(pd, cd)
         grid.centralize()
 
         coords = grid.coords()
@@ -98,8 +101,8 @@ class TestScenario3(unittest.TestCase):
         )
 
         scalars = mesh.pd.pull("scalars")  # or simply pd.pull('scalars')
-        #print(scalars.shape)
-        #print(mesh.coords().shape)
+        # print(scalars.shape)
+        # print(mesh.coords().shape)
         self.assertEqual(scalars.shape, (27,))
         self.assertEqual(mesh.coords().shape, (27, 3))
 
@@ -120,8 +123,8 @@ class TestScenario3(unittest.TestCase):
         mesh.pd.db["scalars"] = scalars_on_points
 
         hex_data = mesh["hex"].cd.pull("scalars")
-        #print(hex_data.shape)
-        #print(mesh["hex"].topology().shape)
+        # print(hex_data.shape)
+        # print(mesh["hex"].topology().shape)
         self.assertEqual(hex_data.shape, (2, 8, 1))
         self.assertEqual(mesh["hex"].topology().shape, (2, 8))
 

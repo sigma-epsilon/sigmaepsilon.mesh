@@ -1,16 +1,19 @@
+from typing import Tuple, Optional
+
 import numpy as np
 from numpy import ndarray
 
 from sigmaepsilon.math import ascont
+from sigmaepsilon.math.linalg import ReferenceFrame
 
-from ..typing import PolyCellProtocol
 from .polydata import PolyData
-from ..cells import T3, T6, TET4
+from .pointdata import PointData
+from ..cells import TET4
 from ..utils.space import frames_of_surfaces, is_planar_surface as is_planar
 from ..extrude import extrude_T3_TET4
 from ..triang import triangulate
 from ..utils.tri import edges_tri
-from ..utils.topology import unique_topo_data, T3_to_T6, T6_to_T3
+from ..utils.topology import unique_topo_data, T6_to_T3
 
 
 __all__ = ["TriMesh"]
@@ -75,54 +78,13 @@ class TriMesh(PolyData):
     :class:`~sigmaepsilon.mesh.space.frame.CartesianFrame`
     """
 
-    _cell_classes_ = {
-        3: T3,
-        6: T6,
-    }
-
-    def __init__(
-        self,
-        *args,
-        points: ndarray = None,
-        triangles: ndarray = None,
-        celltype: PolyCellProtocol = None,
-        **kwargs,
-    ):
-        # parent class handles pointdata and celldata creation
-        points = points if points is not None else kwargs.get("coords", None)
-        triangles = triangles if triangles is not None else kwargs.get("topo", None)
-
-        if triangles is None:
-            try:
-                points, triangles, _ = triangulate(*args, points=points, **kwargs)
-            except Exception:
-                raise RuntimeError
-
-        if celltype is None and triangles is not None:
-            if isinstance(triangles, np.ndarray):
-                nNode = triangles.shape[1]
-                if nNode == 3:
-                    celltype = T3
-                elif nNode == 6:
-                    celltype = T6
-            else:
-                raise NotImplementedError
-
-        NNODE = celltype.Geometry.number_of_nodes
-
-        if triangles.shape[1] == 3 and NNODE == 6:
-            points, triangles = T3_to_T6(points, triangles)
-
-        assert triangles.shape[1] == NNODE
-        super().__init__(*args, coords=points, topo=triangles, **kwargs)
-
     def axes(self) -> np.ndarray:
         """
         Returns the normalized coordinate frames of triangles as a 3d numpy array.
         """
         x = self.coords()
         assert x.shape[-1] == 3, "This is only available for 3d datasets."
-        return frames_of_surfaces(x, self.topology()[:, :3])
+        return frames_of_surfaces(x, self.topology().to_numpy()[:, :3])
 
     def normals(self) -> np.ndarray:
         """
@@ -136,9 +98,7 @@ class TriMesh(PolyData):
         """
         return is_planar(self.normals())
 
-    def extrude(
-        self, *args, celltype=None, h: float = None, N: int = None, **kwargs
-    ) -> PolyData:
+    def extrude(self, *, h: float = None, N: int = None) -> PolyData:
         """
         Exctrude mesh perpendicular to the plane of the triangulation.
         The target element type can be specified with the `celltype` argument.
@@ -155,22 +115,17 @@ class TriMesh(PolyData):
         :class:`~sigmaepsilon.mesh.tetmesh.TetMesh`
             A tetrahedral mesh.
         """
-        from .tetmesh import TetMesh
-
         if not self.is_planar():
             raise RuntimeError("Only planar surfaces can be extruded!")
-        assert celltype is None, "Currently only TET4 element is supported!"
-        ct = TET4 if celltype == None else celltype
-        inds = list(range(3))
-        inds.pop(self._newaxis)
-        x = self.coords()[:, inds]
-        x, topo = extrude_T3_TET4(x, self.topology()[:, :3], h, N)
-        c = np.zeros((x.shape[0], 3))
-        c[:, inds] = x[:, :2]
-        c[:, self._newaxis] = x[:, -1]
-        return TetMesh(coords=c, topo=topo, celltype=ct, frame=self.frame)
 
-    def edges(self, return_cells: bool = False):
+        frame = ReferenceFrame(self.cd.frames[0])
+        x = self.coords(target=frame)[:, :2]
+        x, topo = extrude_T3_TET4(x, self.topology().to_numpy()[:, :3], h, N)
+        pd = PointData(coords=x, frame=frame)
+        cd = TET4(topo=topo, frames=frame)
+        return PolyData(pd, cd)
+
+    def edges(self, return_cells: bool = False) -> Tuple[ndarray, Optional[ndarray]]:
         """
         Returns point indices of the unique edges in the model.
         If `return_cells` is `True`, it also returns the edge
@@ -192,7 +147,7 @@ class TriMesh(PolyData):
             Integer array of indices, that together with the edge data
             reconstructs the topology.
         """
-        edges, IDs = unique_topo_data(edges_tri(self.topology()))
+        edges, IDs = unique_topo_data(edges_tri(self.topology().to_numpy()))
         if return_cells:
             return edges, IDs
         else:
@@ -213,7 +168,7 @@ class TriMesh(PolyData):
         :class:`~matplotlib.tri.Triangulation`
         :func:`~sigmaepsilon.mesh.triang.triangulate`
         """
-        coords, topo = self.coords(), self.topology()
+        coords, topo = self.coords(), self.topology().to_numpy()
         if topo.shape[-1] == 6:
             path = np.array([[0, 5, 4], [5, 1, 3], [3, 2, 4], [5, 3, 4]], dtype=int)
             coords, topo = T6_to_T3(coords, topo, path=path)

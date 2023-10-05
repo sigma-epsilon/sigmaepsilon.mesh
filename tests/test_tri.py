@@ -1,10 +1,10 @@
 import numpy as np
 import unittest
 
-from sigmaepsilon.mesh.data.trimesh import TriMesh
-from sigmaepsilon.mesh.space import CartesianFrame
+from sigmaepsilon.mesh import PointData, TriMesh, CartesianFrame, triangulate
 from sigmaepsilon.mesh.recipes import circular_disk
 from sigmaepsilon.mesh.cells import T3, T6
+from sigmaepsilon.mesh.utils.topology.tr import T3_to_T6
 
 
 class TestTri(unittest.TestCase):
@@ -12,7 +12,10 @@ class TestTri(unittest.TestCase):
         def test_area_T3(Lx, Ly, nx, ny):
             try:
                 A = CartesianFrame(dim=3)
-                mesh = TriMesh(size=(Lx, Ly), shape=(nx, ny), frame=A, celltype=T3)
+                coords, topo, _ = triangulate(size=(Lx, Ly), shape=(nx, ny))
+                pd = PointData(coords=coords, frame=A)
+                cd = T3(topo=topo)
+                mesh = TriMesh(pd, cd)
                 assert np.isclose(mesh.area(), Lx * Ly)
                 return True
             except AssertionError:
@@ -26,7 +29,11 @@ class TestTri(unittest.TestCase):
         def test_area_T6(Lx, Ly, nx, ny):
             try:
                 A = CartesianFrame(dim=3)
-                mesh = TriMesh(size=(Lx, Ly), shape=(nx, ny), frame=A, celltype=T6)
+                coords, topo, _ = triangulate(size=(Lx, Ly), shape=(nx, ny))
+                coords, topo = T3_to_T6(coords, topo)
+                pd = PointData(coords=coords, frame=A)
+                cd = T6(topo=topo)
+                mesh = TriMesh(pd, cd)
                 assert np.isclose(mesh.area(), Lx * Ly)
                 return True
             except AssertionError:

@@ -17,9 +17,15 @@ from sectionproperties.analysis.section import Section
 from sigmaepsilon.core.wrapping import Wrapper
 from linkeddeepdict.tools.kwargtools import getallfromkwargs
 from sigmaepsilon.mesh.utils import centralize
-from sigmaepsilon.mesh.data import TriMesh, TetMesh
+from sigmaepsilon.mesh.data import TriMesh, PolyData
 from sigmaepsilon.mesh.utils.topology import T6_to_T3, detach_mesh_bulk
 
+from .cells import T3
+from .data import PointData
+from .space import CartesianFrame
+from .utils import xy_to_xyz
+
+__all__ = ["generate_mesh", "get_section", "LineSection"]
 
 def generate_mesh(
     geometry: Geometry, *, l_max: float = None, a_max: float = None, n_max: int = None
@@ -300,7 +306,7 @@ class LineSection(Wrapper):
         >>> section = BeamSection(get_section('CHS', d=1.0, t=0.1, n=64))
         >>> trimesh = section.trimesh()
         """
-        points, triangles = self.coords(), self.topology()
+        points, triangles = xy_to_xyz(self.coords()), self.topology()
         if order == 1:
             if subdivide:
                 path = np.array([[0, 5, 4], [5, 1, 3], [3, 2, 4], [5, 3, 4]], dtype=int)
@@ -309,9 +315,13 @@ class LineSection(Wrapper):
                 points, triangles = detach_mesh_bulk(points, triangles[:, :3])
         else:
             raise NotImplementedError
-        return TriMesh(points=points, triangles=triangles, **kwargs)
 
-    def extrude(self, *, length=None, frame=None, N=None, **__) -> TetMesh:
+        frame = kwargs.get("frame", CartesianFrame(dim=3))
+        pd = PointData(coords=points, frame=frame)
+        cd = T3(topo=triangles, frames=frame)
+        return TriMesh(pd, cd)
+
+    def extrude(self, *, length=None, frame=None, N=None, **__) -> PolyData:
         """
         Creates a 3d tetragonal mesh from the section.
 
@@ -326,7 +336,7 @@ class LineSection(Wrapper):
 
         Returns
         -------
-        :class:`~sigmaepsilon.mesh.tetmesh.TetMesh`
+        :class:`~sigmaepsilon.mesh.data.polydata.PolyData`
         """
         return self.trimesh(frame=frame).extrude(h=length, N=N)
 

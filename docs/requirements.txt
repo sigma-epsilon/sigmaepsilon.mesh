@@ -9,6 +9,7 @@ sphinxcontrib-svg2pdfconverter
 sphinx_design
 sphinx-inline-tabs
 pydata-sphinx-theme
+sphinx-plotly-directive
 
 pyvista
 pandas
