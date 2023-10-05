@@ -83,9 +83,9 @@ extensions = [
     "sphinx.ext.mathjax",
     "sphinx_design",
     "sphinx_inline_tabs",
-    "pyvista.ext.plot_directive",
+    #"pyvista.ext.plot_directive",
     "sphinx_plotly_directive",
-    # "matplotlib.sphinxext.plot_directive",
+    "matplotlib.sphinxext.plot_directive",
 ]
 
 autosummary_generate = True

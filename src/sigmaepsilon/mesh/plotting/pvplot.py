@@ -99,13 +99,17 @@ if __haspyvista__:
             
         Example
         -------
-        .. pyvista-plot::
+        .. plot::
 
             # doctest: +SKIP
+            
             from sigmaepsilon.mesh.plotting import pvplot
             from sigmaepsilon.mesh.downloads import download_gt40
+            import matplotlib.pyplot as plt
             mesh = download_gt40(read=True)
-            pvplot(mesh)
+            img=pvplot(mesh, notebook=False, return_img=True)
+            plt.imshow(img)
+            plt.axis('off')
         """
         if not __haspyvista__:  # pragma: no cover
             raise ImportError("You need to install `pyVista` for this.")
@@ -155,6 +159,9 @@ if __haspyvista__:
             
             if "title" not in pvparams:
                 pvparams["title"] = "SigmaEpsilon"
+                
+            if not notebook and return_img:
+                pvparams["off_screen"] = True
             
             plotter = pv.Plotter(**pvparams)
 
