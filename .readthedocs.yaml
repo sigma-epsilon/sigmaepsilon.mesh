@@ -14,12 +14,10 @@ build:
     # nodejs: "16"
     # rust: "1.55"
     # golang: "1.17"
-  commands:
-    - echo "Refresh packages"
-    - sudo apt-get update
-    - echo "Install xvfb for offline rendering"
-    - sudo apt-get install libgl1-mesa-glx xvfb
-
+  apt_packages:
+    - libgl1-mesa-glx
+    - xvfb
+  
 # Build documentation in the docs/ directory with Sphinx
 sphinx:
    configuration: docs/source/conf.py
