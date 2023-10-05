@@ -1,11 +1,12 @@
-from typing import Union
+from typing import Union, Callable, Tuple, Optional
+from numbers import Number
+
 import numpy as np
 from numpy import ndarray
 
-from .pointdata import PointData
+from .typing import PolyCellProtocol
+from .data import PointData, PolyData, TriMesh
 from .grid import grid
-from .polydata import PolyData
-from .trimesh import TriMesh
 from .cells import H8, H27, TET4, TET10, T3, W6, W18
 from .space import CartesianFrame
 from .triang import triangulate
@@ -15,7 +16,13 @@ from .extrude import extrude_T3_TET4, extrude_T3_W6
 from .voxelize import voxelize_cylinder
 
 
-def circular_helix(a=None, b=None, *args, slope=None, pitch=None):
+def circular_helix(
+    a: Optional[Union[Number, None]] = None,
+    b: Optional[Union[Number, None]] = None,
+    *,
+    slope: Optional[Union[Number, None]] = None,
+    pitch: Optional[Union[Number, None]] = None,
+) -> Callable[[Number], Tuple[float, float, float]]:
     """
     Returns the function :math:`f(t) = [a \cdot cos(t), a \cdot sin(t), b \cdot t]`,
     which describes a circular helix of radius a and slope a/b (or pitch 2πb).
@@ -26,7 +33,7 @@ def circular_helix(a=None, b=None, *args, slope=None, pitch=None):
         a = a if a is not None else slope * b
         b = b if b is not None else slope / a
 
-    def inner(t):
+    def inner(t: Number) -> Tuple[float, float, float]:
         """
         Evaluates :math:`f(t) = [a \cdot cos(t), a \cdot sin(t), b \cdot t]`.
         """
@@ -36,7 +43,11 @@ def circular_helix(a=None, b=None, *args, slope=None, pitch=None):
 
 
 def circular_disk(
-    nangles: int, nradii: int, rmin: float, rmax: float, frame=None
+    nangles: int,
+    nradii: int,
+    rmin: float,
+    rmax: float,
+    frame: Optional[Union[CartesianFrame, None]] = None,
 ) -> TriMesh:
     """
     Returns the triangulation of a circular disk.
@@ -80,7 +91,9 @@ def circular_disk(
     points = np.stack((triang.x, triang.y, np.zeros(nP)), axis=1)
     points, triangles = detach(points, triangles)
     frame = CartesianFrame(dim=3) if frame is None else frame
-    return TriMesh(points=points, triangles=triangles, celltype=T3, frame=frame)
+    pd = PointData(coords=points, frame=frame)
+    cd = T3(topo=triangles, frames=frame)
+    return TriMesh(pd, cd)
 
 
 def cylinder(
@@ -89,8 +102,8 @@ def cylinder(
     *,
     regular: bool = True,
     voxelize: bool = False,
-    celltype=None,
-    frame: CartesianFrame = None,
+    celltype: Optional[Union[PolyCellProtocol, None]] = None,
+    frame: Optional[Union[CartesianFrame, None]] = None,
     **kwargs,
 ) -> PolyData:
     """
@@ -128,22 +141,28 @@ def cylinder(
 
     Returns
     -------
-    :class:`~sigmaepsilon.mesh.polydata.PolyData`
+    :class:`~sigmaepsilon.mesh.data.polydata.PolyData`
     """
     if celltype is None:
         celltype = H8 if voxelize else TET4
     etype = None
+
     if isinstance(size, float) or isinstance(size, int):
         size = [size]
+
     if voxelize:
         regular = True
         etype = "H8"
+
     radius, angle, h = shape
+
     if isinstance(radius, int):
         radius = np.array([0, radius])
     elif not isinstance(radius, ndarray):
         radius = np.array(radius)
-    etype = celltype.__label__ if etype is None else etype
+
+    etype = celltype.label if etype is None else etype
+
     if voxelize:
         if isinstance(size[0], int):
             size_ = (radius[1] - radius[0]) / size[0]
@@ -156,7 +175,7 @@ def cylinder(
                 min_radius, max_radius = radius
                 n_radii, n_angles, n_z = size
                 mesh = circular_disk(n_angles, n_radii, min_radius, max_radius)
-                points, triangles = mesh.coords(), mesh.topology()
+                points, triangles = mesh.coords(), mesh.topology().to_numpy()
                 coords, topo = extrude_T3_TET4(points, triangles, h, n_z)
             else:
                 raise NotImplementedError("Celltype not supported!")
@@ -182,7 +201,9 @@ def cylinder(
             topo = grid.cells_dict[10].astype(int)
 
     frame = CartesianFrame(dim=3) if frame is None else frame
-    return PolyData(coords=coords, topo=topo, celltype=celltype, frame=frame)
+    pd = PointData(coords=coords, frame=frame)
+    cd = celltype(topo=topo, frames=frame)
+    return PolyData(pd, cd)
 
 
 def ribbed_plate(
@@ -245,7 +266,7 @@ def ribbed_plate(
 
     Returns
     -------
-    :class:`~sigmaepsilon.mesh.polydata.PolyData`
+    :class:`~sigmaepsilon.mesh.data.polydata.PolyData`
     """
 
     def subdivide(bins, lmax):
@@ -275,6 +296,7 @@ def ribbed_plate(
             zbins.append(ex - hx / 2)
         if (ex + hx / 2) > (t / 2):
             zbins.append(ex + hx / 2)
+
     if wy is not None and hy is not None:
         ey = 0.0 if ey is None else ey
         xbins.extend([-wy / 2, wy / 2])
@@ -301,14 +323,17 @@ def ribbed_plate(
 
     centers = cell_centers_bulk(coords, topo)
     mask = (centers[:, 2] > (-t / 2)) & (centers[:, 2] < (t / 2))
+
     if wx is not None and hx is not None:
         m = (centers[:, 1] > (-wx / 2)) & (centers[:, 1] < (wx / 2))
         m = m & (centers[:, 2] > (ex - hx / 2)) & (centers[:, 2] < (ex + hx / 2))
         mask = mask | m
+
     if wy is not None and hy is not None:
         m = (centers[:, 0] > (-wy / 2)) & (centers[:, 0] < (wy / 2))
         m = m & (centers[:, 2] > (ey - hy / 2)) & (centers[:, 2] < (ey + hy / 2))
         mask = mask | m
+
     topo = topo[mask, :]
 
     if tetrahedralize:
@@ -325,7 +350,7 @@ def ribbed_plate(
     frame = CartesianFrame(dim=3)
     pd = PointData(coords=coords, frame=frame)
     cd = celltype(topo=topo, frames=frame)
-    return PolyData(pd, cd, frame=frame)
+    return PolyData(pd, cd)
 
 
 def perforated_cube(
@@ -345,14 +370,16 @@ def perforated_cube(
 
     Returns
     -------
-    :class:`~sigmaepsilon.mesh.polydata.PolyData`
+    :class:`~sigmaepsilon.mesh.data.polydata.PolyData`
     """
     size = (lx, ly)
+    
     if lmax is not None:
         shape = (max([int(lx / lmax), 4]), max([int(ly / lmax), 4]))
     else:
         shape = (4, 4)
     coords, _ = grid(size=size, shape=shape, eshape=(2, 2), centralize=True)
+    
     if lmax is not None:
         where = np.hypot(coords[:, 0], coords[:, 1]) > (radius + lmax)
     else:
@@ -364,12 +391,13 @@ def perforated_cube(
             nangles = max(int(2 * np.pi * radius / lmax), 8)
         else:
             nangles = 16
+            
     angles = np.linspace(0, 2 * np.pi, nangles, endpoint=False)
     x_circle = (radius * np.cos(angles)).flatten()
     y_circle = (radius * np.sin(angles)).flatten()
     circle_coords = np.stack([x_circle, y_circle], axis=1)
 
-    coords = np.vstack([coords, circle_coords])
+    coords = np.vstack([coords[:, :2], circle_coords])
 
     *_, triobj = triangulate(points=coords, backend="mpl")
     triobj.set_mask(
@@ -408,4 +436,4 @@ def perforated_cube(
     frame = CartesianFrame(dim=3)
     pd = PointData(coords=coords, frame=frame)
     cd = celltype(topo=topo, frames=frame)
-    return PolyData(pd, cd, frame=frame)
+    return PolyData(pd, cd)

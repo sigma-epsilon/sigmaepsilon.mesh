@@ -25,11 +25,11 @@ class TestLineCells(unittest.TestCase):
 
         jac = cd.jacobian_matrix()
         self.assertTrue(isinstance(jac, np.ndarray))
-        
-        pcoords = L2.master_coordinates()
+
+        pcoords = L2.Geometry.master_coordinates()
         self.assertTrue(isinstance(pcoords, np.ndarray))
-        
-        gdshp = L2.shape_function_derivatives(pcoords, jac=jac)
+
+        gdshp = L2.Geometry.shape_function_derivatives(pcoords, jac=jac)
         self.assertTrue(
             gdshp.shape, (topo.shape[0], pcoords.shape[0], topo.shape[1], 1)
         )

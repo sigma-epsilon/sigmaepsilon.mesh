@@ -27,7 +27,7 @@ def area_Q4_bulk(ecoords: np.ndarray):
 @njit(nogil=True, cache=__cache)
 def shp_Q4(pcoord: np.ndarray):
     r, s = pcoord[:2]
-    return np.array(
+    res = np.array(
         [
             [0.25 * (1 - r) * (1 - s)],
             [0.25 * (1 + r) * (1 - s)],
@@ -36,6 +36,7 @@ def shp_Q4(pcoord: np.ndarray):
         ],
         dtype=pcoord.dtype,
     )
+    return res
 
 
 @njit(nogil=True, parallel=True, cache=__cache)
@@ -50,7 +51,7 @@ def shp_Q4_multi(pcoords: np.ndarray):
 @njit(nogil=True, cache=__cache)
 def dshp_Q4(pcoord: ndarray):
     r, s = pcoord[:2]
-    return np.array(
+    res = np.array(
         [
             [(s - 1) / 4, (r - 1) / 4],
             [(1 - s) / 4, (-r - 1) / 4],
@@ -59,6 +60,7 @@ def dshp_Q4(pcoord: ndarray):
         ],
         dtype=pcoord.dtype,
     )
+    return res
 
 
 @njit(nogil=True, parallel=True, cache=__cache)

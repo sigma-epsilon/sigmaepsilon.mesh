@@ -30,7 +30,7 @@ def download_stand(*, read: bool = False) -> Union[str, PolyData]:
     ----------
     read: bool, Optional
         If False, the path of the mesh file is returned instead of a
-        :class:`~sigmaepsilon.mesh.polydata.PolyData` object. Default is False.
+        :class:`~sigmaepsilon.mesh.data.polydata.PolyData` object. Default is False.
 
     Returns
     -------
@@ -57,7 +57,7 @@ def download_bunny(*, tetra: bool = False, read: bool = False) -> Union[str, Pol
         it is a surface triangulation. Default is False.
     read: bool, Optional
         If False, the path of the mesh file is returned instead of a
-        :class:`~sigmaepsilon.mesh.polydata.PolyData` object. Default is False.
+        :class:`~sigmaepsilon.mesh.data.polydata.PolyData` object. Default is False.
 
     Returns
     -------
@@ -87,7 +87,7 @@ def download_bunny_coarse(
         it is a surface triangulation. Default is False.
     read: bool, Optional
         If False, the path of the mesh file is returned instead of a
-        :class:`~sigmaepsilon.mesh.polydata.PolyData` object. Default is False.
+        :class:`~sigmaepsilon.mesh.data.polydata.PolyData` object. Default is False.
 
     Example
     -------
@@ -106,7 +106,7 @@ def download_gt40(read: bool = False) -> Union[str, PolyData]:
     ----------
     read: bool, Optional
         If False, the path of the mesh file is returned instead of a
-        :class:`~sigmaepsilon.mesh.polydata.PolyData` object. Default is False.
+        :class:`~sigmaepsilon.mesh.data.polydata.PolyData` object. Default is False.
 
     Example
     -------
@@ -124,7 +124,7 @@ def download_badacsony(read: bool = False) -> Union[str, PolyData]:
     ----------
     read: bool, Optional
         If False, the path of the mesh file is returned instead of a
-        :class:`~sigmaepsilon.mesh.polydata.PolyData` object. Default is False.
+        :class:`~sigmaepsilon.mesh.data.polydata.PolyData` object. Default is False.
 
     Example
     -------

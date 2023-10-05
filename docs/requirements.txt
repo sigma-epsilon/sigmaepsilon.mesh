@@ -9,6 +9,7 @@ sphinxcontrib-svg2pdfconverter
 sphinx_design
 sphinx-inline-tabs
 pydata-sphinx-theme
+sphinx-plotly-directive
 
 pyvista
 pandas
@@ -16,5 +17,4 @@ tetgen
 matplotlib
 plotly
 k3d
-dewloosh.mpl
 setuptools>=65.5.1 # not directly required, pinned by Snyk to avoid a vulnerability

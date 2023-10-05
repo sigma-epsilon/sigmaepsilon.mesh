@@ -1,5 +1,7 @@
 User Guide
 ----------
+The user guide provides in-depth information on the key concepts of the library with 
+useful background information and explanation.
 
 .. toctree::
     :maxdepth: 2
@@ -15,4 +17,4 @@ User Guide
     notebooks/io
     notebooks/mesh_analysis
     notebooks/shape_function_generation
-    notebooks/interpolation
+    notebooks/approximation

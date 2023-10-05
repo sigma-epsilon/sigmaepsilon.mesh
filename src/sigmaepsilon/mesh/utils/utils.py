@@ -7,7 +7,7 @@ from numba import njit, prange
 from numba.typed import Dict as nbDict
 from numba import types as nbtypes
 
-from sigmaepsilon.math import matrixform
+from sigmaepsilon.math import matrixform, atleast2d
 from sigmaepsilon.math.linalg.sparse import JaggedArray, csr_matrix
 
 __cache = True
@@ -16,7 +16,7 @@ nbint64A = nbint64[:]
 nbfloat64A = nbtypes.float64[:]
 
 
-def cells_around(*args, **kwargs):
+def cells_around(*args, **kwargs) -> Union[JaggedArray, csr_matrix, dict]:
     """
     Alias for :func:`points_around`.
     """
@@ -30,7 +30,7 @@ def points_around(
     frmt: str = "dict",
     MT: bool = True,
     n_max: int = 10,
-):
+) -> Union[JaggedArray, csr_matrix, dict]:
     """
     Returns neighbouring points for each entry in `points` that are
     closer than the distance `r_max`. The results are returned in
@@ -299,15 +299,15 @@ def cell_coords(coords: ndarray, topo: ndarray) -> ndarray:
         2d array of shape (nP, nD) of vertex coordinates.
         nP : number of points
         nD : number of dimensions of the model space
-    topo: (nNE) numpy.ndarray
-        1D array of vertex indices.
+    topo: numpy.ndarray
+        1d array of vertex indices of shape (nNE,).
         nNE : number of nodes per element
 
     Returns
     -------
-    (nNE, nD) numpy.ndarray
-        Coordinates for all nodes of all cells according to the
-        argument 'topo'.
+    numpy.ndarray
+        2d NumPy array of (nNE, nD) of coordinates for all nodes of all cells 
+        according to the argument 'topo'.
 
     Notes
     -----
@@ -408,7 +408,7 @@ def _nodal_distribution_factors_csr_(topo: csr_matrix, w: ndarray) -> ndarray:
 
     Parameters
     ----------
-    topo: csr_matrix
+    topo: :class:`~sigmaepsilon.math.linalg.sparse.csr.csr_matrix`
         2d integer topology array as a CSR matrix.
     w: numpy.ndarray
         The weights of the cells.
@@ -462,19 +462,19 @@ def nodal_distribution_factors(
 
     Parameters
     ----------
-    topo: numpy.ndarray or csr_matrix
+    topo: numpy.ndarray or :class:`~sigmaepsilon.math.linalg.sparse.csr.csr_matrix`
         2d integer topology array.
     w: numpy.ndarray
         The weights of the cells.
 
     Returns
     -------
-    numpy.ndarray or csr_matrix
+    numpy.ndarray or :class:`~sigmaepsilon.math.linalg.sparse.csr.csr_matrix`
         A 2d matrix with a matching shape to 'topo'.
 
     See also
     --------
-    :func:`~sigmaepsilon.mesh.PolyData.nodal_distribution_factors`
+    :func:`~sigmaepsilon.mesh.data.polydata.PolyData.nodal_distribution_factors`
     """
     if isinstance(topo, ndarray):
         return _nodal_distribution_factors_dense_(topo, weights)
@@ -716,7 +716,7 @@ def avg_cell_data(data: np.ndarray, topo: np.ndarray) -> ndarray:
 @njit(nogil=True, parallel=True, cache=__cache)
 def jacobian_matrix_single(dshp: ndarray, ecoords: ndarray) -> ndarray:
     """
-    Returns Jacobian matrix of local to global transformation for for one cell and 
+    Returns Jacobian matrix of local to global transformation for for one cell and
     multiple evaluation pointsd.
 
     Parameters
@@ -727,7 +727,7 @@ def jacobian_matrix_single(dshp: ndarray, ecoords: ndarray) -> ndarray:
     ecoords: numpy.ndarray
         A 2d numpy array of shape (nNE, nD), where nNE and nD
         are the number of nodes and spatial dimensions.
-            
+
     Returns
     -------
     numpy.ndarray
@@ -778,7 +778,8 @@ def jacobian_matrix_bulk_1d(dshp: ndarray, ecoords: ndarray) -> ndarray:
 
     Returns
     -------
-    A 4d NumPy array of shape (nE, nP, 1, 1).
+    numpy.ndarray
+        A 4d NumPy array of shape (nE, nP, 1, 1).
 
     Notes
     -----
@@ -944,7 +945,7 @@ def pcoords_to_coords_1d(pcoords: ndarray, ecoords: ndarray) -> ndarray:
     Parameters
     ----------
     pcoords: numpy.ndarray
-        1d float array of length nP, coordinates in the range [-1 , 1].
+        1d float array of length nP, coordinates in the range [0 , 1].
     ecoords: numpy.ndarray
         3d float array of shape (nE, 2+, nD) of cell coordinates.
 
@@ -1057,3 +1058,16 @@ def global_shape_function_derivatives(dshp: ndarray, jac: ndarray) -> ndarray:
             invJ = np.linalg.inv(jac[iE, iP])
             res[iE, iP] = dshp[iP] @ invJ
     return res
+
+
+def xy_to_xyz(x: ndarray) -> ndarray:
+    x = atleast2d(x, back=True)
+    if (N := x.shape[-1]) == 3:
+        return x
+    else:
+        res = np.zeros((x.shape[0], 3), dtype=x.dtype)
+        if N == 2:
+            res[:, :2] = x
+        elif N == 1:
+            res[:, 0] = x
+        return res

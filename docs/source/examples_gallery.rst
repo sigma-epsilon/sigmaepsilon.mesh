@@ -1,5 +1,5 @@
-Examples
---------
+Gallery
+-------
 
 .. nbgallery::
     :maxdepth: 1
@@ -18,4 +18,5 @@ Examples
     examples/import_pyvista.ipynb
     examples/joint_cube.ipynb
     examples/lighting.ipynb
+    examples/shape_functions_1d.ipynb
     examples/trigridQ4.ipynb

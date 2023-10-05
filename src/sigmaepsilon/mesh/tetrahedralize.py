@@ -1,7 +1,7 @@
 import numpy as np
 
-from .polydata import PolyData
-from .pointdata import PointData
+from .data.polydata import PolyData
+from .data.pointdata import PointData
 from .cells import TET4, TET10
 from .utils.topology.tr import TET4_to_TET10
 from .config import __has_tetgen__
@@ -32,6 +32,12 @@ def tetrahedralize(
     Notes
     -----
     The input mesh must contain exactly one block of solid cells.
+
+    Examples
+    --------
+    >>> from sigmaepsilon.mesh import Grid, tetrahedralize
+    >>> mesh = Grid(size=(80, 60, 20), shape=(8, 6, 2), eshape="H8")
+    >>> tetmesh = tetrahedralize(mesh)
 
     See Also
     --------
