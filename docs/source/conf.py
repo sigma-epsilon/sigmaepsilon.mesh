@@ -43,37 +43,24 @@ generate_examples_gallery_rst(
 project = library.__pkg_name__
 copyright = "2014-%s, Bence Balogh" % date.today().year
 author = "Bence Balogh"
-
-# The short X.Y version.
 version = library.__version__
-# The full version, including alpha/beta/rc tags.
 release = "v" + library.__version__
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
 extensions = [
-    # allows to work with markdown files
-    "myst_parser",  # pip install myst-parser for this
-    # to plot summary about durations of file generations
+    "myst_parser",
     "sphinx.ext.duration",
-    # to test code snippets in docstrings
     "sphinx.ext.doctest",
-    # for automatic exploration of the source files
     "sphinx.ext.autodoc",
-    # to enable cross referencing other documents on the internet
     "sphinx.ext.intersphinx",
-    # Napoleon is a extension that enables Sphinx to parse both NumPy and Google style docstrings
     "sphinx.ext.napoleon",
-    #'sphinx_gallery.gen_gallery',
-    #'sphinx_gallery.load_style',  # load CSS for gallery (needs SG >= 0.6)
-    "nbsphinx",  # to handle jupyter notebooks
-    # "numpydoc",
-    # "nbsphinx_link",  # for including notebook files from outside the sphinx source root
-    "sphinx_copybutton",  # for "copy to clipboard" buttons
-    "sphinx.ext.mathjax",  # for math equations
-    "sphinxcontrib.bibtex",  # for bibliographic references
-    "sphinxcontrib.rsvgconverter",  # for SVG->PDF conversion in LaTeX output
+    "nbsphinx",
+    "sphinx_copybutton",
+    "sphinx.ext.mathjax",
+    "sphinxcontrib.bibtex",
+    "sphinxcontrib.rsvgconverter",
     "sphinx.ext.viewcode",
     "sphinx.ext.autosummary",
     "sphinx.ext.doctest",
@@ -86,6 +73,7 @@ extensions = [
     #"pyvista.ext.plot_directive",
     "sphinx_plotly_directive",
     "matplotlib.sphinxext.plot_directive",
+    "sphinx_k3d_screenshot"
 ]
 
 autosummary_generate = True
@@ -175,7 +163,6 @@ warnings.filterwarnings(
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
 html_theme = "pydata_sphinx_theme"
-
 html_theme_options = {
     "show_prev_next": True,
     "icon_links": [
@@ -197,19 +184,12 @@ html_theme_options = {
         "text": "SigmaEpsilon.Mesh",
     },
 }
-
 html_js_files = [
     "require.min.js",
     "custom.js",
 ]
-
 html_css_files = ["custom.css"]
-
 html_context = {"default_mode": "dark"}
-
-# Add any paths that contain custom static files (such as style sheets) here,
-# relative to this directory. They are copied after the builtin static files,
-# so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ["_static"]
 
 # -- nbsphinx configuration -------------------------------------------------
