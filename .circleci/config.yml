@@ -28,6 +28,12 @@ jobs:
             pip install 'build<0.10.0'
             python -m build
       - run:
+          name: Refresh packages
+          command: sudo apt-get update
+      - run:
+          name: Install xvfb for offline rendering
+          command: sudo apt-get install libgl1-mesa-glx xvfb
+      - run:
           name: Run tests
           # This assumes pytest is installed via the install-package step above
           command: python -m pytest
