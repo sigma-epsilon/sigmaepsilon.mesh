@@ -73,7 +73,7 @@ extensions = [
     #"pyvista.ext.plot_directive",
     "sphinx_plotly_directive",
     "matplotlib.sphinxext.plot_directive",
-    "sphinx_k3d_screenshot"
+    #"sphinx_k3d_screenshot"
 ]
 
 autosummary_generate = True
