@@ -1,4 +1,5 @@
 from .pvplot import pvplot
+from .k3dplot import k3dplot
 from .mpl import (
     triplot_mpl_hinton,
     triplot_mpl_mesh,
@@ -26,4 +27,5 @@ __all__ = [
     "scatter_points_plotly",
     "plot_lines_plotly",
     "triplot_plotly",
+    "k3dplot"
 ]

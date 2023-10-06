@@ -1789,7 +1789,7 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
             
     if __hask3d__:
 
-        def to_k3d(self, *args, **kwargs) -> object:
+        def to_k3d(self, *args, **kwargs) -> k3d.Plot:
             """
             Returns the mesh as a k3d mesh object. All arguments are forwarded to
             :func:~`sigmaepsilon.mesh.io.to_k3d.to_k3d`, refer to its documentation
@@ -1802,40 +1802,35 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
 
             Returns
             -------
-            object
+            k3d.Plot
                 A K3D Plot Widget, which is a result of a call to `k3d.plot`.
             """
             exporter: Callable = exporters["k3d"]
             return exporter(self, *args, **kwargs)
 
-        def k3dplot(self, scene=None, *, menu_visibility: bool = True, **kwargs):
+        def k3dplot(self, *args, **kwargs) -> k3d.Plot:
             """
-            Plots the mesh using 'k3d' as the backend.
+            Convenience function for plotting the mesh using K3D. All arguments are
+            forwarded to :func:~`sigmaepsilon.mesh.plotting.k3dplot.k3dplot`, refer the
+            documentation of this function for the details.
 
             .. warning::
                 During this call there is a UserWarning saying 'Given trait value dtype
                 "float32" does not match required type "float32"'. Although this is weird,
                 plotting seems to be just fine.
 
-            Parameters
-            ----------
-            scene: object, Optional
-                A K3D plot widget to append to. This can also be given as the
-                first positional argument. Default is None, in which case it is
-                created using a call to :func:`k3d.plot`.
-            menu_visibility: bool, Optional
-                Whether to show the menu or not. Default is True.
-            **kwargs: dict, Optional
-                Extra keyword arguments forwarded to :func:`to_k3d`.
-
+            Returns
+            -------
+            k3d.Plot
+                A K3D Plot Widget, which is a result of a call to `k3d.plot`.
+            
             See Also
             --------
             :func:`to_k3d`
             :func:`k3d.plot`
             """
-            if scene is None:
-                scene = k3d.plot(menu_visibility=menu_visibility)
-            return self.to_k3d(scene=scene, **kwargs)
+            plotter: Callable = plotters["k3d"]
+            return plotter(self, *args, **kwargs)
 
     if __haspyvista__:
 

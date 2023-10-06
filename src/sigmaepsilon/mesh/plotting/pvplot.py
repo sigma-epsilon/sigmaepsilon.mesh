@@ -110,10 +110,7 @@ if __haspyvista__:
             img=pvplot(mesh, notebook=False, return_img=True)
             plt.imshow(img)
             plt.axis('off')
-        """
-        if not __haspyvista__:  # pragma: no cover
-            raise ImportError("You need to install `pyVista` for this.")
-        
+        """       
         if not isinstance(obj, PolyData):  # pragma: no cover
             raise TypeError(f"Expected PolyData, got {type(obj)}.")
 

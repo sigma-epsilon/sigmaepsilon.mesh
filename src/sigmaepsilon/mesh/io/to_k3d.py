@@ -3,6 +3,8 @@ from ..helpers import exporters
 
 if __hask3d__ and __hasmatplotlib__:
     from copy import copy
+    from typing import Union, Iterable, Optional
+    import warnings
 
     import k3d
     import numpy as np
@@ -11,20 +13,20 @@ if __hask3d__ and __hasmatplotlib__:
 
     from sigmaepsilon.math import minmax
 
-    from ..data import PolyData
+    from ..data import PolyData, PolyCell, PointData
     from ..utils.topology import detach_mesh_data_bulk, detach_mesh_bulk
 
     def to_k3d(
         obj: PolyData,
         *,
-        scene: object = None,
-        deep: bool = True,
-        config_key: str = None,
-        menu_visibility: bool = True,
-        cmap: list = None,
-        show_edges: bool = True,
-        scalars: ndarray = None,
-    ) -> object:
+        scene: Optional[Union[k3d.Plot, None]] = None,
+        deep: Optional[bool] = True,
+        config_key: Optional[Union[str, None]] = None,
+        menu_visibility: Optional[bool] = True,
+        cmap: Optional[Union[list, None]] = None,
+        show_edges: Optional[bool] = True,
+        scalars: Optional[Union[ndarray, None]] = None,
+    ) -> k3d.Plot:
         """
         Returns the mesh as a k3d mesh object.
 
@@ -52,7 +54,11 @@ if __hask3d__ and __hasmatplotlib__:
         if config_key is None:
             config_key = obj.__class__._k3d_config_key_
 
-        for b in obj.cellblocks(inclusive=True, deep=deep):
+        cellblocks: Iterable[PolyData[PointData, PolyCell]] = obj.cellblocks(
+            inclusive=True, deep=deep
+        )
+
+        for b in cellblocks:
             NDIM = b.celltype.Geometry.number_of_spatial_dimensions
             params = copy(k3dparams)
             config = b._get_config_(config_key)
@@ -95,7 +101,12 @@ if __hask3d__ and __hasmatplotlib__:
                 t = t.astype(np.uint32)
 
                 if "side" in params:
-                    if params["side"].lower() == "both":
+                    if params["side"].lower() == "both":  # pragma: no cover
+                        warnings.warn(
+                            "The parameter 'both' was a typo in the documentation of K3D "
+                            "we made up for it on the cost of performance by adding surfaces twice, "
+                            "but the correct way is to use 'double' instead."
+                        )
                         params["side"] = "front"
                         scene += k3d.mesh(c, t, **params)
                         params["side"] = "back"
@@ -126,7 +137,7 @@ if __hask3d__ and __hasmatplotlib__:
 
         return scene
 
-else: # pragma: no cover
+else:  # pragma: no cover
 
     def to_k3d(*_, **__):
         raise ImportError(
