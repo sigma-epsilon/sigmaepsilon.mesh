@@ -42,7 +42,7 @@
 
 
 The `sigmaepsilon.mesh`_ library aims to provide the tools to build and analyse polygonal meshes 
-with complex topologies. Meshes can be built like a dictionary, using arbitarily nested layouts and 
+with complex topologies. Meshes can be built like a dictionary, using arbitrarily nested layouts and 
 then be translated to other formats including `VTK`_ and `PyVista`_. For plotting, there is also 
 support for `K3D`_, `Matplotlib`_ and `Plotly`_.
 

@@ -39,6 +39,7 @@ if __hasplotly__:
         Example
         -------
         .. plotly::
+            :include-source: True
         
             from sigmaepsilon.mesh.plotting import triplot_plotly
             from sigmaepsilon.mesh import grid
