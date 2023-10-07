@@ -116,11 +116,11 @@ if __hasplotly__:
 
 else:  # pragma: no cover
 
-    def scatter_points_3d(*_, **__):
+    def scatter_points_plotly(*_, **__):
         raise ImportError(
             "You need Plotly for this. Install it with 'pip install plotly'. "
             "You may also need to restart your kernel and reload the package."
         )
 
 
-__all__ = ["scatter_points_3d"]
+__all__ = ["scatter_points_plotly"]
