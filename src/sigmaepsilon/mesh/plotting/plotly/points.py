@@ -38,6 +38,7 @@ if __hasplotly__:
         Example
         -------
         .. plotly::
+            :include-source: True
         
             from sigmaepsilon.mesh.plotting import scatter_points_plotly
             import numpy as np

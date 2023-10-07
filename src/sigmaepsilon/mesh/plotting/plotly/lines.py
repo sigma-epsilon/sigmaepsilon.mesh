@@ -69,6 +69,7 @@ if __hasplotly__:
         Example
         -------
         .. plotly::
+            :include-source: True
         
             from sigmaepsilon.mesh.plotting import plot_lines_plotly
             from sigmaepsilon.mesh import grid

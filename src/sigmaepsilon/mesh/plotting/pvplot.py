@@ -100,9 +100,8 @@ if __haspyvista__:
         Example
         -------
         .. plot::
-
-            # doctest: +SKIP
-            
+            :include-source: True
+                        
             from sigmaepsilon.mesh.plotting import pvplot
             from sigmaepsilon.mesh.downloads import download_gt40
             import matplotlib.pyplot as plt
