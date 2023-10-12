@@ -15,7 +15,7 @@ from .utils import (
 __cache = True
 
 
-__all__ = ["grid", "gridQ4", "gridQ9", "gridH8", "gridH27", "knngridL2"]
+__all__ = ["grid", "gridQ4", "gridQ8", "gridQ9", "gridH8", "gridH27", "knngridL2"]
 
 
 def grid(
@@ -131,6 +131,16 @@ def grid(
                 bins=bins,
                 **kwargs,
             )
+        elif eshape == "Q8":
+            return gridQ8(
+                size=size,
+                shape=shape,
+                shift=shift,
+                start=start,
+                centralize=centralize,
+                bins=bins,
+                **kwargs,
+            )
         elif eshape == "Q9":
             return gridQ9(
                 size=size,
@@ -232,6 +242,19 @@ def gridQ9(*args, **kwargs) -> Tuple[ndarray, ndarray]:
     coords, topo = grid(*args, eshape=(3, 3), **kwargs)
     path = np.array([0, 6, 8, 2, 3, 7, 5, 1, 4], dtype=int)
     return xy_to_xyz(coords), transform_topology(topo, path)
+
+
+def gridQ8(*args, **kwargs) -> Tuple[ndarray, ndarray]:
+    """
+    Customized version of `grid` dedicated to Q8 elements.
+    It returns a topology with vtk-compliant node numbering.
+
+    In terms of parameters, this function have to be called the
+    same way `grid` would be called, except the parameter
+    `eshape` being obsolete.
+    """
+    coords, topo = gridQ9(*args, **kwargs)
+    return detach_mesh_bulk(coords, topo[:, :-1])
 
 
 def gridH8(*args, **kwargs) -> Tuple[ndarray, ndarray]:

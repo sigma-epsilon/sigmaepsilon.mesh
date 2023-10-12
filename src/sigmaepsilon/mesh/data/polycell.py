@@ -285,7 +285,7 @@ class PolyCell(
         """
         Returns the total area of the cells in the database. Only for 2d entities.
         """
-        if self.Geometry.number_of_spatial_dimensions == 1:
+        if self.Geometry.number_of_spatial_dimensions == 2:
             return np.sum(self.areas(*args, **kwargs))
         else:
             raise NotImplementedError("This is only for 2d cells")

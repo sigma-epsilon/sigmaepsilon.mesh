@@ -1,9 +1,12 @@
 import unittest
+import numpy as np
 
+from sigmaepsilon.core.testing import SigmaEpsilonTestCase
 from sigmaepsilon.mesh.triang import triangulate
 from sigmaepsilon.mesh.grid import grid
 from sigmaepsilon.mesh.extrude import extrude_T3_W6
 from sigmaepsilon.mesh.utils.topology import (
+    to_T3,
     T3_to_T6,
     T6_to_T3,
     Q9_to_Q4,
@@ -23,10 +26,11 @@ from sigmaepsilon.mesh.utils.topology import (
     W6_to_TET4,
     W18_to_W6,
     W6_to_W18,
+    trimap_Q8,
 )
 
 
-class TestTopoTR(unittest.TestCase):
+class TestTopoTR(SigmaEpsilonTestCase):
     def test_1(self):
         def test_1(Lx, Ly, nx, ny):
             """T3 -> T6 -> T3"""
@@ -124,6 +128,30 @@ class TestTopoTR(unittest.TestCase):
             return True
 
         assert test_8(1, 1, 1, 2, 2, 2)
+
+    def test_Q8_to_T3(self):
+        coords, topo = grid(size=(1, 1), shape=(2, 3), eshape="Q8")
+        Q8_to_T3(coords, topo)
+
+        self.assertFailsProperly(NotImplementedError, Q8_to_T3, coords, topo, path="_")
+        self.assertFailsProperly(TypeError, Q8_to_T3, coords, topo, path=[1])
+        self.assertFailsProperly(
+            ValueError, Q8_to_T3, coords, topo, path=np.array([1, 2, 3, 4], dtype=int)
+        )
+
+    def test_to_T3(self):
+        coords, topo = grid(size=(1, 1), shape=(2, 3), eshape="Q8")
+        to_T3(coords, topo, path=trimap_Q8())
+
+        self.assertFailsProperly(TypeError, to_T3, coords, topo)
+        self.assertFailsProperly(TypeError, to_T3, coords, topo, path="_")
+        self.assertFailsProperly(TypeError, to_T3, coords, topo, path=[1])
+        self.assertFailsProperly(
+            ValueError, to_T3, coords, topo, path=np.array([1, 2, 3, 4], dtype=int)
+        )
+        self.assertFailsProperly(
+            ValueError, to_T3, coords, topo, path=np.array([[1, 2, 3, 4]], dtype=int)
+        )
 
 
 if __name__ == "__main__":

@@ -12,6 +12,30 @@ def load_tests(loader, tests, ignore):  # pragma: no cover
 
 
 class TestGrid(unittest.TestCase):
+    def test_grid_Q4(self):
+        size = 80, 60
+        shape = 8, 6
+        topo = grid(size=size, shape=shape, eshape="Q4")[1]
+
+        self.assertEqual(topo.shape[0], np.prod(shape))
+        self.assertEqual(topo.shape[1], 4)
+    
+    def test_grid_Q8(self):
+        size = 80, 60
+        shape = 8, 6
+        topo = grid(size=size, shape=shape, eshape="Q8")[1]
+
+        self.assertEqual(topo.shape[0], np.prod(shape))
+        self.assertEqual(topo.shape[1], 8)
+    
+    def test_grid_Q9(self):
+        size = 80, 60
+        shape = 8, 6
+        topo = grid(size=size, shape=shape, eshape="Q9")[1]
+
+        self.assertEqual(topo.shape[0], np.prod(shape))
+        self.assertEqual(topo.shape[1], 9)
+    
     def test_grid_H8(self):
         size = 80, 60, 20
         shape = 8, 6, 2
