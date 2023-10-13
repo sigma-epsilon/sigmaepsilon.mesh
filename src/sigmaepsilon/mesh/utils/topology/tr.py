@@ -26,6 +26,7 @@ from ..topodata import (
     faces_W6,
 )
 from .topo import unique_topo_data
+from .trimap import trimap_Q8
 
 __cache = True
 
@@ -33,6 +34,7 @@ __cache = True
 __all__ = [
     "transform_topology",
     "compose_trmap",
+    "to_T3",
     "L2_to_L3",
     "T3_to_T6",
     "T3_to_L2",
@@ -67,7 +69,7 @@ def transform_topology(
     *_,
     MT: bool = True,
     max_workers: int = 4,
-    **__
+    **__,
 ) -> Union[ndarray, Tuple[ndarray]]:
     """
     Transforms a mesh by canging the celltype, but keeping the topology of
@@ -205,6 +207,47 @@ def compose_trmap(map1: ndarray, map2: ndarray) -> ndarray:
     return res
 
 
+def to_T3(
+    coords: ndarray,
+    topo: ndarray,
+    data: DataLike = None,
+    *args,
+    path: ndarray = None,
+    **kwargs,
+) -> Tuple[ndarray]:
+    if path is None:
+        raise TypeError("Expected Iterable for argument 'path', got 'NoneType'.")
+    
+    if not isinstance(path, ndarray):
+        raise TypeError(f"Expected 'ndarray' for argument 'path', got {type(path)}.")
+    
+    if not len(path.shape) == 2:
+        raise ValueError("'path' must be a 2d NumPy array")
+    
+    if not path.shape[1] == 3:
+        raise ValueError("Invalid 'path'.")
+    
+    if data is None:
+        return coords, +transform_topology(topo, path, *args, **kwargs)
+    else:
+        return (coords,) + transform_topology(topo, path, data, *args, **kwargs)
+
+
+def Q8_to_T3(
+    coords: ndarray,
+    topo: ndarray,
+    data: DataLike = None,
+    *,
+    path: ndarray = None,
+    **kwargs
+) -> Tuple[ndarray]:
+    if path is None:
+        path = trimap_Q8()
+    elif isinstance(path, str):
+        raise NotImplementedError   
+    return to_T3(coords, topo, data, path=path, **kwargs)
+
+
 def T6_to_T3(
     coords: ndarray,
     topo: ndarray,
@@ -212,7 +255,7 @@ def T6_to_T3(
     *args,
     path: ndarray = None,
     subdivide: bool = True,
-    **kwargs
+    **kwargs,
 ) -> Tuple[ndarray]:
     if isinstance(path, ndarray):
         assert path.shape[1] == 3
@@ -237,7 +280,7 @@ def H27_to_H8(
     *args,
     path: ndarray = None,
     subdivide: bool = True,
-    **kwargs
+    **kwargs,
 ) -> Tuple[ndarray]:
     if isinstance(path, ndarray):
         assert path.shape[1] == 8
@@ -271,7 +314,7 @@ def Q9_to_Q4(
     data: DataLike = None,
     *args,
     path: ndarray = None,
-    **kwargs
+    **kwargs,
 ) -> Tuple[ndarray]:
     if isinstance(path, ndarray):
         assert path.shape[1] == 4
@@ -317,7 +360,7 @@ def H8_to_TET4(
     data: DataLike = None,
     *args,
     path: ndarray = None,
-    **kwargs
+    **kwargs,
 ) -> Tuple[ndarray]:
     if isinstance(path, ndarray):
         assert path.shape[1] == 4
@@ -341,7 +384,7 @@ def H27_to_TET10(
     data: DataLike = None,
     *args,
     path: ndarray = None,
-    **kwargs
+    **kwargs,
 ) -> Tuple[ndarray]:
     if isinstance(path, ndarray):
         assert path.shape[1] == 10
@@ -371,7 +414,7 @@ def H8_to_Q4(
     data: DataLike = None,
     *args,
     path: ndarray = None,
-    **kwargs
+    **kwargs,
 ) -> Tuple[ndarray]:
     if isinstance(path, ndarray):
         assert path.shape[1] == 4
@@ -402,7 +445,7 @@ def T3_to_L2(
     data: DataLike = None,
     *args,
     path: ndarray = None,
-    **kwargs
+    **kwargs,
 ) -> Tuple[ndarray]:
     if isinstance(path, ndarray):
         assert path.shape[0] == 3, "Invalid shape!"
@@ -428,7 +471,7 @@ def TET4_to_L2(
     data: DataLike = None,
     *args,
     path: ndarray = None,
-    **kwargs
+    **kwargs,
 ) -> Tuple[ndarray]:
     if isinstance(path, ndarray):
         assert path.shape[0] == 6, "Invalid shape!"
@@ -454,7 +497,7 @@ def H8_to_L2(
     data: DataLike = None,
     *args,
     path: ndarray = None,
-    **kwargs
+    **kwargs,
 ) -> Tuple[ndarray]:
     if isinstance(path, ndarray):
         assert path.shape[0] == 12, "Invalid shape!"
@@ -480,7 +523,7 @@ def Q4_to_T3(
     data: DataLike = None,
     *args,
     path: ndarray = None,
-    **kwargs
+    **kwargs,
 ) -> Tuple[ndarray]:
     if isinstance(path, ndarray):
         assert path.shape[1] == 3
@@ -490,37 +533,6 @@ def Q4_to_T3(
         elif isinstance(path, str):
             if path == "grid":
                 path = np.array([[0, 2, 3], [0, 3, 1]], dtype=topo.dtype)
-    if data is None:
-        return coords, +transform_topology(topo, path, *args, **kwargs)
-    else:
-        return (coords,) + transform_topology(topo, path, data, *args, **kwargs)
-
-
-def Q8_to_T3(
-    coords: ndarray,
-    topo: ndarray,
-    data: DataLike = None,
-    *args,
-    path: ndarray = None,
-    **kwargs
-) -> Tuple[ndarray]:
-    if isinstance(path, ndarray):
-        assert path.shape[1] == 3
-    else:
-        if path is None:
-            path = np.array(
-                [
-                    [0, 4, 7],
-                    [4, 1, 5],
-                    [5, 2, 6],
-                    [6, 3, 7],
-                    [4, 6, 7],
-                    [4, 5, 6],
-                ],
-                dtype=topo.dtype,
-            )
-        elif isinstance(path, str):
-            raise NotImplementedError
     if data is None:
         return coords, +transform_topology(topo, path, *args, **kwargs)
     else:
@@ -619,7 +631,7 @@ def W6_to_TET4(
     data: DataLike = None,
     *args,
     path: ndarray = None,
-    **kwargs
+    **kwargs,
 ):
     if isinstance(path, ndarray):
         assert path.shape[1] == 4
@@ -644,7 +656,7 @@ def W18_to_W6(
     *args,
     path: ndarray = None,
     subdivide: bool = True,
-    **kwargs
+    **kwargs,
 ):
     if isinstance(path, ndarray):
         assert path.shape[1] == 6
