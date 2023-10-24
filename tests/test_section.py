@@ -3,13 +3,13 @@ import unittest, doctest
 
 from numpy import ndarray
 
-import sigmaepsilon.mesh.section
-from sigmaepsilon.mesh.section import LineSection, get_section
+import sigmaepsilon.mesh.domains.section
+from sigmaepsilon.mesh.domains.section import LineSection, get_section
 from sigmaepsilon.mesh import TriMesh, CartesianFrame, PolyData
 
 
 def load_tests(loader, tests, ignore):  # pragma: no cover
-    tests.addTests(doctest.DocTestSuite(sigmaepsilon.mesh.section))
+    tests.addTests(doctest.DocTestSuite(sigmaepsilon.mesh.domains.section))
     return tests
 
 

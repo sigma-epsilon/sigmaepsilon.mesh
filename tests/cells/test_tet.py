@@ -1,10 +1,14 @@
 # -*- coding: utf-8 -*-
 import numpy as np
 import unittest
+from sympy import symbols
 
+from sigmaepsilon.core.testing import SigmaEpsilonTestCase
+from sigmaepsilon.math import atleast2d
 from sigmaepsilon.mesh import PointData, TriMesh, CartesianFrame, triangulate
 from sigmaepsilon.mesh.recipes import circular_disk
 from sigmaepsilon.mesh.cells import T3, TET4, TET10
+from sigmaepsilon.mesh.utils.tet import nat_to_loc_tet
 
 
 class TestTet(unittest.TestCase):
@@ -60,6 +64,44 @@ class TestTet(unittest.TestCase):
         shpf(pcoords)
         shpmf(pcoords)
         dshpf(pcoords)
+        
+
+class TestTET4(SigmaEpsilonTestCase):
+    def test_TET4(self, N: int = 3):
+        shp, dshp, shpf, shpmf, dshpf = TET4.Geometry.generate_class_functions(
+            return_symbolic=True
+        )
+        r, s, t = symbols("r, s, t", real=True)
+
+        for _ in range(N):
+            A1, A2, A3 = np.random.rand(3)
+            A4 = 1 - A1 - A2 - A3
+            x_nat = np.array([A1, A2, A3, A4])
+            x_loc = atleast2d(nat_to_loc_tet(x_nat))
+
+            shpA = shpf(x_loc)
+            shpB = TET4.Geometry.shape_function_values(x_loc)
+            shp_sym = shp.subs({r: x_loc[0, 0], s: x_loc[0, 1], t: x_loc[0, 2]})
+            self.assertTrue(np.allclose(shpA, shpB))
+            self.assertTrue(
+                np.allclose(shpA, np.array(shp_sym.tolist(), dtype=float).T)
+            )
+
+            dshpA = dshpf(x_loc)
+            dshpB = TET4.Geometry.shape_function_derivatives(x_loc)
+            dshp_sym = dshp.subs({r: x_loc[0, 0], s: x_loc[0, 1], t: x_loc[0, 2]})
+            self.assertTrue(np.allclose(dshpA, dshpB))
+            self.assertTrue(
+                np.allclose(dshpA, np.array(dshp_sym.tolist(), dtype=float))
+            )
+
+            shpmfA = shpmf(x_loc)
+            shpmfB = TET4.Geometry.shape_function_matrix(x_loc)
+            self.assertTrue(np.allclose(shpmfA, shpmfB))
+
+        nX = 2
+        shpmf = TET4.Geometry.shape_function_matrix(x_loc, N=nX)
+        self.assertEqual(shpmf.shape, (1, nX, 4 * nX))
 
 
 if __name__ == "__main__":
