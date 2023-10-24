@@ -42,12 +42,12 @@ def monoms_tri_loc_bulk(lcoord: ndarray) -> ndarray:
 
 @njit(nogil=True, cache=__cache)
 def lcoords_tri() -> ndarray:
-    return np.array([[0.0, 0.0], [1.0, 0.0], [0.0, 1.0]])
+    return np.array([[-1 / 3, -1 / 3], [2 / 3, -1 / 3], [-1 / 3, 2 / 3]])
 
 
 @njit(nogil=True, cache=__cache)
 def lcenter_tri() -> ndarray:
-    return np.array([1 / 3, 1 / 3])
+    return np.array([0.0, 0.0])
 
 
 @njit(nogil=True, cache=__cache)

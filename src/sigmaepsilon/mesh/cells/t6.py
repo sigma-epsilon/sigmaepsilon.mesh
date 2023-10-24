@@ -49,7 +49,7 @@ class T6(PolyCell):
                 A list of monomials.
             """
             locvars = r, s = symbols("r s", real=True)
-            monoms = [1, r, s, r ** 2, s ** 2, r * s]
+            monoms = [1, r, s, r**2, s**2, r * s]
             return locvars, monoms
 
         @classmethod
@@ -62,7 +62,14 @@ class T6(PolyCell):
             numpy.ndarray
             """
             return np.array(
-                [[0.0, 0.0], [1.0, 0.0], [0.0, 1.0], [0.5, 0.0], [0.5, 0.5], [0.0, 0.5]]
+                [
+                    [-1 / 3, -1 / 3],
+                    [2 / 3, -1 / 3],
+                    [-1 / 3, 2 / 3],
+                    [1 / 6, -1 / 3],
+                    [1 / 6, 1 / 6],
+                    [-1 / 3, 1 / 6],
+                ]
             )
 
         @classmethod
@@ -74,16 +81,19 @@ class T6(PolyCell):
             -------
             numpy.ndarray
             """
-            return np.array([[1 / 3, 1 / 3]])
+            return np.array([[0.0, 0.0]], dtype=float)
 
         @classmethod
-        def trimap(cls, subdivide: bool = True):
+        def trimap(cls, subdivide: bool = True) -> ndarray:
             if subdivide:
                 return np.array([[0, 3, 5], [3, 1, 4], [5, 4, 2], [5, 3, 4]], dtype=int)
             else:
                 return np.array([[0, 1, 2]], dtype=int)
 
     def to_triangles(self) -> ndarray:
+        """
+        Returns the topology as triangles.
+        """
         return T6_to_T3(None, self.topology().to_numpy())[1]
 
     def areas(self) -> ndarray:

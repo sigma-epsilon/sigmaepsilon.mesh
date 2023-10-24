@@ -16,17 +16,17 @@ def Gauss_Legendre_Line_Grid(n: int) -> Tuple[ndarray]:
 
 
 def Gauss_Legendre_Tri_1() -> Tuple[ndarray]:
-    return np.array([[1 / 3, 1 / 3]]), np.array([1 / 2])
+    return np.array([[0.0, 0.0]]), np.array([1 / 2])
 
 
 def Gauss_Legendre_Tri_3a() -> Tuple[ndarray]:
-    p = np.array([[1 / 6, 1 / 6], [2 / 3, 1 / 6], [1 / 6, 2 / 3]])
+    p = np.array([[-1 / 6, -1 / 6], [1 / 3, -1 / 6], [-1 / 6, 1 / 3]])
     w = np.array([1 / 6, 1 / 6, 1 / 6])
     return p, w
 
 
 def Gauss_Legendre_Tri_3b() -> Tuple[ndarray]:
-    p = np.array([[1 / 2, 1 / 2], [0, 1 / 2], [1 / 2, 0]])
+    p = np.array([[1 / 6, 1 / 6], [-1 / 3, 1 / 6], [1 / 6, -1 / 3]])
     w = np.array([1 / 6, 1 / 6, 1 / 6])
     return p, w
 
@@ -55,14 +55,14 @@ def Gauss_Legendre_Quad_9() -> Tuple[ndarray]:
 
 
 def Gauss_Legendre_Tet_1() -> Tuple[ndarray]:
-    p = np.array([[1 / 4, 1 / 4, 1 / 4]])
+    p = np.array([[-1 / 12, -1 / 12, -1 / 12]])
     w = np.array([1 / 6])
     return p, w
 
 
 def Gauss_Legendre_Tet_4() -> Tuple[ndarray]:
-    a = (5 + 3 * np.sqrt(5)) / 20
-    b = (5 - np.sqrt(5)) / 20
+    a = ((5 + 3 * np.sqrt(5)) / 20) - 1 / 3
+    b = ((5 - np.sqrt(5)) / 20) - 1 / 3
     p = np.array([[a, b, b], [b, a, b], [b, b, a], [b, b, b]])
     w = np.full(4, 1 / 24)
     return p, w
@@ -71,11 +71,11 @@ def Gauss_Legendre_Tet_4() -> Tuple[ndarray]:
 def Gauss_Legendre_Tet_5() -> Tuple[ndarray]:
     p = np.array(
         [
-            [1 / 4, 1 / 4, 1 / 4],
-            [1 / 2, 1 / 6, 1 / 6],
-            [1 / 6, 1 / 2, 1 / 6],
-            [1 / 6, 1 / 6, 1 / 2],
-            [1 / 6, 1 / 6, 1 / 6],
+            [-1 / 12, -1 / 12, -1 / 12],
+            [1 / 6, -1 / 6, -1 / 6],
+            [-1 / 6, 1 / 6, -1 / 6],
+            [-1 / 6, -1 / 6, 1 / 6],
+            [-1 / 6, -1 / 6, -1 / 6],
         ]
     )
     w = np.array([-4 / 30, 9 / 120, 9 / 120, 9 / 120, 9 / 120])
@@ -83,15 +83,15 @@ def Gauss_Legendre_Tet_5() -> Tuple[ndarray]:
 
 
 def Gauss_Legendre_Tet_11() -> Tuple[ndarray]:
-    a = (1 + 3 * np.sqrt(5 / 15)) / 4
-    b = (1 - np.sqrt(5 / 14)) / 4
+    a = ((1 + 3 * np.sqrt(5 / 15)) / 4) - 1 / 3
+    b = ((1 - np.sqrt(5 / 14)) / 4) - 1 / 3
     p = np.array(
         [
-            [1 / 4, 1 / 4, 1 / 4],
-            [11 / 14, 1 / 14, 1 / 14],
-            [1 / 14, 11 / 14, 1 / 14],
-            [1 / 14, 1 / 14, 11 / 14],
-            [1 / 14, 1 / 14, 1 / 14],
+            [-1 / 12, -1 / 12, -1 / 12],
+            [19 / 42, -11 / 42, -11 / 42],
+            [-11 / 42, 19 / 42, -11 / 42],
+            [-11 / 42, -11 / 42, 19 / 42],
+            [-11 / 42, -11 / 42, -11 / 42],
             [a, a, b],
             [a, b, a],
             [a, b, b],

@@ -46,21 +46,21 @@ class W6(PolyCell):
         def master_coordinates(cls) -> ndarray:
             return np.array(
                 [
-                    [0.0, 0.0, -1.0],
-                    [1.0, 0.0, -1.0],
-                    [0.0, 1.0, -1.0],
-                    [0.0, 0.0, 1.0],
-                    [1.0, 0.0, 1.0],
-                    [0.0, 1.0, 1.0],
+                    [-1 / 3, -1 / 3, -1.0],
+                    [2 / 3, -1 / 3, -1.0],
+                    [-1 / 3, 2 / 3, -1.0],
+                    [-1 / 3, -1 / 3, 1.0],
+                    [2 / 3, -1 / 3, 1.0],
+                    [-1 / 3, 2 / 3, 1.0],
                 ]
             )
 
         @classmethod
         def master_center(cls) -> ndarray:
-            return np.array([[1 / 3, 1 / 3, 0]])
+            return np.array([[0.0, 0.0, 0.0]], dtype=float)
 
         @classmethod
-        def tetmap(cls) -> np.ndarray:
+        def tetmap(cls) -> ndarray:
             return np.array(
                 [[0, 1, 2, 4], [3, 5, 4, 2], [2, 5, 0, 4]],
                 dtype=int,

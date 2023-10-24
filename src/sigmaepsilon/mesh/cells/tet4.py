@@ -52,12 +52,17 @@ class TET4(PolyCell):
         @classmethod
         def master_coordinates(cls) -> ndarray:
             return np.array(
-                [[0.0, 0.0, 0.0], [1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]]
+                [
+                    [-1 / 3, -1 / 3, -1 / 3],
+                    [2 / 3, -1 / 3, -1 / 3],
+                    [-1 / 3, 2 / 3, -1 / 3],
+                    [-1 / 3, -1 / 3, 2 / 3],
+                ]
             )
 
         @classmethod
         def master_center(cls) -> ndarray:
-            return np.array([[1 / 3, 1 / 3, 1 / 3]])
+            return np.array([[0.0, 0.0, 0.0]], dtype=float)
 
         @classmethod
         def tetmap(cls) -> ndarray:
