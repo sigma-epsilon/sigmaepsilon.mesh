@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from typing import Tuple
+
 import numpy as np
 from numpy import ndarray
 from numba import njit, prange, vectorize
@@ -11,7 +13,7 @@ __cache = True
 
 
 @njit(nogil=True, parallel=True, cache=__cache)
-def triangulate_cell_coords(ecoords: ndarray, trimap: ndarray):
+def triangulate_cell_coords(ecoords: ndarray, trimap: ndarray) -> ndarray:
     nE = ecoords.shape[0]
     nTE, nNTE = trimap.shape
     nT = int(nE * nTE)
@@ -26,12 +28,12 @@ def triangulate_cell_coords(ecoords: ndarray, trimap: ndarray):
 
 
 @njit(nogil=True, cache=__cache)
-def monoms_tri_loc(lcoord: np.ndarray):
+def monoms_tri_loc(lcoord: ndarray) -> ndarray:
     return np.array([1, lcoord[0], lcoord[1]], dtype=lcoord.dtype)
 
 
 @njit(nogil=True, cache=__cache)
-def monoms_tri_loc_bulk(lcoord: np.ndarray):
+def monoms_tri_loc_bulk(lcoord: ndarray) -> ndarray:
     res = np.ones((lcoord.shape[0], 3), dtype=lcoord.dtype)
     res[:, 1] = lcoord[:, 0]
     res[:, 2] = lcoord[:, 1]
@@ -39,27 +41,29 @@ def monoms_tri_loc_bulk(lcoord: np.ndarray):
 
 
 @njit(nogil=True, cache=__cache)
-def lcoords_tri():
+def lcoords_tri() -> ndarray:
     return np.array([[0.0, 0.0], [1.0, 0.0], [0.0, 1.0]])
 
 
 @njit(nogil=True, cache=__cache)
-def lcenter_tri():
+def lcenter_tri() -> ndarray:
     return np.array([1 / 3, 1 / 3])
 
 
 @njit(nogil=True, cache=__cache)
-def ncenter_tri():
+def ncenter_tri() -> ndarray:
     return np.array([1 / 3, 1 / 3, 1 / 3])
 
 
 @njit(nogil=True, cache=__cache)
-def shp_tri_loc(lcoord: np.ndarray):
+def shp_tri_loc(lcoord: ndarray) -> ndarray:
     return np.array([1 - lcoord[0] - lcoord[1], lcoord[0], lcoord[1]])
 
 
 @njit(nogil=True, parallel=True, cache=__cache)
-def shape_function_matrix_tri_loc(lcoord: np.ndarray, nDOFN=2, nNODE=3):
+def shape_function_matrix_tri_loc(
+    lcoord: ndarray, nDOFN: int = 2, nNODE: int = 3
+) -> ndarray:
     eye = np.eye(nDOFN, dtype=lcoord.dtype)
     shp = shp_tri_loc(lcoord)
     res = np.zeros((nDOFN, nNODE * nDOFN), dtype=lcoord.dtype)
@@ -69,14 +73,14 @@ def shape_function_matrix_tri_loc(lcoord: np.ndarray, nDOFN=2, nNODE=3):
 
 
 @njit(nogil=True, cache=__cache)
-def center_tri_2d(ecoords: np.ndarray):
+def center_tri_2d(ecoords: ndarray) -> ndarray:
     return np.array(
         [np.mean(ecoords[:, 0]), np.mean(ecoords[:, 1])], dtype=ecoords.dtype
     )
 
 
 @njit(nogil=True, cache=__cache)
-def center_tri_3d(ecoords: np.ndarray):
+def center_tri_3d(ecoords: ndarray) -> ndarray:
     return np.array(
         [np.mean(ecoords[:, 0]), np.mean(ecoords[:, 1]), np.mean(ecoords[:, 2])],
         dtype=ecoords.dtype,
@@ -84,7 +88,7 @@ def center_tri_3d(ecoords: np.ndarray):
 
 
 @njit(nogil=True, cache=__cache)
-def area_tri(ecoords: np.ndarray):
+def area_tri(ecoords: ndarray) -> ndarray:
     """
     Returns the the signed area of a single 3-noded triangle.
 
@@ -112,7 +116,7 @@ def area_tri(ecoords: np.ndarray):
 
 
 @njit(nogil=True, cache=__cache)
-def inscribed_radius(ecoords: ndarray):
+def inscribed_radius(ecoords: ndarray) -> ndarray:
     """
     Returns the radius of the inscribed circle of a single triangle.
 
@@ -169,7 +173,7 @@ def inscribed_radii(ecoords: ndarray) -> ndarray:
 
 
 @njit(nogil=True, parallel=False, cache=__cache)
-def areas_tri(ecoords: np.ndarray) -> ndarray:
+def areas_tri(ecoords: ndarray) -> ndarray:
     """
     Returns the total sum of signed areas of several triangles.
 
@@ -205,7 +209,7 @@ def areas_tri(ecoords: np.ndarray) -> ndarray:
 
 
 @njit(nogil=True, parallel=True, cache=__cache)
-def area_tri_bulk(ecoords: np.ndarray) -> ndarray:
+def area_tri_bulk(ecoords: ndarray) -> ndarray:
     """
     Returns the signed area of several triangles.
 
@@ -266,7 +270,7 @@ def area_tri_u2(x1, x2, x3, y1, y2, y3):
 
 
 @njit(nogil=True, cache=__cache)
-def loc_to_glob_tri(lcoord: np.ndarray, gcoords: np.ndarray):
+def loc_to_glob_tri(lcoord: ndarray, gcoords: ndarray) -> ndarray:
     """
     Transformation from local to global coordinates within a triangle.
 
@@ -278,7 +282,7 @@ def loc_to_glob_tri(lcoord: np.ndarray, gcoords: np.ndarray):
 
 
 @njit(nogil=True, cache=__cache)
-def glob_to_loc_tri(gcoord: np.ndarray, gcoords: np.ndarray):
+def glob_to_loc_tri(gcoord: ndarray, gcoords: ndarray) -> ndarray:
     """
     Transformation from global to local coordinates within a triangle.
 
@@ -293,7 +297,7 @@ def glob_to_loc_tri(gcoord: np.ndarray, gcoords: np.ndarray):
 
 
 @njit(nogil=True, cache=__cache)
-def glob_to_nat_tri(gcoord: np.ndarray, ecoords: np.ndarray):
+def glob_to_nat_tri(gcoord: ndarray, ecoords: ndarray) -> ndarray:
     """
     Transformation from global to natural coordinates within a triangle.
 
@@ -360,7 +364,7 @@ def _pip_tri_bulk_knn_(
 
 
 @njit(nogil=True, cache=__cache)
-def nat_to_glob_tri(ncoord: np.ndarray, ecoords: np.ndarray):
+def nat_to_glob_tri(ncoord: ndarray, ecoords: ndarray) -> ndarray:
     """
     Transformation from natural to global coordinates within a triangle.
 
@@ -372,7 +376,7 @@ def nat_to_glob_tri(ncoord: np.ndarray, ecoords: np.ndarray):
 
 
 @njit(nogil=True, cache=__cache)
-def loc_to_nat_tri(lcoord: np.ndarray):
+def loc_to_nat_tri(lcoord: ndarray) -> ndarray:
     """
     Transformation from local to natural coordinates within a triangle.
 
@@ -384,7 +388,7 @@ def loc_to_nat_tri(lcoord: np.ndarray):
 
 
 @njit(nogil=True, cache=__cache)
-def nat_to_loc_tri(acoord: np.ndarray):
+def nat_to_loc_tri(acoord: ndarray) -> ndarray:
     """
     Transformation from natural to local coordinates within a triangle.
 
@@ -396,7 +400,9 @@ def nat_to_loc_tri(acoord: np.ndarray):
 
 
 @njit(nogil=True, parallel=True, cache=__cache)
-def localize_points(points: ndarray, triangles: ndarray, coords: ndarray):
+def localize_points(
+    points: ndarray, triangles: ndarray, coords: ndarray
+) -> Tuple[ndarray, ndarray]:
     nE = triangles.shape[0]
     nC = coords.shape[0]
     ecoords = cells_coords(points, triangles)
@@ -413,21 +419,29 @@ def localize_points(points: ndarray, triangles: ndarray, coords: ndarray):
 
 
 @njit(nogil=True, parallel=True, cache=__cache)
-def _get_points_inside_triangles(points: ndarray, topo: ndarray, coords: ndarray):
+def _get_points_inside_triangles(
+    points: ndarray, topo: ndarray, coords: ndarray
+) -> ndarray:
     inds, _ = localize_points(points, topo, coords)
     inds[inds > -1] = 1
     inds[inds < 0] = 0
     return inds
 
 
-def get_points_inside_triangles(points: ndarray, topo: ndarray, coords: ndarray):
+def get_points_inside_triangles(
+    points: ndarray, topo: ndarray, coords: ndarray
+) -> ndarray:
     return _get_points_inside_triangles(points, topo, coords).astype(bool)
 
 
 @njit(nogil=True, parallel=True, cache=__cache)
 def approx_data_to_points(
-    points: ndarray, triangles: ndarray, data: ndarray, coords: ndarray, defval=0.0
-):
+    points: ndarray,
+    triangles: ndarray,
+    data: ndarray,
+    coords: ndarray,
+    defval: float = 0.0,
+) -> ndarray:
     nC = coords.shape[0]
     nD = data.shape[1]
     inds, shp = localize_points(points, triangles, coords)
@@ -440,8 +454,10 @@ def approx_data_to_points(
     return res
 
 
-def offset_tri(coords: np.ndarray, topo: np.ndarray, data: np.ndarray, *args, **kwargs):
-    if isinstance(data, np.ndarray):
+def offset_tri(
+    coords: ndarray, topo: ndarray, data: ndarray, *args, **kwargs
+) -> ndarray:
+    if isinstance(data, ndarray):
         alpha = np.abs(data)
         amax = alpha.max()
         if amax > 1.0:
@@ -455,7 +471,7 @@ def offset_tri(coords: np.ndarray, topo: np.ndarray, data: np.ndarray, *args, **
 
 
 @njit(nogil=True, cache=__cache)
-def offset_tri_uniform(coords: np.ndarray, topo: np.ndarray, alpha=0.9):
+def offset_tri_uniform(coords: ndarray, topo: ndarray, alpha: float = 0.9) -> ndarray:
     cellcoords = cells_coords(coords, topo)
     ncenter = ncenter_tri(coords.dtype)
     eye = np.eye(3, dtype=coords.dtype)
@@ -469,7 +485,7 @@ def offset_tri_uniform(coords: np.ndarray, topo: np.ndarray, alpha=0.9):
 
 
 @njit(nogil=True, parallel=True, cache=__cache)
-def _offset_tri_(coords: np.ndarray, topo: np.ndarray, alpha: np.ndarray):
+def _offset_tri_(coords: ndarray, topo: ndarray, alpha: ndarray) -> ndarray:
     cellcoords = cells_coords(coords, topo)
     ncenter = ncenter_tri()
     dn = np.eye(3, dtype=coords.dtype) - ncenter
@@ -482,7 +498,7 @@ def _offset_tri_(coords: np.ndarray, topo: np.ndarray, alpha: np.ndarray):
     return res
 
 
-def edges_tri(triangles: np.ndarray):
+def edges_tri(triangles: ndarray) -> ndarray:
     shp = triangles.shape
     if len(shp) == 2:
         return _edges_tri(triangles)
@@ -493,7 +509,7 @@ def edges_tri(triangles: np.ndarray):
 
 
 @njit(nogil=True, cache=__cache)
-def _edges_tri(triangles: np.ndarray):
+def _edges_tri(triangles: ndarray) -> ndarray:
     nE = len(triangles)
     edges = np.zeros((nE, 3, 2), dtype=triangles.dtype)
     edges[:, 0, 0] = triangles[:, 0]
@@ -506,7 +522,7 @@ def _edges_tri(triangles: np.ndarray):
 
 
 @njit(nogil=True, parallel=True, cache=__cache)
-def _edges_tri_pop(triangles: np.ndarray):
+def _edges_tri_pop(triangles: ndarray) -> ndarray:
     nPop, nE, _ = triangles.shape
     res = np.zeros((nPop, nE, 3, 2), dtype=triangles.dtype)
     for i in prange(nPop):
@@ -515,7 +531,9 @@ def _edges_tri_pop(triangles: np.ndarray):
 
 
 @njit(nogil=True, parallel=True, cache=__cache)
-def tri_glob_to_loc(points: np.ndarray, triangles: np.ndarray):
+def tri_glob_to_loc(
+    points: ndarray, triangles: ndarray
+) -> Tuple[ndarray, ndarray, ndarray]:
     nE = triangles.shape[0]
     tr = np.zeros((nE, 3, 3), dtype=points.dtype)
     res = np.zeros((nE, 3, 2), dtype=points.dtype)
