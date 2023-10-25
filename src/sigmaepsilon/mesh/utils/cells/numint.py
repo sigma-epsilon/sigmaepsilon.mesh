@@ -1,9 +1,12 @@
 from typing import Tuple
+from collections import namedtuple
+
 import numpy as np
 from numpy import ndarray
 
 from sigmaepsilon.math.numint import gauss_points as gp
 
+Quadrature = namedtuple("QuadratureRule", ["inds", "pos", "weight"])
 
 # LINES
 
