@@ -5,7 +5,6 @@ import unittest
 from sigmaepsilon.core.testing import SigmaEpsilonTestCase
 from sigmaepsilon.math.linalg import FrameLike
 from sigmaepsilon.mesh import CartesianFrame, PointData, triangulate
-from sigmaepsilon.mesh import PointData
 
 
 class TestPointData(SigmaEpsilonTestCase):
