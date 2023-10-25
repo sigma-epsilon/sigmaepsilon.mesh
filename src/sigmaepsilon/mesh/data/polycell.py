@@ -8,6 +8,8 @@ from typing import (
     Optional,
     TypeVar,
     Generic,
+    Hashable,
+    Callable
 )
 from numbers import Number
 
@@ -57,6 +59,7 @@ from ..utils import cell_centers_bulk
 from ..vtkutils import mesh_to_UnstructuredGrid as mesh_to_vtk
 from ..topoarray import TopologyArray
 from ..space import CartesianFrame
+from ..utils.cells.numint import Quadrature
 from ..config import __haspyvista__
 
 if __haspyvista__:
@@ -123,6 +126,32 @@ class PolyCell(
             points = atleastnd(points, 2, front=True)
 
         return points, rng
+    
+    @staticmethod
+    def _parse_gauss_data(quad_dict: dict, key: Hashable):
+        value: Union[Callable, str, dict] = quad_dict[key]
+
+        if isinstance(value, dict):
+            for qinds, qvalue in value.items():
+                if isinstance(qvalue, str):
+                    for v in PolyCell._parse_gauss_data(value, qvalue):
+                        v.inds = qinds
+                        yield v
+                else:
+                    qpos, qweight = qvalue
+                    quad = Quadrature(qinds, qpos, qweight)
+                    yield quad
+        elif isinstance(value, Callable):
+            qpos, qweight = value()
+            quad = Quadrature(np.s_[:], qpos, qweight)
+            yield quad
+        elif isinstance(value, str):
+            for v in PolyCell._parse_gauss_data(quad_dict, value):
+                yield v
+        else:
+            qpos, qweight = value
+            quad = Quadrature(np.s_[:], qpos, qweight)
+            yield quad
 
     @CellData.frames.getter
     def frames(self) -> ndarray:
