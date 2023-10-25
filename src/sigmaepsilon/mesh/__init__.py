@@ -20,7 +20,7 @@ __all__ = [
     "CartesianFrame",
     "PolyData",
     "LineData",
-    "PolyData1d",
+    "PolyData1d", 
     "PointData",
     "TriMesh",
     #
