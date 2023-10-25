@@ -9,11 +9,13 @@ from typing import (
     TypeVar,
     Generic,
 )
+from numbers import Number
 
 import numpy as np
 from numpy import ndarray
+from numpy.lib.index_tricks import IndexExpression
 
-from sigmaepsilon.math import atleast1d, atleast2d, ascont
+from sigmaepsilon.math import atleast1d, atleast2d, atleastnd, ascont
 from sigmaepsilon.math.linalg import ReferenceFrame as FrameLike
 from sigmaepsilon.math.utils import to_range_1d
 
@@ -63,7 +65,7 @@ if __haspyvista__:
 MapLike = Union[ndarray, MutableMapping]
 PointDataLike = TypeVar("PointDataLike", bound=PointDataProtocol)
 MeshDataLike = TypeVar("MeshDataLike", bound=PolyDataProtocol)
-
+T = TypeVar("T", bound="PolyCell")
 
 __all__ = ["PolyCell"]
 
@@ -75,15 +77,59 @@ class PolyCell(
 ):
     """
     A subclass of :class:`~sigmaepsilon.mesh.data.celldata.CellData` as a base class
-    for all cell containers.
+    for all cell containers. The class should not be used directly, the main purpose
+    here is encapsulation of common behaviour for all kinds of cells.
     """
 
     label: ClassVar[Optional[str]] = None
     Geometry: ClassVar[GeometryProtocol]
 
+    def _get_cell_slicer(
+        self, cells: Optional[Union[int, Iterable[int]]] = None
+    ) -> Union[Iterable[int], IndexExpression]:
+        if isinstance(cells, Iterable):
+            cells = atleast1d(cells)
+            conds = np.isin(cells, self.id)
+            cells = atleast1d(cells[conds])
+            assert (
+                len(cells) > 0
+            ), "Length of cells is zero. At least one cell must be requested"
+        else:
+            cells = np.s_[:]
+        return cells
+
+    def _get_points_and_range(
+        self,
+        points: Optional[Union[None, Iterable[Number]]] = None,
+        rng: Optional[Union[None, Iterable[Number]]] = None,
+    ) -> Tuple[ndarray, ndarray]:
+        nDIM = self.Geometry.number_of_spatial_dimensions
+        if nDIM == 1:
+            if points is None:
+                points = np.array(self.Geometry.master_coordinates()).flatten()
+                rng = [-1, 1]
+            else:
+                points = atleast1d(np.array(points))
+                rng = np.array([-1, 1]) if rng is None else np.array(rng)
+            points = to_range_1d(points, source=rng, target=[-1, 1]).flatten()
+            rng = [-1, 1]
+        else:
+            if points is None:
+                points = np.array(self.Geometry.master_coordinates())
+
+        points, rng = np.array(points, dtype=float), np.array(rng, dtype=float)
+
+        if nDIM > 1:
+            points = atleastnd(points, 2, front=True)
+
+        return points, rng
+
     @CellData.frames.getter
     def frames(self) -> ndarray:
-        """Returns local coordinate frames of the cells."""
+        """
+        Returns local coordinate frames of the cells as a 3d NumPy float array,
+        where the first axis runs along the cells of the block.
+        """
         if not self.has_frames:
             if (nD := self.Geometry.number_of_spatial_dimensions) == 1:
                 coords = self.source_coords()
@@ -102,9 +148,28 @@ class PolyCell(
                 )
         return super().frames
 
+    def split(self: T) -> Iterable[T]:
+        """
+        Splits the block to a list of regular blocks. A regular block is one where
+        the topology can be described with a NumPy matrix, otherwise the topology is
+        jagged. In the latter case, a list of PolyCell instances are returned.
+        In the instance has a regular topology, the result is `[self]`.
+        """
+        raise NotImplementedError
+        topo: TopologyArray = self.topology()
+
+        if not topo.is_jagged():
+            return [self]
+
+        topologies = topo.split()
+
     def to_triangles(self) -> ndarray:
         """
-        Returns the topology as a collection of T3 triangles.
+        Returns the topology as a collection of T3 triangles, represented
+        as a 2d NumPy integer array, where the first axis runs along the
+        triangles, and the second along the nodes.
+
+        Only for 2d cells.
         """
         if self.Geometry.number_of_spatial_dimensions == 2:
             t = self.topology().to_numpy()
@@ -114,7 +179,11 @@ class PolyCell(
 
     def to_tetrahedra(self, flatten: Optional[bool] = True) -> ndarray:
         """
-        Returns the topology as a collection of TET4 tetrahedra.
+        Returns the topology as a collection of TET4 tetrahedra, represented
+        as a 2d NumPy integer array, where the first axis runs along the
+        tetrahedra, and the second along the nodes.
+
+        Only for 3d cells.
 
         Parameters
         ----------
@@ -139,7 +208,9 @@ class PolyCell(
 
     def to_simplices(self) -> Tuple[ndarray]:
         """
-        Returns the cells of the block, refactorized into simplices.
+        Returns the cells of the block, refactorized into simplices. For cells
+        of dimension 2, the returned 2d NumPy integer array represents 3-noded
+        triangles, for 3d cells it is a collection of 4-noded tetrahedra.
         """
         NDIM: int = self.Geometry.number_of_spatial_dimensions
         if NDIM == 1:
@@ -152,7 +223,11 @@ class PolyCell(
             raise NotImplementedError
 
     def jacobian_matrix(
-        self, *, pcoords: Iterable[float] = None, dshp: ndarray = None, **__
+        self,
+        *,
+        pcoords: Optional[Union[Iterable[float], None]] = None,
+        dshp: Optional[Union[ndarray, None]] = None,
+        **kwargs,
     ) -> ndarray:
         """
         Returns the jacobian matrices of the cells in the block. The evaluation
@@ -178,8 +253,13 @@ class PolyCell(
             are the number of elements, evaluation points and spatial
             dimensions. The number of evaluation points in the output
             is governed by the parameter 'dshp' or 'pcoords'.
+
+        Note
+        ----
+        For 1d cells, the returned array is also 4 dimensional, with the last two
+        axes being dummy.
         """
-        ecoords = self.local_coordinates()
+        ecoords = kwargs.get("_ec", self.local_coordinates())
 
         if dshp is None:
             x = (
@@ -194,7 +274,9 @@ class PolyCell(
         else:
             return jacobian_matrix_bulk(dshp, ecoords)
 
-    def jacobian(self, *, jac: ndarray = None, **kwargs) -> Union[float, ndarray]:
+    def jacobian(
+        self, *, jac: Optional[Union[ndarray, None]] = None, **kwargs
+    ) -> Union[float, ndarray]:
         """
         Returns the jacobian determinant for one or more cells.
 
@@ -339,10 +421,6 @@ class PolyCell(
         else:
             raise NotImplementedError
 
-    def extract_surface(self, detach: bool = False):
-        """Extracts the surface of the mesh. Only for 3d meshes."""
-        raise NotImplementedError
-
     def source_points(self) -> PointCloud:
         """
         Returns the hosting pointcloud.
@@ -368,26 +446,32 @@ class PolyCell(
     def points_of_cells(
         self,
         *,
-        points: Union[float, Iterable] = None,
-        cells: Union[int, Iterable] = None,
-        target: Union[str, CartesianFrame] = "global",
-        rng: Iterable = None,
+        points: Optional[Union[float, Iterable, None]] = None,
+        cells: Optional[Union[int, Iterable, None]] = None,
+        rng: Optional[Union[Iterable, None]] = None,
     ) -> ndarray:
         """
-        Returns the points of selected cells as a NumPy array.
-        """
-        if cells is not None:
-            cells = atleast1d(cells)
-            conds = np.isin(cells, self.id)
-            cells = atleast1d(cells[conds])
-            assert len(cells) > 0, "Length of cells is zero!"
-        else:
-            cells = np.s_[:]
+        Returns the points of selected cells as a NumPy array. The returned
+        array is three dimensional with a shape of (nE, nNE, 2), where `nE` is
+        the number of cells in the block, `nNE` is the number of nodes per cell
+        and 2 stands for the 2 spatial dimensions.
 
-        if isinstance(target, str):
-            assert target.lower() in ["global", "g"]
-        else:
-            raise NotImplementedError
+        Parameters
+        ----------
+        points: Optional[Union[float, Iterable, None]]
+            Points defined in the domain of the master cell. If specified, global
+            coordinates for each cell are calculated and returned for each cell.
+            Default is `None`, in which case the locations of the nodes of the cells
+            are used.
+        cells: Optional[Union[int, Iterable, None]]
+            BLock-local indices of the cells of interest, or `None` if all of the
+            cells in the block are of interest. Default is `None`.
+        rng: Optional[Union[Iterable, None]]
+            For 1d cells only, it is possible to provide an iterable of length 2
+            as an interval (or range) in which the argument `points` is to be understood.
+            Default is `None`, in which case the `points` are expected in the range [-1, 1].
+        """
+        cells = self._get_cell_slicer(cells)
 
         NDIM: int = self.Geometry.number_of_spatial_dimensions
         coords = self.source_coords()
@@ -397,12 +481,7 @@ class PolyCell(
         if points is None:
             return ecoords
         else:
-            if NDIM == 1:
-                rng = np.array([-1, 1]) if rng is None else np.array(rng)
-                points = atleast1d(np.array(points))
-                points = to_range_1d(points, source=rng, target=[0, 1])
-            else:
-                points = np.array(points)
+            points, rng = self._get_points_and_range(points, rng)
 
         if NDIM == 1:
             res = pcoords_to_coords_1d(points, ecoords)  # (nE * nP, nD)
@@ -416,10 +495,15 @@ class PolyCell(
                 shp = shp if len(shp) == 2 else shp[cells]
             return pcoords_to_coords(points, ecoords, shp)  # (nE, nP, nD)
 
-    def local_coordinates(self, *, target: CartesianFrame = None) -> ndarray:
+    def local_coordinates(
+        self, *, target: Optional[Union[str, CartesianFrame, None]]
+    ) -> ndarray:
         """
-        Returns local coordinates of the cells as a 3d float
-        numpy array.
+        Returns local coordinates of the cells as a 3d float NumPy array.
+        The returned array is three dimensional with a shape of (nE, nNE, 2),
+        where `nE` is the number of cells in the block, `nNE` is the number of
+        nodes per cell and 2 stands for the 2 spatial dimensions. The coordinates
+        are centralized to the centers for each cell.
 
         Parameters
         ----------
@@ -432,11 +516,14 @@ class PolyCell(
             frames = target.show()
         else:
             frames = self.frames
+
         topo = self.topology().to_numpy()
+
         if self.pointdata is not None:
             coords = self.pointdata.x
         else:
             coords = self.container.source().coords()
+
         res = points_of_cells(coords, topo, local_axes=frames, centralize=True)
 
         if self.Geometry.number_of_spatial_dimensions == 2:
@@ -446,15 +533,15 @@ class PolyCell(
 
     def coords(self, *args, **kwargs) -> ndarray:
         """
-        Returns the coordinates of the cells in the database as a 3d
-        numpy array.
+        Alias for :func:`points_of_cells`, all arguments are forwarded.
         """
         return self.points_of_cells(*args, **kwargs)
 
     def topology(self) -> Union[TopologyArray, None]:
         """
         Returns the numerical representation of the topology of
-        the cells.
+        the cells as either a :class:`~sigmaepsilon.mesh.topoarray.TopologyArray`
+        or `None` if the topology is not specified yet.
         """
         key = self._dbkey_nodes_
         if key in self.fields:
@@ -691,8 +778,18 @@ class PolyCell(
         else:
             raise NotImplementedError
 
-    def centers(self, target: FrameLike = None) -> ndarray:
-        """Returns the centers of the cells of the block."""
+    def centers(self, target: Optional[Union[CartesianFrame, None]] = None) -> ndarray:
+        """
+        Returns the centers of the cells of the block as a 1d float
+        NumPy array.
+
+        Parameters
+        ----------
+        target: CartesianFrame, Optional
+            A target frame. If provided, coordinates are returned in
+            this frame, otherwise they are returned in the global frame.
+            Default is None.
+        """
         coords = self.source_coords()
         t = self.topology().to_numpy()
         centers = cell_centers_bulk(coords, t)
@@ -703,12 +800,15 @@ class PolyCell(
 
     def unique_indices(self) -> ndarray:
         """
-        Returns the indices of the points involved in the cells of the block.
+        Returns the indices of the points involved in the cells of the block
+        as a 1d integer NumPy array.
         """
         return np.unique(self.topology())
 
     def points_involved(self) -> PointCloud:
-        """Returns the points involved in the cells of the block."""
+        """
+        Returns the points involved in the cells of the block.
+        """
         return self.source_points()[self.unique_indices()]
 
     def detach_points_cells(self) -> Tuple[ndarray]:
@@ -722,6 +822,11 @@ class PolyCell(
     def to_vtk(self, detach: bool = False) -> Any:
         """
         Returns the block as a VTK object.
+
+        Parameters
+        ----------
+        detach: bool, Optional
+            Wether to detach the mesh or not. Default is False.
         """
         coords = self.container.source().coords()
         topo = self.topology().to_numpy()
@@ -738,13 +843,24 @@ class PolyCell(
             self, detach: bool = False
         ) -> Union[pv.UnstructuredGrid, pv.PolyData]:
             """
-            Returns the block as a pyVista object.
+            Returns the block as a PyVista object.
+
+            Parameters
+            ----------
+            detach: bool, Optional
+                Wether to detach the mesh or not. Default is False.
             """
             return pv.wrap(self.to_vtk(detach=detach))
 
     def extract_surface(self, detach: bool = False) -> Tuple[ndarray]:
         """
-        Extracts the surface of the object.
+        Extracts the surface of the object as a 2-tuple of NumPy arrays
+        representing the coordinates and the topology of a triangulation.
+
+        Parameters
+        ----------
+        detach: bool, Optional
+            Wether to detach the mesh or not. Default is False.
         """
 
         if self.Geometry.number_of_spatial_dimensions == 3:
@@ -764,7 +880,7 @@ class PolyCell(
 
     def boundary(self, detach: bool = False) -> Tuple[ndarray]:
         """
-        Returns the boundary of the block as 2 NumPy arrays.
+        Alias for :func:`extract_surface`.
         """
         if self.Geometry.number_of_spatial_dimensions == 3:
             return self.extract_surface(detach=detach)
