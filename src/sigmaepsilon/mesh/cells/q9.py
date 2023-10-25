@@ -31,6 +31,7 @@ class Q9(PolyCell):
         monomial_evaluator: monoms_Q9
         quadrature = {
             "full": Gauss_Legendre_Quad_9(),
+            "geometry": "full",
         }
 
         @classmethod

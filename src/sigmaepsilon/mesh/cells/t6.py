@@ -21,6 +21,19 @@ from ..utils.topology import T6_to_T3, T3_to_T6
 class T6(PolyCell):
     """
     A class to handle 6-noded triangles.
+    
+    Example
+    -------
+    >>> from sigmaepsilon.mesh import TriMesh, CartesianFrame, PointData, triangulate
+    >>> from sigmaepsilon.mesh.cells import T6 as CellData
+    >>> from sigmaepsilon.mesh.utils.topology.tr import T3_to_T6
+    >>> A = CartesianFrame(dim=3)
+    >>> coords, topo = triangulate(size=(800, 600), shape=(10, 10))
+    >>> coords, topo = T3_to_T6(coords, topo)
+    >>> pd = PointData(coords=coords, frame=A)
+    >>> cd = CellData(topo=topo)
+    >>> trimesh = TriMesh(pd, cd)
+    >>> trimesh.area()
     """
 
     label = "T6"
@@ -34,6 +47,7 @@ class T6(PolyCell):
         monomial_evaluator: monoms_T6
         quadrature = {
             "full": Gauss_Legendre_Tri_3a(),
+            "geometry": "full",
         }
 
         @classmethod

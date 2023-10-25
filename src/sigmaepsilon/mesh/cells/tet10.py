@@ -26,6 +26,7 @@ class TET10(PolyCell):
         monomial_evaluator: monoms_TET10
         quadrature = {
             "full": Gauss_Legendre_Tet_4(),
+            "geometry": "full",
         }
 
         @classmethod

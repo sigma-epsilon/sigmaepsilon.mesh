@@ -19,4 +19,5 @@ class L3(PolyCell):
         monomial_evaluator: monoms_L3
         quadrature = {
             "full": Gauss_Legendre_Line_Grid(3),
+            "geometry": "full",
         }

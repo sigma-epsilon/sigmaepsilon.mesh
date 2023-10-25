@@ -57,6 +57,7 @@ class H27(PolyCell):
         monomial_evaluator: monoms_H27
         quadrature = {
             "full": Gauss_Legendre_Hex_Grid(3, 3, 3),
+            "geometry": "full",
         }
 
         @classmethod

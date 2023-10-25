@@ -24,6 +24,7 @@ class W6(PolyCell):
         monomial_evaluator: monoms_W6
         quadrature = {
             "full": Gauss_Legendre_Wedge_3x2(),
+            "geometry": "full",
         }
 
         @classmethod

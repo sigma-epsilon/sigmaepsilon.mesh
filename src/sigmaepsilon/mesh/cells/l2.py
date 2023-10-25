@@ -26,4 +26,5 @@ class L2(PolyCell):
         monomial_evaluator: monoms_L2
         quadrature = {
             "full": Gauss_Legendre_Line_Grid(2),
+            "geometry": "full",
         }

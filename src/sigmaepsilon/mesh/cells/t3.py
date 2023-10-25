@@ -20,6 +20,17 @@ from ..utils.tri import area_tri_bulk
 class T3(PolyCell):
     """
     A class to handle 3-noded triangles.
+    
+    Example
+    -------
+    >>> from sigmaepsilon.mesh import TriMesh, CartesianFrame, PointData, triangulate
+    >>> from sigmaepsilon.mesh.cells import T3 as CellData
+    >>> A = CartesianFrame(dim=3)
+    >>> coords, topo = triangulate(size=(800, 600), shape=(10, 10))
+    >>> pd = PointData(coords=coords, frame=A)
+    >>> cd = CellData(topo=topo)
+    >>> trimesh = TriMesh(pd, cd)
+    >>> trimesh.area()
     """
 
     label = "T3"
@@ -33,6 +44,7 @@ class T3(PolyCell):
         monomial_evaluator: monoms_T3
         quadrature = {
             "full": Gauss_Legendre_Tri_1(),
+            "geometry": "full",
         }
 
         @classmethod

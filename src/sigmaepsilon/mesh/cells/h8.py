@@ -47,6 +47,7 @@ class H8(PolyCell):
         monomial_evaluator: monoms_H8
         quadrature = {
             "full": Gauss_Legendre_Hex_Grid(2, 2, 2),
+            "geometry": "full",
         }
 
         @classmethod
