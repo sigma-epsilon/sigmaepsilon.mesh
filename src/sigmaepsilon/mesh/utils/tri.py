@@ -57,7 +57,9 @@ def ncenter_tri() -> ndarray:
 
 @njit(nogil=True, cache=__cache)
 def shp_tri_loc(lcoord: ndarray) -> ndarray:
-    return np.array([1 - lcoord[0] - lcoord[1], lcoord[0], lcoord[1]])
+    return np.array(
+        [1 / 3 - lcoord[0] - lcoord[1], lcoord[0] + 1 / 3, lcoord[1] + 1 / 3]
+    )
 
 
 @njit(nogil=True, parallel=True, cache=__cache)
@@ -292,7 +294,7 @@ def glob_to_loc_tri(gcoord: ndarray, gcoords: ndarray) -> ndarray:
     """
     monoms = monoms_tri_loc_bulk(gcoords)
     coeffs = np.linalg.inv(monoms)
-    shp = coeffs @ monoms_tri_loc(gcoord)
+    shp = coeffs.T @ monoms_tri_loc(gcoord)
     return lcoords_tri().T @ shp
 
 
