@@ -9,7 +9,7 @@ from typing import (
     TypeVar,
     Generic,
     Hashable,
-    Callable
+    Callable,
 )
 from numbers import Number
 
@@ -126,7 +126,7 @@ class PolyCell(
             points = atleastnd(points, 2, front=True)
 
         return points, rng
-    
+
     @staticmethod
     def _parse_gauss_data(quad_dict: dict, key: Hashable):
         value: Union[Callable, str, dict] = quad_dict[key]
@@ -525,7 +525,7 @@ class PolyCell(
             return pcoords_to_coords(points, ecoords, shp)  # (nE, nP, nD)
 
     def local_coordinates(
-        self, *, target: Optional[Union[str, CartesianFrame, None]]
+        self, *, target: Optional[Union[str, CartesianFrame, None]] = None
     ) -> ndarray:
         """
         Returns local coordinates of the cells as a 3d float NumPy array.
