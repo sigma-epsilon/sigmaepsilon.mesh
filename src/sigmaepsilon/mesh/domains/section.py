@@ -15,17 +15,18 @@ from sectionproperties.pre.library.steel_sections import tee_section
 from sectionproperties.analysis.section import Section
 
 from sigmaepsilon.core.wrapping import Wrapper
-from linkeddeepdict.tools.kwargtools import getallfromkwargs
+from sigmaepsilon.core.kwargtools import getallfromkwargs
 from sigmaepsilon.mesh.utils import centralize
 from sigmaepsilon.mesh.data import TriMesh, PolyData
 from sigmaepsilon.mesh.utils.topology import T6_to_T3, detach_mesh_bulk
 
-from .cells import T3
-from .data import PointData
-from .space import CartesianFrame
-from .utils import xy_to_xyz
+from ..cells import T3
+from ..data import PointData
+from ..space import CartesianFrame
+from ..utils import xy_to_xyz
 
 __all__ = ["generate_mesh", "get_section", "LineSection"]
+
 
 def generate_mesh(
     geometry: Geometry, *, l_max: float = None, a_max: float = None, n_max: int = None
@@ -58,7 +59,7 @@ def generate_mesh(
     area = geometry.calculate_area()
     mesh_sizes_max = []
     if isinstance(l_max, float):
-        mesh_sizes_max.append(l_max ** 2 * np.sqrt(3) / 4)
+        mesh_sizes_max.append(l_max**2 * np.sqrt(3) / 4)
     if isinstance(a_max, float):
         mesh_sizes_max.append(a_max)
     if isinstance(n_max, int):
@@ -245,7 +246,7 @@ class LineSection(Wrapper):
         shape=None,
         mesh_params=None,
         material: Material = None,
-        **kwargs
+        **kwargs,
     ):
         if len(args) > 0:
             try:
