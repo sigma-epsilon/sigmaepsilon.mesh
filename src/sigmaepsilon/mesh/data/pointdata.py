@@ -39,6 +39,15 @@ class PointData(AkWrapper, ABC_AkWrapper):
     frame: CartesianFrame, Optional
         The coordinate frame the points are understood in. Default is `None`, which
         means the standard global frame (the ambient frame).
+        
+    Example
+    -------
+    >>> from sigmaepsilon.mesh import CartesianFrame, PointData, triangulate
+    >>> A = CartesianFrame(dim=3)
+    >>> coords = triangulate(size=(800, 600), shape=(10, 10))[0]
+    >>> pd = PointData(coords=coords, frame=frame)
+    >>> pd.activity = np.ones((len(pd)), dtype=bool)
+    >>> pd.id = np.arange(len(pd))
     """
 
     _point_cls_ = PointCloud
