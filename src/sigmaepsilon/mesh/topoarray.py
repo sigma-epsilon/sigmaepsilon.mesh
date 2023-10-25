@@ -120,7 +120,7 @@ class TopologyArray(JaggedArray):
         # __array_function__ to handle DiagonalArray objects.
         if not all(issubclass(t, self.__class__) for t in types):
             return NotImplemented
-        return HANDLED_FUNCTIONS[func](*args, **kwargs)
+        return HANDLED_FUNCTIONS[func](*args, **kwargs)        
 
 
 def implements(numpy_function):
