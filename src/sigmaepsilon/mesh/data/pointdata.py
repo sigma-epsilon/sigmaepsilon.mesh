@@ -39,7 +39,7 @@ class PointData(AkWrapper, ABC_AkWrapper):
     frame: CartesianFrame, Optional
         The coordinate frame the points are understood in. Default is `None`, which
         means the standard global frame (the ambient frame).
-        
+
     Example
     -------
     >>> from sigmaepsilon.mesh import CartesianFrame, PointData, triangulate
@@ -172,7 +172,7 @@ class PointData(AkWrapper, ABC_AkWrapper):
         if it isn't.
         """
         return self._dbkey_x_ in self._wrapped.fields
-    
+
     @property
     def has_activity(self) -> bool:
         """
@@ -275,7 +275,7 @@ class PointData(AkWrapper, ABC_AkWrapper):
         """
         if not isinstance(value, ndarray):
             raise TypeError(f"Expected a NumPy array, got {type(value)}")
-        
+
         if not isintegerarray(value):
             raise ValueError(f"Expected an integer array, got dtype {value.dtype}.")
 

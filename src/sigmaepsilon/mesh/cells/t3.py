@@ -20,7 +20,7 @@ from ..utils.tri import area_tri_bulk
 class T3(PolyCell):
     """
     A class to handle 3-noded triangles.
-    
+
     Example
     -------
     >>> from sigmaepsilon.mesh import TriMesh, CartesianFrame, PointData, triangulate

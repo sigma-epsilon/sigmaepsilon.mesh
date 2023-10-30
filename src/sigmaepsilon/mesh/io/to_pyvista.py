@@ -4,7 +4,7 @@ from ..helpers import exporters
 if __haspyvista__:
     from typing import Union, Optional
     from contextlib import suppress
-    
+
     import pyvista as pv
     import vtk
     from numpy import ndarray
@@ -72,6 +72,7 @@ if __haspyvista__:
                             pvobj["scalars"] = d
                     res.append(pvobj)
                 return res
+
 
 else:  # pragma: no cover
 

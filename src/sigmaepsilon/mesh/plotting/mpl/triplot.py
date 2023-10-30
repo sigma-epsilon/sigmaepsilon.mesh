@@ -17,7 +17,6 @@ if __hasmatplotlib__:
 
     from .utils import decorate_mpl_ax, triplotter, TriPatchCollection
 
-
     @triplotter
     def triplot_mpl_hinton(
         triobj: Any,
@@ -383,6 +382,7 @@ if __hasmatplotlib__:
             **kwargs,
         )
         return axobj
+
 
 else:  # pragma: no cover
 

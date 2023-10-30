@@ -96,12 +96,12 @@ if __haspyvista__:
         Union[None, pv.Plotter, numpy.ndarray]
             A PyVista plotter if `return_plotter` is `True`, a NumPy array if
             `return_img` is `True`, or nothing.
-            
+
         Example
         -------
         .. plot::
             :include-source: True
-                        
+
             from sigmaepsilon.mesh.plotting import pvplot
             from sigmaepsilon.mesh.downloads import download_gt40
             import matplotlib.pyplot as plt
@@ -109,7 +109,7 @@ if __haspyvista__:
             img=pvplot(mesh, notebook=False, return_img=True)
             plt.imshow(img)
             plt.axis('off')
-        """       
+        """
         if not isinstance(obj, PolyData):  # pragma: no cover
             raise TypeError(f"Expected PolyData, got {type(obj)}.")
 
@@ -145,20 +145,20 @@ if __haspyvista__:
 
         if plotter is None:
             pvparams = dict()
-            
+
             if window_size is not None:
                 pvparams.update(window_size=window_size)
-            
+
             pvparams.update(kwargs)
             pvparams.update(notebook=notebook)
             pvparams.update(theme=theme)
-            
+
             if "title" not in pvparams:
                 pvparams["title"] = "SigmaEpsilon"
-                
+
             if not notebook and return_img:
                 pvparams["off_screen"] = True
-            
+
             plotter = pv.Plotter(**pvparams)
 
         if camera_position is not None:
@@ -179,16 +179,16 @@ if __haspyvista__:
             if has_data:
                 config.pop("color", None)
             params.update(config)
-            
+
             if cmap is not None:
                 params["cmap"] = cmap
-            
+
             if NDIM > 1:
                 params["show_edges"] = show_edges
-            
+
             if isinstance(show_scalar_bar, bool):
                 params["show_scalar_bar"] = show_scalar_bar
-            
+
             plotter.add_mesh(poly, **params)
 
         if return_plotter:
@@ -204,6 +204,7 @@ if __haspyvista__:
                 return plotter.last_image
 
         return plotter.show(**show_params)
+
 
 else:  # pragma: no cover
 

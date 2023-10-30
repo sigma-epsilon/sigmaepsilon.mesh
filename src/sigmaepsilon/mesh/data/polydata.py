@@ -26,12 +26,7 @@ from sigmaepsilon.math.linalg.sparse import csr_matrix
 from sigmaepsilon.math.linalg import Vector, ReferenceFrame as FrameLike
 from sigmaepsilon.math import atleast1d, minmax
 
-from ..typing import (
-    PolyDataProtocol as PDP,
-    PolyDataLike,
-    PointDataLike,
-    PolyCellLike
-)
+from ..typing import PolyDataProtocol as PDP, PolyDataLike, PointDataLike, PolyCellLike
 
 from .akwrapper import AkWrapper
 from .pointdata import PointData
@@ -1785,8 +1780,10 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
             pyvista.UnstructuredGrid or pyvista.MultiBlock
             """
             exporter: Callable = exporters["PyVista"]
-            return exporter(self, deepcopy=deepcopy, multiblock=multiblock, scalars=scalars)
-            
+            return exporter(
+                self, deepcopy=deepcopy, multiblock=multiblock, scalars=scalars
+            )
+
     if __hask3d__:
 
         def to_k3d(self, *args, **kwargs) -> k3d.Plot:
@@ -1823,7 +1820,7 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
             -------
             k3d.Plot
                 A K3D Plot Widget, which is a result of a call to `k3d.plot`.
-            
+
             See Also
             --------
             :func:`to_k3d`

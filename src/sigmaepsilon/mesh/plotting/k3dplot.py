@@ -37,11 +37,11 @@ if __hask3d__:
         Example
         -------
         Get a compound mesh, add some random data to it and plot it with K3D.
-        
+
         .. code-block:: python
 
             # doctest: +SKIP
-           
+
             from sigmaepsilon.mesh.plotting import k3dplot
             from sigmaepsilon.mesh.examples import compound_mesh
             from k3d.colormaps import matplotlib_color_maps
@@ -63,6 +63,7 @@ if __hask3d__:
         if scene is None:
             scene = k3d.plot(menu_visibility=menu_visibility)
         return obj.to_k3d(scene=scene, **kwargs)
+
 
 else:  # pragma: no cover
 

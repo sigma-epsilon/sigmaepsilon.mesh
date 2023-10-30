@@ -30,17 +30,17 @@ if __hasplotly__:
             If True, plots the edges of the mesh. Default is False.
         edges: numpy.ndarray, Optional
             The edges to plot. If provided, `plot_edges` is ignored. Default is None.
-        
+
         Returns
         -------
         figure: :class:`plotly.graph_objects.Figure`
             The figure object.
-            
+
         Example
         -------
         .. plotly::
             :include-source: True
-        
+
             from sigmaepsilon.mesh.plotting import triplot_plotly
             from sigmaepsilon.mesh import grid
             from sigmaepsilon.mesh.utils.topology.tr import Q4_to_T3
@@ -111,6 +111,7 @@ if __hasplotly__:
             scatter_lines_plotly(points, edges, fig=fig)
 
         return fig
+
 
 else:  # pragma: no cover
 

@@ -46,6 +46,7 @@ if __hasvtk__:
             else:
                 return ugrids[0]
 
+
 else:  # pragma: no cover
 
     def to_vtk(*_) -> None:

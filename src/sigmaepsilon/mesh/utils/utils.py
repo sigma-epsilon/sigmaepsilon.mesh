@@ -306,7 +306,7 @@ def cell_coords(coords: ndarray, topo: ndarray) -> ndarray:
     Returns
     -------
     numpy.ndarray
-        2d NumPy array of (nNE, nD) of coordinates for all nodes of all cells 
+        2d NumPy array of (nNE, nD) of coordinates for all nodes of all cells
         according to the argument 'topo'.
 
     Notes

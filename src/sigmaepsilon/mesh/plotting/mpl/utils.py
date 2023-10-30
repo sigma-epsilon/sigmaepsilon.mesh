@@ -98,7 +98,7 @@ def get_fig_axes(
     """
     if isinstance(ax, (tuple, list)):
         axes = ax
-    
+
     if fig is not None:
         if axes is not None:
             return fig, axes

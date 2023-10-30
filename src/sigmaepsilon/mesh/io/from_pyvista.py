@@ -68,6 +68,7 @@ if __haspyvista__:
 
         return polydata
 
+
 else:  # pragma: no cover
 
     def from_pv(*_) -> None:

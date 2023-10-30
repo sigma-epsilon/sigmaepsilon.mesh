@@ -59,7 +59,7 @@ def generate_mesh(
     area = geometry.calculate_area()
     mesh_sizes_max = []
     if isinstance(l_max, float):
-        mesh_sizes_max.append(l_max**2 * np.sqrt(3) / 4)
+        mesh_sizes_max.append(l_max ** 2 * np.sqrt(3) / 4)
     if isinstance(a_max, float):
         mesh_sizes_max.append(a_max)
     if isinstance(n_max, int):
