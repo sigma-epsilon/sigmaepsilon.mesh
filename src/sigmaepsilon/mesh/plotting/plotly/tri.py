@@ -1,6 +1,14 @@
 from ...config import __hasplotly__
 
-if __hasplotly__:
+if not __hasplotly__:  # pragma: no cover
+
+    def triplot_plotly(*_, **__):
+        raise ImportError(
+            "You need Plotly for this. Install it with 'pip install plotly'. "
+            "You may also need to restart your kernel and reload the package."
+        )
+
+else:
     from typing import Optional, Union
 
     import plotly.graph_objects as go
@@ -111,15 +119,6 @@ if __hasplotly__:
             scatter_lines_plotly(points, edges, fig=fig)
 
         return fig
-
-
-else:  # pragma: no cover
-
-    def triplot_plotly(*_, **__):
-        raise ImportError(
-            "You need Plotly for this. Install it with 'pip install plotly'. "
-            "You may also need to restart your kernel and reload the package."
-        )
 
 
 __all__ = ["triplot_plotly"]

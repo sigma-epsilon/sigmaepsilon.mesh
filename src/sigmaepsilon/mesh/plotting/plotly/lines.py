@@ -1,6 +1,20 @@
 from ...config import __hasplotly__
 
-if __hasplotly__:
+if not __hasplotly__:  # pragma: no cover
+
+    def plot_lines_plotly(*_, **__):
+        raise ImportError(
+            "You need Plotly for this. Install it with 'pip install plotly'. "
+            "You may also need to restart your kernel and reload the package."
+        )
+
+    def scatter_lines_plotly(*_, **__):
+        raise ImportError(
+            "You need Plotly for this. Install it with 'pip install plotly'. "
+            "You may also need to restart your kernel and reload the package."
+        )
+
+else:
     import plotly.graph_objects as go
     from numpy import ndarray
 
@@ -116,21 +130,6 @@ if __hasplotly__:
         )
 
         return fig
-
-
-else:  # pragma: no cover
-
-    def plot_lines_plotly(*_, **__):
-        raise ImportError(
-            "You need Plotly for this. Install it with 'pip install plotly'. "
-            "You may also need to restart your kernel and reload the package."
-        )
-
-    def scatter_lines_plotly(*_, **__):
-        raise ImportError(
-            "You need Plotly for this. Install it with 'pip install plotly'. "
-            "You may also need to restart your kernel and reload the package."
-        )
 
 
 __all__ = ["plot_lines_plotly", "scatter_lines_plotly"]

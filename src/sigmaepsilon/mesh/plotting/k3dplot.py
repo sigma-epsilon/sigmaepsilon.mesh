@@ -1,7 +1,15 @@
 from ..config import __hask3d__
 from ..helpers import plotters
 
-if __hask3d__:
+if not __hask3d__:  # pragma: no cover
+
+    def k3dplot(*_, **__) -> None:
+        raise ImportError(
+            "You need K3D for this. Install it with 'pip install k3d'. "
+            "You may also need to restart your kernel and reload the package."
+        )
+
+else:
     from typing import Union, Optional
 
     import k3d
@@ -63,15 +71,6 @@ if __hask3d__:
         if scene is None:
             scene = k3d.plot(menu_visibility=menu_visibility)
         return obj.to_k3d(scene=scene, **kwargs)
-
-
-else:  # pragma: no cover
-
-    def k3dplot(*_, **__) -> None:
-        raise ImportError(
-            "You need K3D for this. Install it with 'pip install k3d'. "
-            "You may also need to restart your kernel and reload the package."
-        )
 
 
 plotters["k3d"] = k3dplot

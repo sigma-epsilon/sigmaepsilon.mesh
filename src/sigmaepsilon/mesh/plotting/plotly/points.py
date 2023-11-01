@@ -1,6 +1,14 @@
 from ...config import __hasplotly__
 
-if __hasplotly__:
+if not __hasplotly__:  # pragma: no cover
+
+    def scatter_points_plotly(*_, **__):
+        raise ImportError(
+            "You need Plotly for this. Install it with 'pip install plotly'. "
+            "You may also need to restart your kernel and reload the package."
+        )
+
+else:
     from typing import Iterable, Optional, Union
     from numbers import Number
 
@@ -114,15 +122,6 @@ if __hasplotly__:
             )
 
         return fig
-
-
-else:  # pragma: no cover
-
-    def scatter_points_plotly(*_, **__):
-        raise ImportError(
-            "You need Plotly for this. Install it with 'pip install plotly'. "
-            "You may also need to restart your kernel and reload the package."
-        )
 
 
 __all__ = ["scatter_points_plotly"]

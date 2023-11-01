@@ -1,7 +1,15 @@
 from ..config import __hasvtk__
 from ..helpers import exporters
 
-if __hasvtk__:
+if not __hasvtk__:  # pragma: no cover
+
+    def to_vtk(*_) -> None:
+        raise ImportError(
+            "You need VTK for this. Install it with 'pip install vtk'. "
+            "You may also need to restart your kernel and reload the package."
+        )
+
+else:
     import vtk
     from typing import Union
 
@@ -45,15 +53,6 @@ if __hasvtk__:
                 return ugrids
             else:
                 return ugrids[0]
-
-
-else:  # pragma: no cover
-
-    def to_vtk(*_) -> None:
-        raise ImportError(
-            "You need VTK for this. Install it with 'pip install vtk'. "
-            "You may also need to restart your kernel and reload the package."
-        )
 
 
 exporters["vtk"] = to_vtk

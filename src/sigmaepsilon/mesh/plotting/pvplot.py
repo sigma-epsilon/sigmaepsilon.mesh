@@ -1,7 +1,15 @@
 from ..config import __haspyvista__
 from ..helpers import plotters
 
-if __haspyvista__:
+if not __haspyvista__:  # pragma: no cover
+
+    def pvplot(*_, **__) -> None:
+        raise ImportError(
+            "You need PyVista for this. Install it with 'pip install pyvista'. "
+            "You may also need to restart your kernel and reload the package."
+        )
+
+else:
     from typing import Union, Iterable, Tuple
     from copy import copy
 
@@ -204,15 +212,6 @@ if __haspyvista__:
                 return plotter.last_image
 
         return plotter.show(**show_params)
-
-
-else:  # pragma: no cover
-
-    def pvplot(*_, **__) -> None:
-        raise ImportError(
-            "You need PyVista for this. Install it with 'pip install pyvista'. "
-            "You may also need to restart your kernel and reload the package."
-        )
 
 
 plotters["PyVista"] = pvplot

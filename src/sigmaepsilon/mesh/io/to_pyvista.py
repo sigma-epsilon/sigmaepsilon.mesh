@@ -1,7 +1,15 @@
 from ..config import __haspyvista__
 from ..helpers import exporters
 
-if __haspyvista__:
+if not __haspyvista__:  # pragma: no cover
+
+    def to_pv(*_) -> None:
+        raise ImportError(
+            "You need PyVista for this. Install it with 'pip install pyvista'. "
+            "You may also need to restart your kernel and reload the package."
+        )
+
+else:
     from typing import Union, Optional
     from contextlib import suppress
 
@@ -72,15 +80,6 @@ if __haspyvista__:
                             pvobj["scalars"] = d
                     res.append(pvobj)
                 return res
-
-
-else:  # pragma: no cover
-
-    def to_pv(*_) -> None:
-        raise ImportError(
-            "You need PyVista for this. Install it with 'pip install pyvista'. "
-            "You may also need to restart your kernel and reload the package."
-        )
 
 
 exporters["PyVista"] = to_pv

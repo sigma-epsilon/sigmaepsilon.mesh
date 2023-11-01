@@ -1,7 +1,15 @@
 from ..config import __haspyvista__
 from ..helpers import importers
 
-if __haspyvista__:
+if not __haspyvista__:  # pragma: no cover
+
+    def from_pv(*_) -> None:
+        raise ImportError(
+            "You need PyVista for this. Install it with 'pip install pyvista'. "
+            "You may also need to restart your kernel and reload the package."
+        )
+
+else:
     import pyvista as pv
     from typing import Union
 
@@ -67,15 +75,6 @@ if __haspyvista__:
                 )
 
         return polydata
-
-
-else:  # pragma: no cover
-
-    def from_pv(*_) -> None:
-        raise ImportError(
-            "You need PyVista for this. Install it with 'pip install pyvista'. "
-            "You may also need to restart your kernel and reload the package."
-        )
 
 
 importers["PyVista"] = from_pv

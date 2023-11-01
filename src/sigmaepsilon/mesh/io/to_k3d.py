@@ -1,7 +1,15 @@
 from ..config import __hask3d__, __hasmatplotlib__
 from ..helpers import exporters
 
-if __hask3d__ and __hasmatplotlib__:
+if not (__hask3d__ and __hasmatplotlib__):  # pragma: no cover
+
+    def to_k3d(*_, **__):
+        raise ImportError(
+            "You need both K3D and Matplotlib for this. Install it with 'pip install k3d matplotlib'. "
+            "You may also need to restart your kernel and reload the package."
+        )
+
+else:
     from copy import copy
     from typing import Union, Iterable, Optional
     import warnings
@@ -136,15 +144,6 @@ if __hask3d__ and __hasmatplotlib__:
                     scene += k3d.mesh(c, t, wireframe=True, color=0)
 
         return scene
-
-
-else:  # pragma: no cover
-
-    def to_k3d(*_, **__):
-        raise ImportError(
-            "You need both K3D and Matplotlib for this. Install it with 'pip install k3d matplotlib'. "
-            "You may also need to restart your kernel and reload the package."
-        )
 
 
 exporters["k3d"] = to_k3d
