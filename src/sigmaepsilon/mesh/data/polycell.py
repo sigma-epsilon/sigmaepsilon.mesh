@@ -128,7 +128,7 @@ class PolyCell(
         return points, rng
 
     @staticmethod
-    def _parse_gauss_data(quad_dict: dict, key: Hashable):
+    def _parse_gauss_data(quad_dict: dict, key: Hashable) -> Iterable[Quadrature]:
         value: Union[Callable, str, dict] = quad_dict[key]
 
         if isinstance(value, dict):
@@ -176,21 +176,6 @@ class PolyCell(
                     " must be 1, 2 or 3."
                 )
         return super().frames
-
-    def split(self: T) -> Iterable[T]:
-        """
-        Splits the block to a list of regular blocks. A regular block is one where
-        the topology can be described with a NumPy matrix, otherwise the topology is
-        jagged. In the latter case, a list of PolyCell instances are returned.
-        In the instance has a regular topology, the result is `[self]`.
-        """
-        raise NotImplementedError
-        topo: TopologyArray = self.topology()
-
-        if not topo.is_jagged():
-            return [self]
-
-        topologies = topo.split()
 
     def to_triangles(self) -> ndarray:
         """
