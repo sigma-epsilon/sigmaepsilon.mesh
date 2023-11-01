@@ -64,7 +64,7 @@ class TestTet(unittest.TestCase):
         shpf(pcoords)
         shpmf(pcoords)
         dshpf(pcoords)
-        
+
 
 class TestTET4(SigmaEpsilonTestCase):
     def test_TET4(self, N: int = 3):

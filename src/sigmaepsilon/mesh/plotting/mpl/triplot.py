@@ -20,6 +20,7 @@ if not __hasmatplotlib__:  # pragma: no cover
             "You may also need to restart your kernel and reload the package."
         )
 
+
 else:
     from typing import Any, Union, Optional, Iterable
 

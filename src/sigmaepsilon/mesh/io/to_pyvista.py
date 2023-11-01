@@ -9,6 +9,7 @@ if not __haspyvista__:  # pragma: no cover
             "You may also need to restart your kernel and reload the package."
         )
 
+
 else:
     from typing import Union, Optional
     from contextlib import suppress

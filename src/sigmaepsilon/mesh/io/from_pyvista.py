@@ -9,6 +9,7 @@ if not __haspyvista__:  # pragma: no cover
             "You may also need to restart your kernel and reload the package."
         )
 
+
 else:
     import pyvista as pv
     from typing import Union

@@ -19,7 +19,7 @@ class TestGrid(unittest.TestCase):
 
         self.assertEqual(topo.shape[0], np.prod(shape))
         self.assertEqual(topo.shape[1], 4)
-    
+
     def test_grid_Q8(self):
         size = 80, 60
         shape = 8, 6
@@ -27,7 +27,7 @@ class TestGrid(unittest.TestCase):
 
         self.assertEqual(topo.shape[0], np.prod(shape))
         self.assertEqual(topo.shape[1], 8)
-    
+
     def test_grid_Q9(self):
         size = 80, 60
         shape = 8, 6
@@ -35,7 +35,7 @@ class TestGrid(unittest.TestCase):
 
         self.assertEqual(topo.shape[0], np.prod(shape))
         self.assertEqual(topo.shape[1], 9)
-    
+
     def test_grid_H8(self):
         size = 80, 60, 20
         shape = 8, 6, 2
