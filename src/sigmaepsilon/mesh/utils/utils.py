@@ -1060,7 +1060,7 @@ def global_shape_function_derivatives(dshp: ndarray, jac: ndarray) -> ndarray:
     return res
 
 
-def xy_to_xyz(x: ndarray) -> ndarray:
+def coords_to_3d(x: ndarray) -> ndarray:
     x = atleast2d(x, back=True)
     if (N := x.shape[-1]) == 3:
         return x
@@ -1069,5 +1069,5 @@ def xy_to_xyz(x: ndarray) -> ndarray:
         if N == 2:
             res[:, :2] = x
         elif N == 1:
-            res[:, 0] = x
+            res[:, 0] = x.flatten()
         return res
