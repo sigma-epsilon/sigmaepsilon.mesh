@@ -14,7 +14,7 @@ from ..utils.cells.t6 import (
     shape_function_matrix_T6_multi,
     monoms_T6,
 )
-from ..utils.cells.numint import Gauss_Legendre_Tri_3a
+from ..utils.cells.numint import Quadrature, Gauss_Legendre_Tri_3a
 from ..utils.topology import T6_to_T3, T3_to_T6
 
 
@@ -63,7 +63,7 @@ class T6(PolyCell):
                 A list of monomials.
             """
             locvars = r, s = symbols("r s", real=True)
-            monoms = [1, r, s, r ** 2, s ** 2, r * s]
+            monoms = [1, r, s, r**2, s**2, r * s]
             return locvars, monoms
 
         @classmethod
@@ -121,8 +121,10 @@ class T6(PolyCell):
         coords = self.source_coords()
         topo = self.topology().to_numpy()
         ecoords = cells_coords(coords[:, :2], topo)
-        qpos, qweight = self.Geometry.quadrature["full"]
-        return areas_T6(ecoords, qpos, qweight)
+        quad: Quadrature = next(
+            self._parse_gauss_data(self.Geometry.quadrature, "geometry")
+        )
+        return areas_T6(ecoords, quad.pos, quad.weight)
 
     @classmethod
     def from_TriMesh(cls, *args, coords=None, topo=None, **kwargs):
