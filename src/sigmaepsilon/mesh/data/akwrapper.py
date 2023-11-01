@@ -74,7 +74,7 @@ class AkWrapper(Wrapper):
 
     def to_parquet(
         self, path: str, *args, fields: Iterable[str] = None, **kwargs
-    ) -> Any:
+    ) -> None:
         """
         Saves the data of the database to a parquet file.
 
@@ -227,7 +227,7 @@ class AkWrapper(Wrapper):
             res = db.to_list()
         return res
 
-    def __len__(self):
+    def __len__(self) -> int:
         return len(self._wrapped)
 
     def __hasattr__(self, attr):

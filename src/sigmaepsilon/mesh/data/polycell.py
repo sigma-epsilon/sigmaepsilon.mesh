@@ -12,6 +12,7 @@ from typing import (
     Callable,
 )
 from numbers import Number
+from copy import deepcopy
 
 import numpy as np
 from numpy import ndarray
@@ -20,10 +21,21 @@ from numpy.lib.index_tricks import IndexExpression
 from sigmaepsilon.math import atleast1d, atleast2d, atleastnd, ascont
 from sigmaepsilon.math.linalg import ReferenceFrame as FrameLike
 from sigmaepsilon.math.utils import to_range_1d
+from sigmaepsilon.math.linalg.sparse import csr_matrix
 
-from ..typing import ABC_PolyCell, PolyDataProtocol, PointDataProtocol, GeometryProtocol
+from ..typing import (
+    ABC_PolyCell,
+    PolyDataProtocol,
+    PointDataProtocol,
+    GeometryProtocol,
+    CellDataProtocol,
+)
 from .celldata import CellData
 from ..space import PointCloud, CartesianFrame
+from ..utils import (
+    distribute_nodal_data_bulk,
+    distribute_nodal_data_sparse,
+)
 from ..utils.utils import (
     jacobian_matrix_bulk,
     jacobian_matrix_bulk_1d,
@@ -73,11 +85,7 @@ T = TypeVar("T", bound="PolyCell")
 __all__ = ["PolyCell"]
 
 
-class PolyCell(
-    Generic[MeshDataLike, PointDataLike],
-    CellData[MeshDataLike, PointDataLike],
-    ABC_PolyCell,
-):
+class PolyCell(Generic[MeshDataLike, PointDataLike], ABC_PolyCell):
     """
     A subclass of :class:`~sigmaepsilon.mesh.data.celldata.CellData` as a base class
     for all cell containers. The class should not be used directly, the main purpose
@@ -87,12 +95,159 @@ class PolyCell(
     label: ClassVar[Optional[str]] = None
     Geometry: ClassVar[GeometryProtocol]
 
+    data_class: type = CellData[MeshDataLike, PointDataLike]
+
+    def __init__(
+        self,
+        *args,
+        db: Optional[Union[CellData[MeshDataLike, PointDataLike], None]] = None,
+        pointdata: Optional[Union[PointDataLike, None]] = None,
+        container: Optional[Union[MeshDataLike, None]] = None,
+        **kwargs,
+    ):
+        if db is None:
+            db_class = self.__class__.data_class
+            db = db_class(*args, **kwargs)
+        
+        self._db = db
+        self._pointdata = pointdata
+        self._container = container
+        
+        super().__init__()
+
+    @property
+    def db(self) -> CellDataProtocol[MeshDataLike, PointDataLike]:
+        """
+        Returns the database of the block.
+        """
+        return self._db
+
+    @db.setter
+    def db(self, value: CellDataProtocol[MeshDataLike, PointDataLike]) -> None:
+        """
+        Sets the database of the block.
+        """
+        self._db = value
+
+    @property
+    def pointdata(self) -> PointDataLike:
+        """
+        Returns the hosting point database. This is what
+        the topology of the cells are referring to.
+        """
+        return self._pointdata
+
+    @pointdata.setter
+    def pointdata(self, value: PointDataLike) -> None:
+        """
+        Sets the hosting point database. This is what
+        the topology of the cells are referring to.
+        """
+        if value is not None:
+            if not isinstance(value, PointDataProtocol):
+                raise TypeError("'value' must be a PointData instance")
+        self._pointdata = value
+
+    @property
+    def pd(self) -> PointDataLike:
+        """
+        Returns the attached point database. This is what
+        the topology of the cells are referring to.
+        """
+        return self.pointdata
+
+    @pd.setter
+    def pd(self, value: PointDataLike) -> None:
+        """
+        Sets the attached pointdata.
+        """
+        self.pointdata = value
+
+    @property
+    def container(self) -> MeshDataLike:
+        """
+        Returns the container of the block.
+        """
+        return self._container
+
+    @container.setter
+    def container(self, value: MeshDataLike) -> None:
+        """
+        Sets the container of the block.
+        """
+        if not isinstance(value, PolyDataProtocol):
+            raise TypeError("'value' must be a PolyData instance")
+        self._container = value
+
+    def __getattr__(self, name: str) -> Any:
+        if len(name) >= 7 and name[:7] == "_dbkey_":
+            return getattr(self.db, name)
+        elif hasattr(self.db, name):
+            return getattr(self.db, name)
+        else:
+            return super().__getattr__(name)
+        
+    def root(self) -> MeshDataLike:
+        """
+        Returns the top level container of the model the block is
+        the part of.
+        """
+        c = self.container
+        return None if c is None else c.root
+
+    def source(self) -> MeshDataLike:
+        """
+        Retruns the source of the cells. This is the PolyData block
+        that stores the PointData object the topology of the cells
+        are referring to.
+        """
+        c = self.container
+        return None if c is None else c.source()
+    
+    def pull(
+        self, data: Union[str, ndarray], ndf: Union[ndarray, csr_matrix] = None
+    ) -> ndarray:
+        """
+        Pulls data from the attached pointdata. The pulled data is either copied or
+        distributed according to a measure.
+
+        Parameters
+        ----------
+        data: str or numpy.ndarray
+            Either a field key to identify data in the database of the attached
+            PointData, or a NumPy array.
+
+        See Also
+        --------
+        :func:`~sigmaepsilon.mesh.utils.utils.distribute_nodal_data_bulk`
+        :func:`~sigmaepsilon.mesh.utils.utils.distribute_nodal_data_sparse`
+        """
+        if isinstance(data, str):
+            pd = self.source().pd
+            nodal_data = pd[data].to_numpy()
+        else:
+            assert isinstance(
+                data, ndarray
+            ), "'data' must be a string or a NumPy array."
+            nodal_data = data
+        topo = self.nodes
+        if ndf is None:
+            ndf = np.ones_like(topo).astype(float)
+        if len(nodal_data.shape) == 1:
+            nodal_data = atleast2d(nodal_data, back=True)
+        if isinstance(ndf, ndarray):
+            d = distribute_nodal_data_bulk(nodal_data, topo, ndf)
+        else:
+            d = distribute_nodal_data_sparse(nodal_data, topo, self.id, ndf)
+        # nE, nNE, nDATA
+        return d
+
     def _get_cell_slicer(
         self, cells: Optional[Union[int, Iterable[int]]] = None
     ) -> Union[Iterable[int], IndexExpression]:
         if isinstance(cells, Iterable):
             cells = atleast1d(cells)
-            conds = np.isin(cells, self.id)
+            conds = np.isin(cells, self.db.id)
             cells = atleast1d(cells[conds])
             assert (
                 len(cells) > 0
@@ -143,30 +298,63 @@ class PolyCell(
             quad = Quadrature(x=qpos, w=qweight)
             yield quad
 
-    @CellData.frames.getter
+    @property
     def frames(self) -> ndarray:
         """
         Returns local coordinate frames of the cells as a 3d NumPy float array,
         where the first axis runs along the cells of the block.
         """
-        if not self.has_frames:
+        if not self.db.has_frames:
             if (nD := self.Geometry.number_of_spatial_dimensions) == 1:
                 coords = self.source_coords()
                 topo = self.topology().to_numpy()
-                self.frames = frames_of_lines(coords, topo)
+                self.db.frames = frames_of_lines(coords, topo)
             elif nD == 2:
                 coords = self.source_coords()
                 topo = self.topology().to_numpy()
-                self.frames = frames_of_surfaces(coords, topo)
+                self.db.frames = frames_of_surfaces(coords, topo)
             elif nD == 3:
-                self.frames = self.source_frame()
+                self.db.frames = self.source_frame()
             else:  # pragma: no cover
                 raise TypeError(
                     "Invalid Geometry class. The 'number of spatial dimensions'"
                     " must be 1, 2 or 3."
                 )
-        return super().frames
+        return self.db.frames
 
+    @frames.setter
+    def frames(self, value: Union[FrameLike, ndarray]) -> None:
+        self.db.frames=value
+        
+    def to_parquet(self, path: str, *args, fields: Iterable[str] = None, **kwargs) -> None:
+        """
+        Saves the data of the database to a parquet file.
+
+        Parameters
+        ----------
+        *args: tuple, Optional
+            Positional arguments to specify fields.
+        path: str
+            Path of the file being created.
+        fields: Iterable[str], Optional
+            Valid field names to include in the parquet files.
+        **kwargs: dict, Optional
+            Keyword arguments forwarded to :func:`awkward.to_parquet`.
+        """
+        self.db.to_parquet(path, *args, fields=fields, **kwargs)
+        
+    @classmethod
+    def from_parquet(cls, path: str) -> "PolyCell":
+        """
+        Saves the data of the database to a parquet file.
+
+        Parameters
+        ----------
+        path: str
+            Path of the file being created.
+        """
+        return cls(db=CellData.from_parquet(path))
+    
     def to_triangles(self) -> ndarray:
         """
         Returns the topology as a collection of T3 triangles, represented
@@ -314,7 +502,7 @@ class PolyCell(
         Reverse the order of nodes of the topology.
         """
         topo = self.topology().to_numpy()
-        self.nodes = np.flip(topo, axis=1)
+        self.db.nodes = np.flip(topo, axis=1)
         return self
 
     def measures(self, *args, **kwargs) -> ndarray:
@@ -347,9 +535,8 @@ class PolyCell(
         of 1.0 is returned for each cell. Only for 2d cells.
         """
         if self.Geometry.number_of_spatial_dimensions == 2:
-            dbkey = self._dbkey_thickness_
-            if dbkey in self.fields:
-                t = self.db[dbkey].to_numpy()
+            if self.db.has_thickness:
+                t = self.db.t
             else:
                 t = np.ones(len(self), dtype=float)
             return t
@@ -357,7 +544,9 @@ class PolyCell(
             raise NotImplementedError("This is only for 2d cells")
 
     def length(self) -> float:
-        """Returns the total length of the cells in the block."""
+        """
+        Returns the total length of the cells in the block.
+        """
         if self.Geometry.number_of_spatial_dimensions == 1:
             return np.sum(self.lengths())
         else:
@@ -395,9 +584,8 @@ class PolyCell(
         """
         NDIM: int = self.Geometry.number_of_spatial_dimensions
         if NDIM == 1:
-            areakey = self._dbkey_areas_
-            if areakey in self.fields:
-                return self[areakey].to_numpy()
+            if self.db.has_areas:
+                return self.db.A
             else:
                 return np.ones((len(self)))
         elif NDIM == 2:
@@ -454,14 +642,14 @@ class PolyCell(
         if self.pointdata is not None:
             coords = self.pointdata.x
         else:
-            coords = self.container.source().coords()
+            coords = self.source().coords()
         return coords
 
     def source_frame(self) -> FrameLike:
         """
         Returns the frame of the hosting pointcloud.
         """
-        return self.container.source().frame
+        return self.source().frame
 
     def points_of_cells(
         self,
@@ -538,12 +726,7 @@ class PolyCell(
             frames = self.frames
 
         topo = self.topology().to_numpy()
-
-        if self.pointdata is not None:
-            coords = self.pointdata.x
-        else:
-            coords = self.container.source().coords()
-
+        coords = self.source_coords()
         res = points_of_cells(coords, topo, local_axes=frames, centralize=True)
 
         if self.Geometry.number_of_spatial_dimensions == 2:
@@ -563,13 +746,16 @@ class PolyCell(
         the cells as either a :class:`~sigmaepsilon.mesh.topoarray.TopologyArray`
         or `None` if the topology is not specified yet.
         """
-        key = self._dbkey_nodes_
-        if key in self.fields:
-            return TopologyArray(self.nodes)
+        if self.db.has_nodes:
+            return TopologyArray(self.db.nodes)
         else:
             return None
 
-    def rewire(self, imap: MapLike = None, invert: bool = False) -> "PolyCell":
+    def rewire(
+        self,
+        imap: Optional[Union[MapLike, None]] = None,
+        invert: Optional[bool] = False,
+    ) -> "PolyCell":
         """
         Rewires the topology of the block according to the mapping
         described by the argument `imap`. The mapping of the j-th node
@@ -581,7 +767,7 @@ class PolyCell(
 
         Parameters
         ----------
-        imap: MapLike
+        imap: MapLike, Optional
             Mapping from old to new node indices (global to local).
         invert: bool, Optional
             If `True` the argument `imap` describes a local to global
@@ -589,10 +775,10 @@ class PolyCell(
             `imap` must be a `numpy` array. Default is False.
         """
         if imap is None:
-            imap = self.source().pointdata.id
+            imap = self.db.source().pointdata.id
         topo = self.topology().to_array().astype(int)
         topo = rewire(topo, imap, invert=invert).astype(int)
-        self._wrapped[self._dbkey_nodes_] = topo
+        self.db.nodes = topo
         return self
 
     def glob_to_loc(self, x: Union[Iterable, ndarray]) -> ndarray:
@@ -917,3 +1103,39 @@ class PolyCell(
                 .show(source_frame)
             )
             self.frames = new_frames
+            
+    def __len__(self) -> int:
+        return len(self.db)
+    
+    def __deepcopy__(self, memo: dict) -> "PolyCell":
+        return self.__copy__(memo)
+
+    def __copy__(self, memo: Optional[Union[dict, None]] = None) -> "PolyCell":
+        cls = type(self)
+        is_deep = memo is not None
+
+        if is_deep:
+            copy_function = lambda x: deepcopy(x, memo)
+        else:
+            copy_function = lambda x: x
+
+        db = copy_function(self.db)
+
+        pd = self.pointdata
+        pd_copy = None
+        if pd is not None:
+            if is_deep:
+                pd_copy = memo.get(id(pd), None)
+            if pd_copy is None:
+                pd_copy = copy_function(pd)
+
+        result = cls(db=db, pointdata=pd_copy)
+        if is_deep:
+            memo[id(self)] = result
+
+        result_dict = result.__dict__
+        for k, v in self.__dict__.items():
+            if not k in result_dict:
+                setattr(result, k, copy_function(v))
+
+        return result

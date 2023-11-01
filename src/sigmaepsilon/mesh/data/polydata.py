@@ -31,7 +31,6 @@ from ..typing import PolyDataProtocol as PDP, PolyDataLike, PointDataLike, PolyC
 from .akwrapper import AkWrapper
 from .pointdata import PointData
 from .polycell import PolyCell
-from .celldata import CellData
 from .polycell import PolyCell
 from ..space import CartesianFrame, PointCloud
 from ..indexmanager import IndexManager
@@ -150,8 +149,8 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
 
     def __init__(
         self,
-        pd: Optional[Union[PointData, CellData]] = None,
-        cd: Optional[CellData] = None,
+        pd: Optional[Union[PointData, PolyCell, None]] = None,
+        cd: Optional[Union[PolyCell, None]] = None,
         *args,
         **kwargs,
     ):
@@ -170,17 +169,16 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
 
         if isinstance(pd, PointData):
             self.pointdata = pd
-            if isinstance(cd, CellData):
+            if isinstance(cd, PolyCell):
                 self.celldata = cd
-        elif isinstance(pd, CellData):
+        elif isinstance(pd, PolyCell):
             self.celldata = pd
             if isinstance(cd, PointData):
                 self.pointdata = cd
-        elif isinstance(cd, CellData):
+        elif isinstance(cd, PolyCell):
             self.celldata = cd
 
         pidkey = self.__class__._point_class_._dbkey_id_
-        cidkey = CellData._dbkey_id_
 
         if self.pointdata is not None:
             if self.pd.has_id:
@@ -193,9 +191,9 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
             self.pd.container = self
 
         if self.celldata is not None:
-            N = len(self.celldata)
+            N = len(self.celldata.db)
             GIDs = self.root.cim.generate_np(N)
-            self.cd[cidkey] = GIDs
+            self.cd.db.id = GIDs
             try:
                 pd = self.source().pd
             except Exception:
@@ -1896,15 +1894,15 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
     def __join_parent__(self, parent: DeepDict, key: Hashable = None) -> None:
         super().__join_parent__(parent, key)
         if self.celldata is not None:
-            GIDs = self.root.cim.generate_np(len(self.celldata))
-            self.celldata.id = atleast1d(GIDs)
+            GIDs = self.root.cim.generate_np(len(self.celldata.db))
+            self.celldata.db.id = atleast1d(GIDs)
             if self.celldata.pd is None:
                 self.celldata.pd = self.source().pd
             self.celldata.container = self
 
     def __leave_parent__(self) -> None:
         if self.celldata is not None:
-            self.root.cim.recycle(self.celldata.id)
+            self.root.cim.recycle(self.celldata.db.id)
             dbkey = self.celldata._dbkey_id_
             del self.celldata._wrapped[dbkey]
         super().__leave_parent__()

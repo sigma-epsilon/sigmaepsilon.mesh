@@ -1,23 +1,16 @@
 from typing import Union, Iterable, Generic, TypeVar, Optional
 from copy import deepcopy
-import contextlib
 
 import numpy as np
 from numpy import ndarray
 
 from sigmaepsilon.core import classproperty
-from sigmaepsilon.math import atleast2d, atleast3d, repeat
-from sigmaepsilon.math.linalg.sparse import csr_matrix
+from sigmaepsilon.math import atleast3d, repeat
 from sigmaepsilon.math.linalg import ReferenceFrame
 
 from .akwrapper import AkWrapper
 from ..typing import PolyDataProtocol, PointDataProtocol
 from .akwrapper import AwkwardLike
-from ..utils import (
-    avg_cell_data,
-    distribute_nodal_data_bulk,
-    distribute_nodal_data_sparse,
-)
 
 PointDataLike = TypeVar("PointDataLike", bound=PointDataProtocol)
 PolyDataLike = TypeVar("PolyDataLike", bound=PolyDataProtocol)
@@ -75,7 +68,6 @@ class CellData(Generic[PolyDataLike, PointDataLike], AkWrapper):
     def __init__(
         self,
         *args,
-        pointdata: Optional[Union[PointDataLike, None]] = None,
         wrap: Optional[Union[AwkwardLike, None]] = None,
         topo: Optional[Union[ndarray, None]] = None,
         fields: Optional[Union[dict, None]] = None,
@@ -84,7 +76,6 @@ class CellData(Generic[PolyDataLike, PointDataLike], AkWrapper):
         areas: Optional[Union[ndarray, float, None]] = None,
         t: Optional[Union[ndarray, float, None]] = None,
         db: Optional[Union[AwkwardLike, None]] = None,
-        container: Optional[Union[PolyDataLike, None]] = None,
         i: Optional[Union[ndarray, None]] = None,
         **kwargs,
     ):
@@ -124,9 +115,6 @@ class CellData(Generic[PolyDataLike, PointDataLike], AkWrapper):
 
         super().__init__(*args, wrap=wrap, fields=fields, **kwargs)
 
-        self._pointdata = pointdata
-        self._container = container
-
         if self.db is not None:
             if frames is not None:
                 if isinstance(frames, (ReferenceFrame, ndarray)):
@@ -158,15 +146,7 @@ class CellData(Generic[PolyDataLike, PointDataLike], AkWrapper):
 
         db = copy_function(self.db)
 
-        pd = self.pointdata
-        pd_copy = None
-        if pd is not None:
-            if is_deep:
-                pd_copy = memo.get(id(pd), None)
-            if pd_copy is None:
-                pd_copy = copy_function(pd)
-
-        result = cls(db=db, pointdata=pd_copy)
+        result = cls(db=db)
         if is_deep:
             memo[id(self)] = result
 
@@ -206,6 +186,10 @@ class CellData(Generic[PolyDataLike, PointDataLike], AkWrapper):
         return cls._attr_map_["id"]
 
     @property
+    def has_nodes(self) -> bool:
+        return self._dbkey_nodes_ in self._wrapped.fields
+    
+    @property
     def has_id(self) -> bool:
         return self._dbkey_id_ in self._wrapped.fields
 
@@ -226,50 +210,6 @@ class CellData(Generic[PolyDataLike, PointDataLike], AkWrapper):
         return self._wrapped
 
     @property
-    def pointdata(self) -> PointDataLike:
-        """
-        Returns the attached point database. This is what
-        the topology of the cells are referring to.
-        """
-        return self._pointdata
-
-    @pointdata.setter
-    def pointdata(self, value: PointDataLike):
-        """
-        Sets the attached point database. This is what
-        the topology of the cells are referring to.
-        """
-        if value is not None:
-            if not isinstance(value, PointDataProtocol):
-                raise TypeError("'value' must be a PointData instance")
-        self._pointdata = value
-
-    @property
-    def pd(self) -> PointDataLike:
-        """
-        Returns the attached point database. This is what
-        the topology of the cells are referring to.
-        """
-        return self.pointdata
-
-    @pd.setter
-    def pd(self, value: PointDataLike):
-        """Sets the attached pointdata."""
-        self.pointdata = value
-
-    @property
-    def container(self) -> PolyDataLike:
-        """Returns the container object of the block."""
-        return self._container
-
-    @container.setter
-    def container(self, value: PolyDataLike) -> None:
-        """Sets the container of the block."""
-        if not isinstance(value, PolyDataProtocol):
-            raise TypeError("'value' must be a PolyData instance")
-        self._container = value
-
-    @property
     def fields(self) -> Iterable[str]:
         """Returns the fields in the database object."""
         return self._wrapped.fields
@@ -280,7 +220,7 @@ class CellData(Generic[PolyDataLike, PointDataLike], AkWrapper):
         return self._wrapped[self._dbkey_nodes_].to_numpy()
 
     @nodes.setter
-    def nodes(self, value: ndarray):
+    def nodes(self, value: ndarray) -> None:
         """
         Sets the topology of the cells.
 
@@ -298,7 +238,7 @@ class CellData(Generic[PolyDataLike, PointDataLike], AkWrapper):
         return self._wrapped[self._dbkey_frames_].to_numpy()
 
     @frames.setter
-    def frames(self, value: Union[ReferenceFrame, ndarray]):
+    def frames(self, value: Union[ReferenceFrame, ndarray]) -> None:
         """
         Sets local coordinate frames of the cells.
 
@@ -353,7 +293,7 @@ class CellData(Generic[PolyDataLike, PointDataLike], AkWrapper):
         return self._wrapped[self._dbkey_id_].to_numpy()
 
     @id.setter
-    def id(self, value: ndarray):
+    def id(self, value: ndarray) -> None:
         """
         Sets global indices of the cells.
 
@@ -362,7 +302,15 @@ class CellData(Generic[PolyDataLike, PointDataLike], AkWrapper):
         value: numpy.ndarray
             An 1d integer array.
         """
-        assert isinstance(value, ndarray)
+        if isinstance(value, int):
+            if len(self) == 1:
+                value = np.array([value,], dtype=int)
+            else:
+                raise ValueError(f"Expected an array, got {type(value)}")
+            
+        if not isinstance(value, ndarray):
+            raise TypeError(f"Expected ndarray, got {type(value)}")
+        
         self._wrapped[self._dbkey_id_] = value
 
     @property
@@ -384,23 +332,6 @@ class CellData(Generic[PolyDataLike, PointDataLike], AkWrapper):
             value = np.full(len(self), value, dtype=bool)
         self._wrapped[self._dbkey_activity_] = value
 
-    def root(self) -> PolyDataLike:
-        """
-        Returns the top level container of the model the block is
-        the part of.
-        """
-        c = self.container
-        return None if c is None else c.root
-
-    def source(self) -> PolyDataLike:
-        """
-        Retruns the source of the cells. This is the PolyData block
-        that stores the PointData object the topology of the cells
-        are referring to.
-        """
-        c = self.container
-        return None if c is None else c.source()
-
     def __getattr__(self, attr):
         """
         Modified for being able to fetch data from pointcloud.
@@ -410,17 +341,6 @@ class CellData(Generic[PolyDataLike, PointDataLike], AkWrapper):
 
         try:
             return getattr(self._wrapped, attr)
-        except AttributeError:
-            with contextlib.suppress(Exception):
-                if self.pointdata is not None:
-                    if attr in self.pointdata.fields:
-                        data = self.pointdata[attr].to_numpy()
-                        topo = self.nodes
-                        return avg_cell_data(data, topo)
-
-            name = self.__class__.__name__
-            raise AttributeError(f"'{name}' object has no attribute called {attr}")
-
         except Exception:
             name = self.__class__.__name__
             raise AttributeError(f"'{name}' object has no attribute called {attr}")
@@ -446,40 +366,3 @@ class CellData(Generic[PolyDataLike, PointDataLike], AkWrapper):
         else:
             self._wrapped[key] = factors
 
-    def pull(
-        self, data: Union[str, ndarray], ndf: Union[ndarray, csr_matrix] = None
-    ) -> ndarray:
-        """
-        Pulls data from the attached pointdata. The pulled data is either copied or
-        distributed according to a measure.
-
-        Parameters
-        ----------
-        data: str or numpy.ndarray
-            Either a field key to identify data in the database of the attached
-            PointData, or a NumPy array.
-
-        See Also
-        --------
-        :func:`~sigmaepsilon.mesh.utils.utils.distribute_nodal_data_bulk`
-        :func:`~sigmaepsilon.mesh.utils.utils.distribute_nodal_data_sparse`
-        """
-        if isinstance(data, str):
-            pd = self.source().pd
-            nodal_data = pd[data].to_numpy()
-        else:
-            assert isinstance(
-                data, ndarray
-            ), "'data' must be a string or a NumPy array."
-            nodal_data = data
-        topo = self.nodes
-        if ndf is None:
-            ndf = np.ones_like(topo).astype(float)
-        if len(nodal_data.shape) == 1:
-            nodal_data = atleast2d(nodal_data, back=True)
-        if isinstance(ndf, ndarray):
-            d = distribute_nodal_data_bulk(nodal_data, topo, ndf)
-        else:
-            d = distribute_nodal_data_sparse(nodal_data, topo, self.id, ndf)
-        # nE, nNE, nDATA
-        return d
