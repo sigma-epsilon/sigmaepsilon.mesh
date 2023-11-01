@@ -38,7 +38,6 @@ from ..utils.cells.utils import (
     _loc_to_glob_bulk_,
 )
 from ..utils.tet import (
-    vol_tet_bulk,
     _pip_tet_bulk_knn_,
     _pip_tet_bulk_,
     _glob_to_nat_tet_bulk_,
@@ -49,10 +48,11 @@ from ..utils.cells.utils import (
     _find_first_hits_,
     _find_first_hits_knn_,
     _ntet_to_loc_bulk_,
+    cell_measures,
 )
 from ..utils.topology.topo import detach_mesh_bulk, rewire
 from ..utils.topology import transform_topology
-from ..utils.tri import triangulate_cell_coords, area_tri_bulk, _pip_tri_bulk_
+from ..utils.tri import _pip_tri_bulk_
 from ..utils.knn import k_nearest_neighbours
 from ..utils.space import index_of_closest_point, frames_of_lines, frames_of_surfaces
 from ..utils import cell_centers_bulk
@@ -131,26 +131,16 @@ class PolyCell(
     def _parse_gauss_data(quad_dict: dict, key: Hashable) -> Iterable[Quadrature]:
         value: Union[Callable, str, dict] = quad_dict[key]
 
-        if isinstance(value, dict):
-            for qinds, qvalue in value.items():
-                if isinstance(qvalue, str):
-                    for v in PolyCell._parse_gauss_data(value, qvalue):
-                        v.inds = qinds
-                        yield v
-                else:
-                    qpos, qweight = qvalue
-                    quad = Quadrature(qinds, qpos, qweight)
-                    yield quad
-        elif isinstance(value, Callable):
+        if isinstance(value, Callable):
             qpos, qweight = value()
-            quad = Quadrature(np.s_[:], qpos, qweight)
+            quad = Quadrature(x=qpos, w=qweight)
             yield quad
         elif isinstance(value, str):
             for v in PolyCell._parse_gauss_data(quad_dict, value):
                 yield v
         else:
             qpos, qweight = value
-            quad = Quadrature(np.s_[:], qpos, qweight)
+            quad = Quadrature(x=qpos, w=qweight)
             yield quad
 
     @CellData.frames.getter
@@ -328,7 +318,11 @@ class PolyCell(
         return self
 
     def measures(self, *args, **kwargs) -> ndarray:
-        """Ought to return measures for each cell in the database."""
+        """
+        Returns generalized measures for each cell in the block.
+        The generalized measure is length for 1d cells,
+        area for 2d cells and volume for 3d cells.
+        """
         NDIM: int = self.Geometry.number_of_spatial_dimensions
         if NDIM == 1:
             return self.lengths()
@@ -340,8 +334,11 @@ class PolyCell(
             raise NotImplementedError
 
     def measure(self, *args, **kwargs) -> float:
-        """Ought to return the net measure for the cells in the
-        database as a group."""
+        """
+        Returns the net generalized measure for the cells in the
+        block. The generalized measure is length for 1d cells,
+        area for 2d cells and volume for 3d cells.
+        """
         return np.sum(self.measures(*args, **kwargs))
 
     def thickness(self) -> ndarray:
@@ -379,7 +376,8 @@ class PolyCell(
 
     def area(self, *args, **kwargs) -> float:
         """
-        Returns the total area of the cells in the database. Only for 2d entities.
+        Returns the total area of the cells in the database.
+        Only for 2d entities.
         """
         if self.Geometry.number_of_spatial_dimensions == 2:
             return np.sum(self.areas(*args, **kwargs))
@@ -387,7 +385,14 @@ class PolyCell(
             raise NotImplementedError("This is only for 2d cells")
 
     def areas(self, *args, **kwargs) -> ndarray:
-        """Ought to return the areas of the individuall cells in the database."""
+        """
+        Returns the areas of the individuall cells in the database as
+        a 1d float NumPy array.
+
+        Note
+        ----
+        For 1d cells, the cross sectional areas are returned.
+        """
         NDIM: int = self.Geometry.number_of_spatial_dimensions
         if NDIM == 1:
             areakey = self._dbkey_areas_
@@ -396,25 +401,27 @@ class PolyCell(
             else:
                 return np.ones((len(self)))
         elif NDIM == 2:
-            nE = len(self)
             coords = self.source_coords()
             topo = self.topology().to_numpy()
-            frames = self.frames
-            ec = points_of_cells(coords, topo, local_axes=frames)
-            trimap = self.__class__.Geometry.trimap()
-            ec_tri = triangulate_cell_coords(ec, trimap)
-            areas_tri = area_tri_bulk(ec_tri)
-            res = np.sum(areas_tri.reshape(nE, int(len(areas_tri) / nE)), axis=1)
-            return res
+            ecoords = cells_coords(coords[:, :2], topo)
+            quad: Quadrature = next(
+                self._parse_gauss_data(self.Geometry.quadrature, "geometry")
+            )
+            dshp = self.Geometry.shape_function_derivatives(quad.pos)
+            return cell_measures(ecoords, dshp, quad.weight)
         else:
             raise NotImplementedError("This is only for 2d cells")
 
     def volume(self, *args, **kwargs) -> float:
-        """Returns the volume of the cells in the database."""
+        """
+        Returns the volume of the cells in the database.
+        """
         return np.sum(self.volumes(*args, **kwargs))
 
     def volumes(self, *args, **kwargs) -> ndarray:
-        """Returns the volumes of the cells in the database."""
+        """
+        Returns the volumes of the cells in the database.
+        """
         NDIM: int = self.Geometry.number_of_spatial_dimensions
         if NDIM == 1:
             return self.lengths() * self.areas()
@@ -425,14 +432,13 @@ class PolyCell(
         elif NDIM == 3:
             coords = self.source_coords()
             topo = self.topology().to_numpy()
-            topo_tet = self.to_tetrahedra()
-            volumes = vol_tet_bulk(cells_coords(coords, topo_tet))
-            res = np.sum(
-                volumes.reshape(topo.shape[0], int(len(volumes) / topo.shape[0])),
-                axis=1,
+            ecoords = cells_coords(coords, topo)
+            quad: Quadrature = next(
+                self._parse_gauss_data(self.Geometry.quadrature, "geometry")
             )
-            return res
-        else:
+            dshp = self.Geometry.shape_function_derivatives(quad.pos)
+            return cell_measures(ecoords, dshp, quad.weight)
+        else:  # pragma: no cover
             raise NotImplementedError
 
     def source_points(self) -> PointCloud:

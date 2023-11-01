@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from functools import partial
+
 from ..geometry import PolyCellGeometry1d
 from ..data.polycell import PolyCell
 from ..utils.cells.l2 import (
@@ -25,6 +27,6 @@ class L2(PolyCell):
         shape_function_derivative_evaluator: dshp_L2_multi
         monomial_evaluator: monoms_L2
         quadrature = {
-            "full": Gauss_Legendre_Line_Grid(2),
+            "full": partial(Gauss_Legendre_Line_Grid, 2),
             "geometry": "full",
         }

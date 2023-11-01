@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from typing import Tuple, List
+
 import numpy as np
 from numpy import ndarray
 from sympy import symbols
@@ -46,7 +47,7 @@ class T6(PolyCell):
         shape_function_derivative_evaluator: dshp_T6_multi
         monomial_evaluator: monoms_T6
         quadrature = {
-            "full": Gauss_Legendre_Tri_3a(),
+            "full": Gauss_Legendre_Tri_3a,
             "geometry": "full",
         }
 
@@ -109,22 +110,6 @@ class T6(PolyCell):
         Returns the topology as triangles.
         """
         return T6_to_T3(None, self.topology().to_numpy())[1]
-
-    def areas(self) -> ndarray:
-        """
-        Returns the areas of the triangles of the block.
-
-        Returns
-        -------
-        numpy.ndarray
-        """
-        coords = self.source_coords()
-        topo = self.topology().to_numpy()
-        ecoords = cells_coords(coords[:, :2], topo)
-        quad: Quadrature = next(
-            self._parse_gauss_data(self.Geometry.quadrature, "geometry")
-        )
-        return areas_T6(ecoords, quad.pos, quad.weight)
 
     @classmethod
     def from_TriMesh(cls, *args, coords=None, topo=None, **kwargs):

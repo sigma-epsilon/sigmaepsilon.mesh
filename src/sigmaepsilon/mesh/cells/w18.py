@@ -1,4 +1,5 @@
 from typing import Tuple, List
+
 import numpy as np
 from numpy import ndarray
 from sympy import symbols
@@ -6,8 +7,6 @@ from sympy import symbols
 from ..geometry import PolyCellGeometry3d
 from ..data.polycell import PolyCell
 from ..utils.cells.numint import Gauss_Legendre_Wedge_3x3
-from ..utils.cells.utils import volumes
-from ..utils.utils import cells_coords
 from ..utils.cells.w18 import monoms_W18
 from ..utils.topology import compose_trmap
 from .w6 import W6
@@ -25,7 +24,7 @@ class W18(PolyCell):
         vtk_cell_id = 32
         monomial_evaluator: monoms_W18
         quadrature = {
-            "full": Gauss_Legendre_Wedge_3x3(),
+            "full": Gauss_Legendre_Wedge_3x3,
             "geometry": "full",
         }
 
@@ -110,11 +109,3 @@ class W18(PolyCell):
             )
             w6_to_tet4 = W6.Geometry.tetmap()
             return compose_trmap(w18_to_w6, w6_to_tet4)
-
-    def volumes(self) -> ndarray:
-        coords = self.source_coords()
-        topo = self.topology().to_numpy()
-        ecoords = cells_coords(coords, topo)
-        qpos, qweight = self.Geometry.quadrature["full"]
-        dshp = self.Geometry.shape_function_derivatives(qpos)
-        return volumes(ecoords, dshp, qweight)

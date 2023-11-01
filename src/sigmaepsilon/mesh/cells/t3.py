@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from typing import Tuple, List
+
 import numpy as np
 from numpy import ndarray
 from sympy import symbols
@@ -43,7 +44,7 @@ class T3(PolyCell):
         shape_function_derivative_evaluator: dshp_T3_multi
         monomial_evaluator: monoms_T3
         quadrature = {
-            "full": Gauss_Legendre_Tri_1(),
+            "full": Gauss_Legendre_Tri_1,
             "geometry": "full",
         }
 
