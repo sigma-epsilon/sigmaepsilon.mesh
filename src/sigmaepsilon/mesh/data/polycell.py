@@ -95,7 +95,7 @@ class PolyCell(Generic[MeshDataLike, PointDataLike], ABC_PolyCell):
     label: ClassVar[Optional[str]] = None
     Geometry: ClassVar[GeometryProtocol]
 
-    data_class: type = CellData[MeshDataLike, PointDataLike]
+    data_class: ClassVar[type] = CellData[MeshDataLike, PointDataLike]
 
     def __init__(
         self,
@@ -660,9 +660,10 @@ class PolyCell(Generic[MeshDataLike, PointDataLike], ABC_PolyCell):
     ) -> ndarray:
         """
         Returns the points of selected cells as a NumPy array. The returned
-        array is three dimensional with a shape of (nE, nNE, 2), where `nE` is
-        the number of cells in the block, `nNE` is the number of nodes per cell
-        and 2 stands for the 2 spatial dimensions.
+        array is three dimensional with a shape of (nE, nNE, nD), where `nE` is
+        the number of cells in the block, `nNE` is the number of nodes per cell or
+        the number of the points (if 'points' is specified) and nD stands for the 
+        number of spatial dimensions.
 
         Parameters
         ----------
@@ -775,7 +776,7 @@ class PolyCell(Generic[MeshDataLike, PointDataLike], ABC_PolyCell):
             `imap` must be a `numpy` array. Default is False.
         """
         if imap is None:
-            imap = self.db.source().pointdata.id
+            imap = self.source().pointdata.id
         topo = self.topology().to_array().astype(int)
         topo = rewire(topo, imap, invert=invert).astype(int)
         self.db.nodes = topo
