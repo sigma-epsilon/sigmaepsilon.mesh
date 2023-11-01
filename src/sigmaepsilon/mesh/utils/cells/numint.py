@@ -1,12 +1,25 @@
-from typing import Tuple
-from collections import namedtuple
+from typing import Tuple, Iterable
+from numbers import Number
 
 import numpy as np
 from numpy import ndarray
 
 from sigmaepsilon.math.numint import gauss_points as gp
 
-Quadrature = namedtuple("QuadratureRule", ["inds", "pos", "weight"])
+
+class Quadrature:
+    
+    def __init__(self, x: Iterable[Number], w: Iterable[Number]):
+        self._pos = x
+        self._weight = w
+    
+    @property
+    def pos(self) -> Iterable[Number]:
+        return self._pos
+    
+    @property
+    def weight(self) -> Iterable[Number]:
+        return self._weight
 
 # LINES
 
