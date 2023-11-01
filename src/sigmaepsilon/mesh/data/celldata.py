@@ -10,6 +10,7 @@ from sigmaepsilon.math.linalg import ReferenceFrame
 
 from .akwrapper import AkWrapper
 from ..typing import PolyDataProtocol, PointDataProtocol
+from ..typing.abcakwrapper import ABC_AkWrapper
 from .akwrapper import AwkwardLike
 
 PointDataLike = TypeVar("PointDataLike", bound=PointDataProtocol)
@@ -19,7 +20,7 @@ PolyDataLike = TypeVar("PolyDataLike", bound=PolyDataProtocol)
 __all__ = ["CellData"]
 
 
-class CellData(Generic[PolyDataLike, PointDataLike], AkWrapper):
+class CellData(Generic[PolyDataLike, PointDataLike], AkWrapper, ABC_AkWrapper):
     """
     A class to handle data related to the cells of a polygonal mesh.
 
