@@ -7,15 +7,13 @@ from sympy import symbols
 
 from ..geometry import PolyCellGeometry2d
 from ..data.polycell import PolyCell
-from ..utils.utils import cells_coords
 from ..utils.cells.t6 import (
     shp_T6_multi,
     dshp_T6_multi,
-    areas_T6,
     shape_function_matrix_T6_multi,
     monoms_T6,
 )
-from ..utils.cells.numint import Quadrature, Gauss_Legendre_Tri_3a
+from ..utils.numint import Gauss_Legendre_Tri_3a
 from ..utils.topology import T6_to_T3, T3_to_T6
 
 

@@ -13,7 +13,7 @@ from ..utils.cells.h8 import (
     shape_function_matrix_H8_multi,
     monoms_H8,
 )
-from ..utils.cells.numint import Gauss_Legendre_Hex_Grid
+from ..utils.numint import Gauss_Legendre_Hex_Grid
 
 
 class H8(PolyCell):

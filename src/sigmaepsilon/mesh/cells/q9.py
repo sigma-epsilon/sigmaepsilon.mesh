@@ -12,7 +12,7 @@ from ..utils.cells.q9 import (
     shape_function_matrix_Q9_multi,
     monoms_Q9,
 )
-from ..utils.cells.numint import Gauss_Legendre_Quad_9
+from ..utils.numint import Gauss_Legendre_Quad_9
 from ..utils.topology import Q4_to_T3, Q9_to_Q4
 
 

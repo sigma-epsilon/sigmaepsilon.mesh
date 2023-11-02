@@ -9,7 +9,7 @@ from ..utils.cells.l2 import (
     shape_function_matrix_L2_multi,
     monoms_L2,
 )
-from ..utils.cells.numint import Gauss_Legendre_Line_Grid
+from ..utils.numint import Gauss_Legendre_Line_Grid
 
 __all__ = ["L2"]
 

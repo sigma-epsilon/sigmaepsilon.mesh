@@ -3,7 +3,7 @@ from functools import partial
 
 from ..geometry import PolyCellGeometry1d
 from ..data.polycell import PolyCell
-from ..utils.cells.numint import Gauss_Legendre_Line_Grid
+from ..utils.numint import Gauss_Legendre_Line_Grid
 from ..utils.cells.l3 import monoms_L3
 
 

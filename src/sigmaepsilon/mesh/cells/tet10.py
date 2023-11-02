@@ -9,7 +9,7 @@ from ..data.polycell import PolyCell
 from ..utils.cells.tet10 import (
     monoms_TET10,
 )
-from ..utils.cells.numint import Gauss_Legendre_Tet_4
+from ..utils.numint import Gauss_Legendre_Tet_4
 
 
 class TET10(PolyCell):

@@ -71,7 +71,7 @@ from ..utils import cell_centers_bulk
 from ..vtkutils import mesh_to_UnstructuredGrid as mesh_to_vtk
 from ..topoarray import TopologyArray
 from ..space import CartesianFrame
-from ..utils.cells.numint import Quadrature
+from ..utils.numint import Quadrature
 from ..config import __haspyvista__
 
 if __haspyvista__:
@@ -108,11 +108,11 @@ class PolyCell(Generic[MeshDataLike, PointDataLike], ABC_PolyCell):
         if db is None:
             db_class = self.__class__.data_class
             db = db_class(*args, **kwargs)
-        
+
         self._db = db
         self._pointdata = pointdata
         self._container = container
-        
+
         super().__init__()
 
     @property
@@ -186,7 +186,7 @@ class PolyCell(Generic[MeshDataLike, PointDataLike], ABC_PolyCell):
             return getattr(self.db, name)
         else:
             return super().__getattr__(name)
-        
+
     def root(self) -> MeshDataLike:
         """
         Returns the top level container of the model the block is
@@ -203,7 +203,7 @@ class PolyCell(Generic[MeshDataLike, PointDataLike], ABC_PolyCell):
         """
         c = self.container
         return None if c is None else c.source()
-    
+
     def pull(
         self, data: Union[str, ndarray], ndf: Union[ndarray, csr_matrix] = None
     ) -> ndarray:
@@ -324,9 +324,11 @@ class PolyCell(Generic[MeshDataLike, PointDataLike], ABC_PolyCell):
 
     @frames.setter
     def frames(self, value: Union[FrameLike, ndarray]) -> None:
-        self.db.frames=value
-        
-    def to_parquet(self, path: str, *args, fields: Iterable[str] = None, **kwargs) -> None:
+        self.db.frames = value
+
+    def to_parquet(
+        self, path: str, *args, fields: Iterable[str] = None, **kwargs
+    ) -> None:
         """
         Saves the data of the database to a parquet file.
 
@@ -342,7 +344,7 @@ class PolyCell(Generic[MeshDataLike, PointDataLike], ABC_PolyCell):
             Keyword arguments forwarded to :func:`awkward.to_parquet`.
         """
         self.db.to_parquet(path, *args, fields=fields, **kwargs)
-        
+
     @classmethod
     def from_parquet(cls, path: str) -> "PolyCell":
         """
@@ -354,7 +356,7 @@ class PolyCell(Generic[MeshDataLike, PointDataLike], ABC_PolyCell):
             Path of the file being created.
         """
         return cls(db=CellData.from_parquet(path))
-    
+
     def to_triangles(self) -> ndarray:
         """
         Returns the topology as a collection of T3 triangles, represented
@@ -662,7 +664,7 @@ class PolyCell(Generic[MeshDataLike, PointDataLike], ABC_PolyCell):
         Returns the points of selected cells as a NumPy array. The returned
         array is three dimensional with a shape of (nE, nNE, nD), where `nE` is
         the number of cells in the block, `nNE` is the number of nodes per cell or
-        the number of the points (if 'points' is specified) and nD stands for the 
+        the number of the points (if 'points' is specified) and nD stands for the
         number of spatial dimensions.
 
         Parameters
@@ -728,7 +730,10 @@ class PolyCell(Generic[MeshDataLike, PointDataLike], ABC_PolyCell):
 
         topo = self.topology().to_numpy()
         coords = self.source_coords()
-        res = points_of_cells(coords, topo, local_axes=frames, centralize=True)
+        centers = self.loc_to_glob(self.Geometry.master_center())
+        res = points_of_cells(
+            coords, topo, local_axes=frames, centralize=True, centers=centers
+        )
 
         if self.Geometry.number_of_spatial_dimensions == 2:
             return ascont(res[:, :, :2])
@@ -1104,10 +1109,10 @@ class PolyCell(Generic[MeshDataLike, PointDataLike], ABC_PolyCell):
                 .show(source_frame)
             )
             self.frames = new_frames
-            
+
     def __len__(self) -> int:
         return len(self.db)
-    
+
     def __deepcopy__(self, memo: dict) -> "PolyCell":
         return self.__copy__(memo)
 

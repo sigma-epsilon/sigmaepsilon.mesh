@@ -13,7 +13,7 @@ from ..utils.cells.tet4 import (
     shape_function_matrix_TET4_multi,
     monoms_TET4,
 )
-from ..utils.cells.numint import Gauss_Legendre_Tet_1
+from ..utils.numint import Gauss_Legendre_Tet_1
 from ..utils.tet import vol_tet_bulk
 from ..utils.utils import cells_coords
 

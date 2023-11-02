@@ -176,10 +176,10 @@ def _cells_around_MT_(centers: np.ndarray, r_max: float, n_max: int = 10):
 def points_of_cells(
     coords: ndarray,
     topo: ndarray,
-    *args,
+    *,
     local_axes: ndarray = None,
     centralize: bool = True,
-    **kwargs,
+    centers: ndarray = None
 ) -> ndarray:
     """
     Returns an explicit representation of coordinates of the cells from a
@@ -204,6 +204,9 @@ def points_of_cells(
     centralize: bool, Optional
         If True, and 'local_axes' is not None, the local coordinates are
         returned with respect to the geometric center of each element.
+    centers: numpy.ndarray
+        Centers for all cells. This is to account for different master cells
+        with different centers (usually for triangles). Default is None.
 
     Returns
     -------
@@ -217,13 +220,19 @@ def points_of_cells(
     """
     if local_axes is not None:
         if centralize:
-            ec = _centralize_cells_coords_(cells_coords(coords, topo))
+            if centers is not None:
+                ec = _centralize_cells_coords_2(cells_coords(coords, topo), centers)
+            else:
+                ec = _centralize_cells_coords(cells_coords(coords, topo))
         else:
             ec = cells_coords(coords, topo)
         return _cells_coords_tr_(ec, local_axes)
     else:
         if centralize:
-            return _centralize_cells_coords_(cells_coords(coords, topo))
+            if centers is not None:
+                return _centralize_cells_coords_2(cells_coords(coords, topo), centers)
+            else:
+                return _centralize_cells_coords(cells_coords(coords, topo))
         else:
             return cells_coords(coords, topo)
 
@@ -240,11 +249,22 @@ def _cells_coords_tr_(ecoords: ndarray, local_axes: ndarray) -> ndarray:
 
 
 @njit(nogil=True, parallel=True, cache=__cache)
-def _centralize_cells_coords_(ecoords):
+def _centralize_cells_coords(ecoords: ndarray) -> ndarray:
     nE, nNE, _ = ecoords.shape
     res = np.zeros_like(ecoords)
     for i in prange(nE):
         cc = cell_center(ecoords[i])
+        for j in prange(nNE):
+            res[i, j, :] = ecoords[i, j, :] - cc
+    return res
+
+
+@njit(nogil=True, parallel=True, cache=__cache)
+def _centralize_cells_coords_2(ecoords: ndarray, centers: ndarray) -> ndarray:
+    nE, nNE, _ = ecoords.shape
+    res = np.zeros_like(ecoords)
+    for i in prange(nE):
+        cc = centers[i]
         for j in prange(nNE):
             res[i, j, :] = ecoords[i, j, :] - cc
     return res

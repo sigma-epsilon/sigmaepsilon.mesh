@@ -13,7 +13,7 @@ from ..utils.cells.q4 import (
     shape_function_matrix_Q4_multi,
     monoms_Q4,
 )
-from ..utils.cells.numint import Gauss_Legendre_Quad_4
+from ..utils.numint import Gauss_Legendre_Quad_4
 from ..utils.topology import Q4_to_T3
 
 

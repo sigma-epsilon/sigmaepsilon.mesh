@@ -41,36 +41,66 @@ def monoms_tri_loc_bulk(lcoord: ndarray) -> ndarray:
 
 
 @njit(nogil=True, cache=__cache)
-def lcoords_tri() -> ndarray:
-    return np.array([[-1 / 3, -1 / 3], [2 / 3, -1 / 3], [-1 / 3, 2 / 3]])
+def lcoords_tri(center: ndarray = None) -> ndarray:
+    """
+    Returns the local coordinates (r, s) of the vertices of a triangle.
 
+    By default, it is assumed that the origo of the (r, s) system is at
+    the geometric center of the triangle, unless the coordinates of geometric
+    center are provided with the argument 'center'.
 
-@njit(nogil=True, cache=__cache)
-def lcenter_tri() -> ndarray:
-    return np.array([0.0, 0.0])
+    Example
+    -------
+    >>> import numpy as np
+    >>> from sigmaepsilon.mesh.utils.tri import lcoords_tri
+    >>> lcoords = lcoords_tri(np.array([1/3, 1/3]))
+    """
+    res = np.array([[-1 / 3, -1 / 3], [2 / 3, -1 / 3], [-1 / 3, 2 / 3]])
+    if center is not None:
+        res += center
+    return res
 
 
 @njit(nogil=True, cache=__cache)
 def ncenter_tri() -> ndarray:
+    """
+    Returns the area coordinates of the geometric center of the
+    master triangle.
+    """
     return np.array([1 / 3, 1 / 3, 1 / 3])
 
 
 @njit(nogil=True, cache=__cache)
-def shp_tri_loc(lcoord: ndarray) -> ndarray:
-    return np.array(
-        [1 / 3 - lcoord[0] - lcoord[1], lcoord[0] + 1 / 3, lcoord[1] + 1 / 3]
-    )
+def shp_tri_loc(lcoord: ndarray, center: ndarray = None) -> ndarray:
+    """
+    Evaluates the shape functions at the parametric coordinates (r, s).
+
+    By default, it is assumed that the origo of the (r, s) system is at
+    the geometric center of the triangle, unless the coordinates of geometric
+    center are provided with the argument 'center'.
+
+    Example
+    -------
+    For a master triangle with centroid at the first vertex:
+    >>> import numpy as np
+    >>> from sigmaepsilon.mesh.utils.tri import shp_tri_loc
+    >>> A1, A2, A3 = shp_tri_loc(np.array([0.0, 0.0]), np.array([1/3, 1/3]))
+    """
+    r, s = lcoord
+    M = np.ones((3, 3), dtype=lcoord.dtype)
+    M[1:, :] = lcoords_tri(center).T
+    return np.linalg.inv(M) @ np.array([1, r, s], dtype=lcoord.dtype)
 
 
 @njit(nogil=True, parallel=True, cache=__cache)
 def shape_function_matrix_tri_loc(
-    lcoord: ndarray, nDOFN: int = 2, nNODE: int = 3
+    lcoord: ndarray, nDOFN: int = 2, center: ndarray = None
 ) -> ndarray:
     eye = np.eye(nDOFN, dtype=lcoord.dtype)
-    shp = shp_tri_loc(lcoord)
-    res = np.zeros((nDOFN, nNODE * nDOFN), dtype=lcoord.dtype)
-    for i in prange(nNODE):
-        res[:, i * nNODE : (i + 1) * nNODE] = eye * shp[i]
+    shp = shp_tri_loc(lcoord, center)
+    res = np.zeros((nDOFN, 3 * nDOFN), dtype=lcoord.dtype)
+    for i in prange(3):
+        res[:, i * 3 : (i + 1) * 3] = eye * shp[i]
     return res
 
 
@@ -259,7 +289,7 @@ def area_tri_u(x1, y1, x2, y2, x3, y3) -> float:
 
 
 @vectorize("f8(f8, f8, f8, f8, f8, f8)", target="parallel", cache=__cache)
-def area_tri_u2(x1, x2, x3, y1, y2, y3):
+def area_tri_u2(x1, x2, x3, y1, y2, y3) -> float:
     """
     Another vectorized implementation of `area_tri_bulk` with a different
     order of arguments.
@@ -272,7 +302,9 @@ def area_tri_u2(x1, x2, x3, y1, y2, y3):
 
 
 @njit(nogil=True, cache=__cache)
-def loc_to_glob_tri(lcoord: ndarray, gcoords: ndarray) -> ndarray:
+def loc_to_glob_tri(
+    lcoord: ndarray, gcoords: ndarray, center: ndarray = None
+) -> ndarray:
     """
     Transformation from local to global coordinates within a triangle.
 
@@ -280,11 +312,13 @@ def loc_to_glob_tri(lcoord: ndarray, gcoords: ndarray) -> ndarray:
     -----
     This function is numba-jittable in 'nopython' mode.
     """
-    return gcoords.T @ shp_tri_loc(lcoord)
+    return gcoords.T @ shp_tri_loc(lcoord, center)
 
 
 @njit(nogil=True, cache=__cache)
-def glob_to_loc_tri(gcoord: ndarray, gcoords: ndarray) -> ndarray:
+def glob_to_loc_tri(
+    gcoord: ndarray, gcoords: ndarray, center: ndarray = None
+) -> ndarray:
     """
     Transformation from global to local coordinates within a triangle.
 
@@ -295,7 +329,7 @@ def glob_to_loc_tri(gcoord: ndarray, gcoords: ndarray) -> ndarray:
     monoms = monoms_tri_loc_bulk(gcoords)
     coeffs = np.linalg.inv(monoms)
     shp = coeffs.T @ monoms_tri_loc(gcoord)
-    return lcoords_tri().T @ shp
+    return lcoords_tri(center).T @ shp
 
 
 @njit(nogil=True, cache=__cache)
@@ -378,7 +412,7 @@ def nat_to_glob_tri(ncoord: ndarray, ecoords: ndarray) -> ndarray:
 
 
 @njit(nogil=True, cache=__cache)
-def loc_to_nat_tri(lcoord: ndarray) -> ndarray:
+def loc_to_nat_tri(lcoord: ndarray, center: ndarray = None) -> ndarray:
     """
     Transformation from local to natural coordinates within a triangle.
 
@@ -386,19 +420,35 @@ def loc_to_nat_tri(lcoord: ndarray) -> ndarray:
     -----
     This function is numba-jittable in 'nopython' mode.
     """
-    return shp_tri_loc(lcoord)
+    return shp_tri_loc(lcoord, center)
 
 
 @njit(nogil=True, cache=__cache)
-def nat_to_loc_tri(acoord: ndarray) -> ndarray:
+def nat_to_loc_tri(
+    acoord: ndarray, lcoords: ndarray = None, center: ndarray = None
+) -> ndarray:
     """
     Transformation from natural to local coordinates within a triangle.
+
+    Parameters
+    ----------
+    acoord: numpy.ndarray
+        1d NumPy array of area coordinates of a point.
+    lcoords: numpy.ndarray, Optional
+        2d NumPy array of parametric coordinates (r, s) of the
+        master cell of a triangle.
+    center: numpy.ndarray
+        The local coordinates (r, s) of the geometric center
+        of the master triangle. If not provided it is assumed to
+        be at (0, 0).
 
     Notes
     -----
     This function is numba-jittable in 'nopython' mode.
     """
-    return acoord.T @ lcoords_tri()
+    if lcoords is None:
+        lcoords = lcoords_tri(center)
+    return acoord.T @ lcoords
 
 
 @njit(nogil=True, parallel=True, cache=__cache)
@@ -456,9 +506,7 @@ def approx_data_to_points(
     return res
 
 
-def offset_tri(
-    coords: ndarray, topo: ndarray, data: ndarray, *args, **kwargs
-) -> ndarray:
+def offset_tri(coords: ndarray, topo: ndarray, data: ndarray) -> ndarray:
     if isinstance(data, ndarray):
         alpha = np.abs(data)
         amax = alpha.max()

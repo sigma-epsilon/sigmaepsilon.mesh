@@ -16,9 +16,9 @@ from sigmaepsilon.mesh.utils.tri import (
     glob_to_nat_tri,
     lcoords_tri,
     ncenter_tri,
-    lcenter_tri,
     center_tri_2d,
     area_tri,
+    lcoords_tri,
 )
 
 
@@ -32,11 +32,13 @@ class TestT3(SigmaEpsilonTestCase):
         nNE = T3.Geometry.number_of_nodes
         nD = T3.Geometry.number_of_spatial_dimensions
 
+        lcoords = lcoords_tri()
+
         for _ in range(N):
             A1, A2 = np.random.rand(2)
             A3 = 1 - A1 - A2
             x_nat = np.array([A1, A2, A3])
-            x_loc = atleast2d(nat_to_loc_tri(x_nat))
+            x_loc = atleast2d(nat_to_loc_tri(x_nat, lcoords))
 
             shpA = shpf(x_loc)
             shpB = T3.Geometry.shape_function_values(x_loc)
@@ -85,11 +87,13 @@ class TestT3(SigmaEpsilonTestCase):
         nNE = T6.Geometry.number_of_nodes
         nD = T6.Geometry.number_of_spatial_dimensions
 
+        lcoords = lcoords_tri()
+
         for _ in range(N):
             A1, A2 = np.random.rand(2)
             A3 = 1 - A1 - A2
             x_nat = np.array([A1, A2, A3])
-            x_loc = atleast2d(nat_to_loc_tri(x_nat))
+            x_loc = atleast2d(nat_to_loc_tri(x_nat, lcoords))
 
             shpA = shpf(x_loc)
             shpB = T6.Geometry.shape_function_values(x_loc)
@@ -140,13 +144,18 @@ class TestTriutils(SigmaEpsilonTestCase):
         _ = PolyData(pd, cd)
         ec = cd.local_coordinates()
         nE, nNE = topo.shape
+        lcoords = lcoords_tri()
 
-        self.assertTrue(np.allclose(nat_to_loc_tri(ncenter_tri()), lcenter_tri()))
-        self.assertTrue(np.allclose(loc_to_nat_tri(lcenter_tri()), ncenter_tri()))
+        self.assertTrue(
+            np.allclose(nat_to_loc_tri(ncenter_tri(), lcoords), np.array([0.0, 0.0]))
+        )
+        self.assertTrue(
+            np.allclose(loc_to_nat_tri(np.array([0.0, 0.0]), lcoords), ncenter_tri())
+        )
 
         x_tri_loc = lcoords_tri()
         x_tri_nat = np.eye(3).astype(float)
-        c_tri_loc = lcenter_tri()
+        c_tri_loc = np.array([0.0, 0.0])
 
         for iNE in range(nNE):
             x_nat = loc_to_nat_tri(x_tri_loc[iNE])

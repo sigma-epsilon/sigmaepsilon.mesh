@@ -12,7 +12,7 @@ from ..utils.cells.q8 import (
     shape_function_matrix_Q8_multi,
     monoms_Q8,
 )
-from ..utils.cells.numint import Gauss_Legendre_Quad_9
+from ..utils.numint import Gauss_Legendre_Quad_9
 from ..utils.topology import Q8_to_T3, trimap_Q8
 
 

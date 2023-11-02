@@ -6,7 +6,7 @@ from sympy import symbols
 
 from ..geometry import PolyCellGeometry3d
 from ..data.polycell import PolyCell
-from ..utils.cells.numint import Gauss_Legendre_Wedge_3x2
+from ..utils.numint import Gauss_Legendre_Wedge_3x2
 from ..utils.cells.w6 import monoms_W6
 
 
