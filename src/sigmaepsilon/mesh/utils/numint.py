@@ -5,7 +5,7 @@ import numpy as np
 from numpy import ndarray
 
 from sigmaepsilon.math.numint import gauss_points as gp
-from .tri import nat_to_loc_tri as n2l_tri
+from .tri import nat_to_loc_tri as n2l_tri, loc_to_nat_tri as l2n_tri
 from .tet import nat_to_loc_tet as n2l_tet
 
 
@@ -43,16 +43,20 @@ def _complete_natural_coordinates(nat: ndarray) -> ndarray:
 
 
 def Gauss_Legendre_Tri_1(
-    center: Optional[Union[ndarray, None]] = None
+    center: Optional[Union[ndarray, None]] = None,
+    natural: Optional[bool] = False
 ) -> Tuple[ndarray, ndarray]:
     p, w = np.array([[0.0, 0.0]]), np.array([1 / 2])
     if isinstance(center, ndarray):
         p += center
+    if natural:
+        p = np.array([l2n_tri(x, center=center) for x in p], dtype=float)
     return p, w
 
 
 def Gauss_Legendre_Tri_3a(
-    center: Optional[Union[ndarray, None]] = None
+    center: Optional[Union[ndarray, None]] = None,
+    natural: Optional[bool] = False
 ) -> Tuple[ndarray, ndarray]:
     nat = np.array(
         [
@@ -62,13 +66,17 @@ def Gauss_Legendre_Tri_3a(
         ],
         dtype=float,
     )
-    p = np.array([n2l_tri(n, center=center) for n in nat], dtype=float)
+    if not natural:
+        p = np.array([n2l_tri(n, center=center) for n in nat], dtype=float)
+    else:
+        p = nat
     w = np.array([1 / 6, 1 / 6, 1 / 6])
     return p, w
 
 
 def Gauss_Legendre_Tri_3b(
-    center: Optional[Union[ndarray, None]] = None
+    center: Optional[Union[ndarray, None]] = None,
+    natural: Optional[bool] = False
 ) -> Tuple[ndarray, ndarray]:
     nat = np.array(
         [
@@ -78,13 +86,17 @@ def Gauss_Legendre_Tri_3b(
         ],
         dtype=float,
     )
-    p = np.array([n2l_tri(n, center=center) for n in nat], dtype=float)
+    if not natural:
+        p = np.array([n2l_tri(n, center=center) for n in nat], dtype=float)
+    else:
+        p = nat
     w = np.array([1 / 6, 1 / 6, 1 / 6])
     return p, w
 
 
 def Gauss_Legendre_Tri_4(
-    center: Optional[Union[ndarray, None]] = None
+    center: Optional[Union[ndarray, None]] = None,
+    natural: Optional[bool] = False
 ) -> Tuple[ndarray, ndarray]:
     nat = np.array(
         [
@@ -95,13 +107,17 @@ def Gauss_Legendre_Tri_4(
         ],
         dtype=float,
     )
-    p = np.array([n2l_tri(n, center=center) for n in nat], dtype=float)
+    if not natural:
+        p = np.array([n2l_tri(n, center=center) for n in nat], dtype=float)
+    else:
+        p = nat
     w = np.array([-0.5625, 0.520833333333333, 0.520833333333333, 0.520833333333333]) / 2
     return p, w
 
 
 def Gauss_Legendre_Tri_6(
-    center: Optional[Union[ndarray, None]] = None
+    center: Optional[Union[ndarray, None]] = None,
+    natural: Optional[bool] = False
 ) -> Tuple[ndarray, ndarray]:
     nat = np.array(
         [
@@ -115,7 +131,10 @@ def Gauss_Legendre_Tri_6(
         dtype=float,
     )
     nat = _complete_natural_coordinates(nat)
-    p = np.array([n2l_tri(n, center=center) for n in nat], dtype=float)
+    if not natural:
+        p = np.array([n2l_tri(n, center=center) for n in nat], dtype=float)
+    else:
+        p = nat
     w = (
         np.array(
             [
@@ -156,16 +175,21 @@ def Gauss_Legendre_Quad_9() -> Tuple[ndarray, ndarray]:
 
 
 def Gauss_Legendre_Tet_1(
-    center: Optional[Union[ndarray, None]] = None
+    center: Optional[Union[ndarray, None]] = None,
+    natural: Optional[bool] = False
 ) -> Tuple[ndarray, ndarray]:
     nat = np.array([[0.25, 0.25, 0.25, 0.25]])
-    p = np.array([n2l_tet(n, center=center) for n in nat], dtype=float)
+    if not natural:
+        p = np.array([n2l_tet(n, center=center) for n in nat], dtype=float)
+    else:
+        p = nat
     w = np.array([1 / 6])
     return p, w
 
 
 def Gauss_Legendre_Tet_4(
-    center: Optional[Union[ndarray, None]] = None
+    center: Optional[Union[ndarray, None]] = None,
+    natural: Optional[bool] = False
 ) -> Tuple[ndarray, ndarray]:
     nat = np.array(
         [
@@ -195,13 +219,17 @@ def Gauss_Legendre_Tet_4(
             ],
         ]
     )
-    p = np.array([n2l_tet(n, center=center) for n in nat], dtype=float)
+    if not natural:
+        p = np.array([n2l_tet(n, center=center) for n in nat], dtype=float)
+    else:
+        p = nat
     w = np.full(4, 1 / 24)
     return p, w
 
 
 def Gauss_Legendre_Tet_5(
-    center: Optional[Union[ndarray, None]] = None
+    center: Optional[Union[ndarray, None]] = None,
+    natural: Optional[bool] = False
 ) -> Tuple[ndarray, ndarray]:
     nat = np.array(
         [
@@ -212,13 +240,17 @@ def Gauss_Legendre_Tet_5(
             [1 / 6, 1 / 6, 1 / 6, 1 / 2],
         ]
     )
-    p = np.array([n2l_tet(n, center=center) for n in nat], dtype=float)
+    if not natural:
+        p = np.array([n2l_tet(n, center=center) for n in nat], dtype=float)
+    else:
+        p = nat
     w = np.array([-4 / 30, 9 / 120, 9 / 120, 9 / 120, 9 / 120])
     return p, w
 
 
 def Gauss_Legendre_Tet_11(
-    center: Optional[Union[ndarray, None]] = None
+    center: Optional[Union[ndarray, None]] = None,
+    natural: Optional[bool] = False
 ) -> Tuple[ndarray, ndarray]:
     nat = np.array(
         [
@@ -285,7 +317,10 @@ def Gauss_Legendre_Tet_11(
             ],
         ]
     )
-    p = np.array([n2l_tet(n, center=center) for n in nat], dtype=float)
+    if not natural:
+        p = np.array([n2l_tet(n, center=center) for n in nat], dtype=float)
+    else:
+        p = nat
     w = np.array(
         [
             -74 / 5625,
