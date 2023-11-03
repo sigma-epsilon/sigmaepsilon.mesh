@@ -31,11 +31,16 @@ class TestNumint(SigmaEpsilonTestCase):
         Gauss_Legendre_Line_Grid(2)
         
         Gauss_Legendre_Tri_1()
+        Gauss_Legendre_Tri_1(natural=True)
         Gauss_Legendre_Tri_1(np.array([0.0, 0.0]))
         Gauss_Legendre_Tri_3a()
+        Gauss_Legendre_Tri_3a(natural=True)
         Gauss_Legendre_Tri_3b()
+        Gauss_Legendre_Tri_3b(natural=True)
         Gauss_Legendre_Tri_4()
+        Gauss_Legendre_Tri_4(natural=True)
         Gauss_Legendre_Tri_6()
+        Gauss_Legendre_Tri_6(natural=True)
         
         Gauss_Legendre_Quad_Grid(2, 2)
         Gauss_Legendre_Quad_1()
@@ -43,9 +48,13 @@ class TestNumint(SigmaEpsilonTestCase):
         Gauss_Legendre_Quad_9()
         
         Gauss_Legendre_Tet_1()
+        Gauss_Legendre_Tet_1(natural=True)
         Gauss_Legendre_Tet_4()
+        Gauss_Legendre_Tet_4(natural=True)
         Gauss_Legendre_Tet_5()
+        Gauss_Legendre_Tet_5(natural=True)
         Gauss_Legendre_Tet_11()
+        Gauss_Legendre_Tet_11(natural=True)
         
         Gauss_Legendre_Hex_Grid(2, 2, 2)
         Gauss_Legendre_Wedge_3x2()

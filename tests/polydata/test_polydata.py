@@ -8,11 +8,66 @@ from pyvista import examples
 import meshio
 
 from sigmaepsilon.core.testing import SigmaEpsilonTestCase
+from sigmaepsilon.core.warning import SigmaEpsilonPerformanceWarning
 from sigmaepsilon.mesh import PolyData, PointData, CartesianFrame, triangulate
 from sigmaepsilon.mesh.data.trimesh import TriMesh
+from sigmaepsilon.mesh.data.celldata import CellData
 from sigmaepsilon.mesh.space import StandardFrame
 from sigmaepsilon.mesh.cells import H8, Q4, T3
 from sigmaepsilon.mesh.grid import grid
+
+
+class TestPolyDataSingleBlock(SigmaEpsilonTestCase):
+    def setUp(self) -> None:
+        A = StandardFrame(dim=3)
+        coords, topo, _ = triangulate(size=(100, 100), shape=(4, 4))
+        pd = PointData(coords=coords, frame=A)
+        pd["random_data"] = np.random.rand(coords.shape[0])
+        cd = T3(topo=topo, frames=A)
+        cd["random_data"] = np.random.rand(topo.shape[0])
+        tri = TriMesh(cd, pd)
+        self.mesh = tri
+        
+    def test_basic(self):
+        mesh: PolyData = self.mesh
+        mesh.parent = mesh.parent
+        self.assertFalse(mesh.topology().is_jagged())
+        self.assertIsInstance(mesh.cells_at_nodes(), Iterable)
+        
+    def test_set_pointdata_raises_TypeError(self):
+        with self.assertRaises(TypeError) as cm:
+            self.mesh.pointdata = "a"
+        the_exception = cm.exception
+        self.assertEqual(
+            the_exception.args[0],
+            "Value must be a PointData instance.",
+        )
+        
+    def test_set_celldata_raises_TypeError(self):
+        with self.assertRaises(TypeError) as cm:
+            self.mesh.pointdata = "a"
+        the_exception = cm.exception
+        self.assertEqual(
+            the_exception.args[0],
+            "Value must be a PointData instance.",
+        )
+
+    def test_to_lists(self):
+        self.mesh.to_lists(
+            point_fields=["random_data"],
+            cell_fields=["random_data"]
+        )
+        
+    def test_rewire(self):
+        self.mesh.rewire()
+        self.mesh.rewire(deep=True)
+        
+    def test_to_standard_form(self):
+        self.mesh.to_standard_form()
+        self.mesh.to_standard_form(inplace=True)
+        
+    def test_nodal_distribution_factors(self):
+        self.mesh.nodal_distribution_factors()
 
 
 class TestPolyDataMultiBlock(SigmaEpsilonTestCase):
@@ -21,17 +76,21 @@ class TestPolyDataMultiBlock(SigmaEpsilonTestCase):
 
         coords, topo, _ = triangulate(size=(100, 100), shape=(4, 4))
         pd = PointData(coords=coords, frame=A)
+        pd["random_data"] = np.random.rand(coords.shape[0])
         cd = T3(topo=topo, frames=A)
+        cd["random_data"] = np.random.rand(topo.shape[0])
         tri = TriMesh(pd, cd)
 
         coords, topo = grid(size=(100, 100), shape=(4, 4), eshape="Q4")
         pd = PointData(coords=coords, frame=A)
         cd = Q4(topo=topo, frames=A)
+        cd["random_data"] = np.random.rand(topo.shape[0])
         grid2d = PolyData(pd, cd)
 
         coords, topo = grid(size=(100, 100, 20), shape=(4, 4, 2), eshape="H8")
         pd = PointData(coords=coords, frame=A)
         cd = H8(topo=topo, frames=A)
+        cd["random_data"] = np.random.rand(topo.shape[0])
         grid3d = PolyData(pd, cd)
 
         mesh = PolyData(frame=A)
@@ -71,6 +130,29 @@ class TestPolyDataMultiBlock(SigmaEpsilonTestCase):
 
         self.assertIsInstance(mesh["grids", "Q4"].cd.frames, np.ndarray)
         mesh["grids", "Q4"].cd.frames = mesh["grids", "Q4"].cd.frames
+        
+        mesh._in_all_pointdata_("_")
+        mesh._in_all_celldata_("_")
+        dbkey = PointData._dbkey_x_
+        self.assertTrue(mesh._in_all_pointdata_(dbkey))
+        self.assertTrue(mesh._in_all_pointdata_("random_data"))
+        dbkey = CellData._dbkey_nodes_
+        self.assertTrue(mesh._in_all_celldata_(dbkey))
+        self.assertTrue(mesh._in_all_celldata_("random_data"))
+        
+    def test_root(self):
+        self.assertEqual(self.mesh["grids", "Q4"].root, self.mesh)
+        self.assertEqual(self.mesh["grids", "H8"].root, self.mesh)
+        self.assertEqual(self.mesh["tri", "T3"].root, self.mesh)
+        self.assertEqual(self.mesh["tri"].root, self.mesh)
+        self.assertEqual(self.mesh["grids"].root, self.mesh)
+        
+    def blocks_of_cells(self):
+        mesh: PolyData = self.mesh
+        mesh._cid2bid=None
+        self.assertWarns(SigmaEpsilonPerformanceWarning, mesh.blocks_of_cells)
+        mesh.lock()
+        mesh.blocks_of_cells()
 
     def test_coordinates(self):
         mesh: PolyData = self.mesh
@@ -154,6 +236,14 @@ class TestPolyDataMultiBlock(SigmaEpsilonTestCase):
             self.mesh["grids", "Q4"]
 
         self.assertFailsProperly(KeyError, boo)
+        
+    """def test_replace(self):
+        A = StandardFrame(dim=3)
+        coords, topo, _ = triangulate(size=(100, 100), shape=(4, 4))
+        pd = PointData(coords=coords, frame=A)
+        cd = T3(topo=topo, frames=A)
+        tri = TriMesh(pd, cd)
+        self.mesh["tri", "T3"] = tri"""
 
     def test_centers(self):
         self.mesh.centers()
@@ -164,7 +254,7 @@ class TestPolyDataMultiBlock(SigmaEpsilonTestCase):
         self.mesh.nodal_adjacency()
         self.mesh.cells_at_nodes()
         self.mesh.cells_around_cells(radius=1.0)
-
+        
 
 class TestSurfaceExtraction(unittest.TestCase):
     def test_surface_extraction(self):

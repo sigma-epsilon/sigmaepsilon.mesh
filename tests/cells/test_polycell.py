@@ -4,17 +4,71 @@ import numpy as np
 
 from sigmaepsilon.core.testing import SigmaEpsilonTestCase
 import sigmaepsilon.mesh
-from sigmaepsilon.mesh import PolyData, PointData, LineData
+from sigmaepsilon.mesh import (
+    PolyData,
+    PointData,
+    LineData,
+    TriMesh,
+    triangulate,
+    CartesianFrame,
+)
 from sigmaepsilon.mesh.space import CartesianFrame
-from sigmaepsilon.mesh.cells import H8, TET4, L2
+from sigmaepsilon.mesh.cells import H8, TET4, L2, T3
 from sigmaepsilon.mesh.utils.topology import H8_to_TET4, H8_to_L2
-from sigmaepsilon.mesh.utils.space import frames_of_lines
 from sigmaepsilon.mesh.grid import grid as _grid
 
 
 def load_tests(loader, tests, ignore):  # pragma: no cover
     tests.addTests(doctest.DocTestSuite(sigmaepsilon.mesh.cells))
     return tests
+
+
+class TestPolyCell2d(SigmaEpsilonTestCase):
+    def setUp(self):
+        A = CartesianFrame(dim=3)
+        coords, topo, _ = triangulate(size=(10, 10), shape=(4, 4))
+        pd = PointData(coords=coords, frame=A)
+        pd["random_data"] = np.random.rand(coords.shape[0])
+        cd = T3(topo=topo, frames=A, t=np.ones((len(topo))))
+        cd["random_data"] = np.random.rand(topo.shape[0])
+        tri = TriMesh(cd, pd)
+        self.mesh = tri
+        self.cd = cd
+
+    def test_area(self):
+        self.assertTrue(np.isclose(self.cd.area(), 100.0))
+        self.assertTrue(np.isclose(self.cd.measure(), 100.0))
+        self.assertTrue(np.allclose(self.cd.areas(), self.cd.measures()))
+        
+    def test_volume(self):
+        self.assertTrue(np.isclose(self.cd.volume(), 100.0))
+        
+    def test_thickness(self):
+        self.assertTrue(np.allclose(self.cd.thickness(), np.ones((len(self.cd)))))
+        
+    def test_to_triangles(self):
+        tri = self.cd.to_triangles()
+        self.assertIsInstance(tri, np.ndarray)
+        self.assertEqual(tri.shape[1], 3)
+        
+    def test_to_simplices(self):
+        tri = self.cd.to_simplices()
+        self.assertIsInstance(tri, np.ndarray)
+        self.assertEqual(tri.shape[1], 3)
+        
+    def test_points_of_cells(self):
+        poc = self.cd.points_of_cells()
+        self.assertIsInstance(poc, np.ndarray)
+        self.assertEqual(poc.shape[0], len(self.cd))
+        self.assertEqual(poc.shape[1], len(self.cd.nodes[-1]))
+        
+        points = np.array(self.cd.__class__.Geometry.master_coordinates())
+        poc = self.cd.points_of_cells(points=points)
+        poc = self.cd.points_of_cells(points=points, cells=[0, 1])
+        
+    def test_pip(self):
+        res = self.cd.pip([0.0, 0.0, 0.0], lazy=False)
+        self.assertTrue(res)
 
 
 class TestPolyCell(SigmaEpsilonTestCase):
@@ -78,7 +132,7 @@ class TestPolyCell(SigmaEpsilonTestCase):
         cdL2._get_points_and_range()
         cdH8._get_points_and_range()
         cdTET4._get_points_and_range()
-        
+
         cdL2.points_of_cells()
         cdL2.points_of_cells(points=[-1.0, 1.0], rng=[-1, 1])
         cdH8.points_of_cells()
