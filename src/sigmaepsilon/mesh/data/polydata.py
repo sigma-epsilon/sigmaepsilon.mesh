@@ -713,7 +713,7 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
         return self._parent
 
     @parent.setter
-    def parent(self, value: PolyDataLike):
+    def parent(self, value: PolyDataLike) -> None:
         """Sets the parent."""
         self._parent = value
 
@@ -1058,7 +1058,7 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
                 coords.append(v.show(global_frame))
                 inds.append(i)
 
-            if len(coords) == 0:
+            if len(coords) == 0:  # pragme: no cover
                 raise Exception("There are no points belonging to this block")
 
             coords = np.vstack(list(coords))
@@ -1649,11 +1649,11 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
 
     def _in_all_pointdata_(self, key: str) -> bool:
         blocks = self.pointblocks(inclusive=True)
-        return all(list(map(lambda b: key in b.db.fields, blocks)))
+        return all(list(map(lambda b: key in b.pointdata.db.fields, blocks)))
 
     def _in_all_celldata_(self, key: str) -> bool:
         blocks = self.cellblocks(inclusive=True)
-        return all(list(map(lambda b: key in b.db.fields, blocks)))
+        return all(list(map(lambda b: key in b.celldata.db.fields, blocks)))
 
     def _detach_block_data_(self, data: Union[str, ndarray] = None) -> Tuple:
         blocks = self.cellblocks(inclusive=True, deep=True)
@@ -1903,8 +1903,8 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
     def __leave_parent__(self) -> None:
         if self.celldata is not None:
             self.root.cim.recycle(self.celldata.db.id)
-            dbkey = self.celldata._dbkey_id_
-            del self.celldata._wrapped[dbkey]
+            dbkey = self.celldata.db._dbkey_id_
+            del self.celldata.db._wrapped[dbkey]
         super().__leave_parent__()
 
     def __repr__(self):

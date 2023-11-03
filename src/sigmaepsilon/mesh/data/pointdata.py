@@ -30,6 +30,12 @@ class PointData(AkWrapper, ABC_AkWrapper):
 
     The class is technicall a wrapper around an `awkward.Record` instance.
 
+    .. warning::
+       Internal variables used during calculations begin with two leading underscores. Try
+       to avoid leading double underscores when assigning custom data to a PointData instance,
+       unless you are sure, that it is of no importance for the correct behaviour of the
+       class instances.
+    
     Parameters
     ----------
     points: numpy.ndarray, Optional
@@ -53,9 +59,9 @@ class PointData(AkWrapper, ABC_AkWrapper):
     _point_cls_ = PointCloud
     _frame_class_ = CartesianFrame
     _attr_map_ = {
-        "x": "_x",  # coordinates
-        "activity": "_activity",  # activity of the points
-        "id": "_id",  # global indices of the points
+        "x": "__x",  # coordinates
+        "activity": "__activity",  # activity of the points
+        "id": "__id",  # global indices of the points
     }
 
     def __init__(

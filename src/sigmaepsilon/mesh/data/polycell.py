@@ -18,6 +18,7 @@ import numpy as np
 from numpy import ndarray
 from numpy.lib.index_tricks import IndexExpression
 
+from sigmaepsilon.core.typing import issequence
 from sigmaepsilon.math import atleast1d, atleast2d, atleastnd, ascont
 from sigmaepsilon.math.linalg import ReferenceFrame as FrameLike
 from sigmaepsilon.math.utils import to_range_1d
@@ -178,14 +179,6 @@ class PolyCell(Generic[MeshDataLike, PointDataLike], ABC_PolyCell):
         if not isinstance(value, PolyDataProtocol):
             raise TypeError("'value' must be a PolyData instance")
         self._container = value
-
-    def __getattr__(self, name: str) -> Any:
-        if len(name) >= 7 and name[:7] == "_dbkey_":
-            return getattr(self.db, name)
-        elif hasattr(self.db, name):
-            return getattr(self.db, name)
-        else:
-            return super().__getattr__(name)
 
     def root(self) -> MeshDataLike:
         """
@@ -754,7 +747,7 @@ class PolyCell(Generic[MeshDataLike, PointDataLike], ABC_PolyCell):
         """
         if self.db.has_nodes:
             return TopologyArray(self.db.nodes)
-        else:
+        else:  # pragma: no cover
             return None
 
     def rewire(
@@ -1112,6 +1105,45 @@ class PolyCell(Generic[MeshDataLike, PointDataLike], ABC_PolyCell):
 
     def __len__(self) -> int:
         return len(self.db)
+
+    def __hasattr__(self, attr: str) -> Any:
+        return attr in self.__dict__ or hasattr(self.db, attr)
+    
+    def __getattr__(self, attr: str) -> Any:
+        if attr in self.__dict__:
+            return self.__dict__[attr]
+        try:
+            return getattr(self.db, attr)
+        except Exception:
+            raise AttributeError(
+                "'{}' object has no attribute \
+                called {}".format(
+                    self.__class__.__name__, attr
+                )
+            )
+
+    def __getitem__(self, index: str) -> Any:
+        try:
+            return super().__getitem__(index)
+        except Exception:
+            try:
+                return self.db.__getitem__(index)
+            except Exception:
+                raise TypeError(
+                    "'{}' object is not "
+                    "subscriptable".format(self.__class__.__name__)
+                )
+
+    def __setitem__(self, index: str, value: Any) -> None:
+        if not isinstance(index, str):
+            raise TypeError(f"Expected a string, got {type(index)}")
+
+        if not (issequence(value) and len(value) == len(self.db)):
+            raise ValueError(
+                "The length of the provided data must match the number of cells in the block"
+            )
+
+        self.db[index] = value
 
     def __deepcopy__(self, memo: dict) -> "PolyCell":
         return self.__copy__(memo)

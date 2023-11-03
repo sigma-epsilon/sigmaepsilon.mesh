@@ -1,4 +1,4 @@
-from typing import Iterable, Union, Any
+from typing import Iterable, Union, Optional, Any
 
 import numpy as np
 from numpy import ndarray
@@ -6,6 +6,7 @@ import awkward as ak
 from awkward import Array as akArray, Record as akRecord
 
 from sigmaepsilon.core.wrapping import Wrapper
+from sigmaepsilon.core.typing import issequence
 
 AwkwardLike = Union[akArray, akRecord]
 
@@ -15,13 +16,19 @@ __all__ = ["AkWrapper"]
 
 class AkWrapper(Wrapper):
     """
-    A wrapper for Awkward objects. This is the base class of most
+    A wrapper for Awkward objects. This is the base class of many
     database classes in SigmaEpsilon projects.
     """
 
     _attr_map_ = {}
 
-    def __init__(self, *args, wrap=None, fields=None, **kwargs):
+    def __init__(
+        self,
+        *args,
+        wrap: Optional[Union[Any, None]] = None,
+        fields: Optional[Union[Iterable[str], None]],
+        **kwargs,
+    ):
         fields = {} if fields is None else fields
         assert isinstance(fields, dict)
 
@@ -52,7 +59,9 @@ class AkWrapper(Wrapper):
         """
         return self._wrapped[key].to_numpy()
 
-    def to_dataframe(self, *args, fields: Iterable[str] = None, **kwargs):
+    def to_dataframe(
+        self, *args, fields: Optional[Union[Iterable[str], None]] = None, **kwargs
+    ):
         """
         Returns the data of the database as a DataFrame.
 
@@ -73,7 +82,11 @@ class AkWrapper(Wrapper):
         return ak.to_dataframe(akdb, **kwargs)
 
     def to_parquet(
-        self, path: str, *args, fields: Iterable[str] = None, **kwargs
+        self,
+        path: str,
+        *args,
+        fields: Optional[Union[Iterable[str], None]] = None,
+        **kwargs,
     ) -> None:
         """
         Saves the data of the database to a parquet file.
@@ -108,7 +121,10 @@ class AkWrapper(Wrapper):
         return cls(wrap=ak.from_parquet(path))
 
     def to_ak(
-        self, *args, fields: Iterable[str] = None, asarray: bool = False
+        self,
+        *args,
+        fields: Optional[Union[Iterable[str], None]] = None,
+        asarray: Optional[bool] = False,
     ) -> Union[akArray, akRecord]:
         """
         Returns the database with a specified set of fields as either
@@ -131,7 +147,9 @@ class AkWrapper(Wrapper):
         else:
             return self.to_akrecord(*args, fields=fields)
 
-    def to_akarray(self, *args, fields: Iterable[str] = None) -> akArray:
+    def to_akarray(
+        self, *args, fields: Optional[Union[Iterable[str], None]] = None
+    ) -> akArray:
         """
         Returns the data of the mesh as an Awkward array.
 
@@ -145,7 +163,9 @@ class AkWrapper(Wrapper):
         ldb = self.to_list(*args, fields=fields)
         return ak.from_iter(ldb)
 
-    def to_akrecord(self, *args, fields: Iterable[str] = None) -> akRecord:
+    def to_akrecord(
+        self, *args, fields: Optional[Union[Iterable[str], None]] = None
+    ) -> akRecord:
         """
         Returns the data of the mesh as an Awkward record.
 
@@ -159,7 +179,9 @@ class AkWrapper(Wrapper):
         d = self.to_dict(*args, fields=fields)
         return ak.zip(d, depth_limit=1)
 
-    def to_dict(self, *args, fields: Iterable[str] = None) -> dict:
+    def to_dict(
+        self, *args, fields: Optional[Union[Iterable[str], None]] = None
+    ) -> dict:
         """
         Returns data of the object as a dictionary. Unless fields
         are specified, all fields are returned.
@@ -193,7 +215,9 @@ class AkWrapper(Wrapper):
 
         return res
 
-    def to_list(self, *args, fields: Iterable[str] = None) -> list:
+    def to_list(
+        self, *args, fields: Optional[Union[Iterable[str], None]] = None
+    ) -> list:
         """
         Returns data of the object as lists. Unless fields are
         specified, all fields are returned.
@@ -240,10 +264,44 @@ class AkWrapper(Wrapper):
             attr = self.__class__._attr_map_[attr]
 
         if attr in self.__dict__:
-            return getattr(self, attr)
+            return self.__dict__[attr]
 
         try:
             return getattr(self._wrapped, attr)
         except Exception:
             name = self.__class__.__name__
             raise AttributeError(f"'{name}' object has no attribute called '{attr}'")
+        
+    def __getitem__(self, index: str) -> Any:
+        is_str = isinstance(index, str)
+        
+        if is_str and index in self.__class__._attr_map_:
+            index = self.__class__._attr_map_[index]
+        
+        return self.db[index]
+
+    def __setitem__(self, index: str, value: Iterable[Any]) -> None:
+        if not isinstance(index, str):
+            raise TypeError(f"Expected a string, got {type(index)}")
+
+        if not issequence(value):
+            raise TypeError(f"Expected a sequence, got {type(value)}")
+
+        if not len(value) == len(self):
+            raise ValueError(
+                "The provided value must have the same length as the database."
+            )
+
+        self._wrapped[index] = value
+
+    def __contains__(self, item: str) -> bool:
+        if not isinstance(item, str):
+            return False
+
+        if item in self._wrapped.fields:
+            return True
+
+        if item in self.__class__._attr_map_:
+            return self.__class__._attr_map_[item] in self._wrapped.fields
+
+        return False

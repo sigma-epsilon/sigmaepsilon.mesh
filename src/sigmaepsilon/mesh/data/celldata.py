@@ -333,19 +333,6 @@ class CellData(Generic[PolyDataLike, PointDataLike], AkWrapper, ABC_AkWrapper):
             value = np.full(len(self), value, dtype=bool)
         self._wrapped[self._dbkey_activity_] = value
 
-    def __getattr__(self, attr):
-        """
-        Modified for being able to fetch data from pointcloud.
-        """
-        if attr in self.__dict__:
-            return getattr(self, attr)
-
-        try:
-            return getattr(self._wrapped, attr)
-        except Exception:
-            name = self.__class__.__name__
-            raise AttributeError(f"'{name}' object has no attribute called {attr}")
-
     def set_nodal_distribution_factors(self, factors: ndarray, key: str = None) -> None:
         """
         Sets nodal distribution factors.
