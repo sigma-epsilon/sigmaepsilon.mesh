@@ -42,7 +42,7 @@ else:
     def triplot_mpl_hinton(
         triobj: Any,
         data: ndarray,
-        *,
+        *_,
         fig: Optional[Union[Figure, None]] = None,
         ax: Optional[Union[Axes, Iterable[Axes], None]] = None,
         lw: Optional[float] = 0.5,
@@ -133,7 +133,7 @@ else:
     @triplotter
     def triplot_mpl_mesh(
         triobj: Any,
-        *,
+        *_,
         fig: Optional[Union[Figure, None]] = None,
         ax: Optional[Union[Axes, None]] = None,
         lw: Optional[float] = 0.5,
@@ -229,7 +229,7 @@ else:
     def triplot_mpl_data(
         triobj: Any,
         data: ndarray,
-        *,
+        *_,
         fig: Optional[Union[Figure, None]] = None,
         ax: Optional[Union[Axes, Iterable[Axes], None]] = None,
         cmap: Optional[str] = "jet",
