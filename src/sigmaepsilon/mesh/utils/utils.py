@@ -1076,7 +1076,7 @@ def global_shape_function_derivatives(dshp: ndarray, jac: ndarray) -> ndarray:
     for iE in prange(nE):
         for iP in prange(nP):
             invJ = np.linalg.inv(jac[iE, iP])
-            res[iE, iP] = dshp[iP] @ invJ
+            res[iE, iP] = dshp[iP] @ invJ.T
     return res
 
 
