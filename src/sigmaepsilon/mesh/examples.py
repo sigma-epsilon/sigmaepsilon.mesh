@@ -57,5 +57,5 @@ def compound_mesh() -> PolyData:
 
     mesh.to_standard_form()
     mesh.lock(create_mappers=True)
-    
+
     return mesh

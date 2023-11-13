@@ -21,9 +21,9 @@ class TestQ8(SigmaEpsilonTestCase):
         pd = PointData(coords=coords)
         cd = Q8(topo=topo, frames=frame)
         _ = PolyData(pd, cd)
-        
-        self.assertTrue(np.isclose(cd.area(), Lx*Ly))
-        self.assertTrue(np.isclose(cd.volume(), Lx*Ly))
+
+        self.assertTrue(np.isclose(cd.area(), Lx * Ly))
+        self.assertTrue(np.isclose(cd.volume(), Lx * Ly))
         self.assertEqual(cd.jacobian_matrix().shape, (topo.shape[0], 8, 2, 2))
 
 

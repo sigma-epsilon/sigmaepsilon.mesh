@@ -1,21 +1,19 @@
 from typing import Tuple, List
+from functools import partial
+
 import numpy as np
 from numpy import ndarray
 import sympy as sy
 
-from sigmaepsilon.math.numint import gauss_points as gp
-
 from ..geometry import PolyCellGeometry3d
 from ..data.polycell import PolyCell
-from ..utils.utils import cells_coords
 from ..utils.cells.h27 import (
     shp_H27_multi,
     dshp_H27_multi,
-    volumes_H27,
     shape_function_matrix_H27_multi,
     monoms_H27,
 )
-from ..utils.cells.numint import Gauss_Legendre_Hex_Grid
+from ..utils.numint import Gauss_Legendre_Hex_Grid
 
 
 class H27(PolyCell):
@@ -56,7 +54,8 @@ class H27(PolyCell):
         shape_function_derivative_evaluator: dshp_H27_multi
         monomial_evaluator: monoms_H27
         quadrature = {
-            "full": Gauss_Legendre_Hex_Grid(3, 3, 3),
+            "full": partial(Gauss_Legendre_Hex_Grid, 3, 3, 3),
+            "geometry": "full",
         }
 
         @classmethod
@@ -155,17 +154,3 @@ class H27(PolyCell):
             numpy.ndarray
             """
             return np.array([0.0, 0.0, 0.0])
-
-    def volumes(self) -> ndarray:
-        """
-        Returns the volumes of the cells.
-
-        Returns
-        -------
-        numpy.ndarray
-        """
-        coords = self.source_coords()
-        topo = self.topology().to_numpy()
-        ecoords = cells_coords(coords, topo)
-        qpos, qweight = gp(3, 3, 3)
-        return volumes_H27(ecoords, qpos, qweight)
