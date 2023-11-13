@@ -81,6 +81,13 @@ class CellDataProtocol(Generic[PolyDataLike, PointDataLike], Protocol):
     def frames(self) -> ndarray:
         """Ought to return the reference frames of the cells."""
         ...
+        
+    @property
+    def nodes(self) -> ndarray:
+        """
+        Ought to return the topology of the cells as a 2d NumPy integer array.
+        """
+        ...
 
     @property
     def pointdata(self) -> PointDataLike:
@@ -89,6 +96,14 @@ class CellDataProtocol(Generic[PolyDataLike, PointDataLike], Protocol):
     @property
     def container(self) -> PolyDataLike:
         """Returns the container object of the block."""
+    
+    @property    
+    def has_frames(self) -> bool:
+        """
+        Ought to return `True` if the cells are equipped with frames,
+        `False` if they are not.
+        """
+        ...
 
 
 class PolyCellProtocol(

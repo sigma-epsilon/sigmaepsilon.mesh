@@ -1,4 +1,5 @@
 from typing import Tuple, List
+
 import numpy as np
 from numpy import ndarray
 from sympy import symbols
@@ -8,9 +9,7 @@ from ..data.polycell import PolyCell
 from ..utils.cells.tet10 import (
     monoms_TET10,
 )
-from ..utils.cells.numint import Gauss_Legendre_Tet_4
-from ..utils.cells.utils import volumes
-from ..utils.utils import cells_coords
+from ..utils.numint import Gauss_Legendre_Tet_4
 
 
 class TET10(PolyCell):
@@ -25,7 +24,8 @@ class TET10(PolyCell):
         vtk_cell_id = 24
         monomial_evaluator: monoms_TET10
         quadrature = {
-            "full": Gauss_Legendre_Tet_4(),
+            "full": Gauss_Legendre_Tet_4,
+            "geometry": "full",
         }
 
         @classmethod
@@ -48,22 +48,22 @@ class TET10(PolyCell):
         def master_coordinates(cls) -> ndarray:
             return np.array(
                 [
-                    [0.0, 0.0, 0.0],
-                    [1.0, 0.0, 0.0],
-                    [0.0, 1.0, 0.0],
-                    [0.0, 0.0, 1.0],
-                    [0.5, 0.0, 0.0],
-                    [0.5, 0.5, 0.0],
-                    [0.0, 0.5, 0.0],
-                    [0.0, 0.0, 0.5],
-                    [0.5, 0.0, 0.5],
-                    [0.0, 0.5, 0.5],
+                    [-1 / 3, -1 / 3, -1 / 3],
+                    [2 / 3, -1 / 3, -1 / 3],
+                    [-1 / 3, 2 / 3, -1 / 3],
+                    [-1 / 3, -1 / 3, 2 / 3],
+                    [1 / 6, -1 / 3, -1 / 3],
+                    [1 / 6, 1 / 6, -1 / 3],
+                    [-1 / 3, 1 / 6, -1 / 3],
+                    [-1 / 3, -1 / 3, 1 / 6],
+                    [1 / 6, -1 / 3, 1 / 6],
+                    [-1 / 3, 1 / 6, 1 / 6],
                 ]
             )
 
         @classmethod
         def master_center(cls) -> ndarray:
-            return np.array([[1 / 3, 1 / 3, 1 / 3]])
+            return np.array([[0.0, 0.0, 0.0]], dtype=float)
 
         @classmethod
         def tetmap(cls, subdivide: bool = True) -> np.ndarray:
@@ -71,11 +71,3 @@ class TET10(PolyCell):
                 raise NotImplementedError
             else:
                 return np.array([[0, 1, 2, 3]], dtype=int)
-
-    def volumes(self) -> ndarray:
-        coords = self.source_coords()
-        topo = self.topology().to_numpy()
-        ecoords = cells_coords(coords, topo)
-        qpos, qweight = self.Geometry.quadrature["full"]
-        dshp = self.Geometry.shape_function_derivatives(qpos)
-        return volumes(ecoords, dshp, qweight)

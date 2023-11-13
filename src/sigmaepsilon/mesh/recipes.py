@@ -373,13 +373,13 @@ def perforated_cube(
     :class:`~sigmaepsilon.mesh.data.polydata.PolyData`
     """
     size = (lx, ly)
-    
+
     if lmax is not None:
         shape = (max([int(lx / lmax), 4]), max([int(ly / lmax), 4]))
     else:
         shape = (4, 4)
     coords, _ = grid(size=size, shape=shape, eshape=(2, 2), centralize=True)
-    
+
     if lmax is not None:
         where = np.hypot(coords[:, 0], coords[:, 1]) > (radius + lmax)
     else:
@@ -391,7 +391,7 @@ def perforated_cube(
             nangles = max(int(2 * np.pi * radius / lmax), 8)
         else:
             nangles = 16
-            
+
     angles = np.linspace(0, 2 * np.pi, nangles, endpoint=False)
     x_circle = (radius * np.cos(angles)).flatten()
     y_circle = (radius * np.sin(angles)).flatten()

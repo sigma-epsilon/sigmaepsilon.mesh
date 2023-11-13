@@ -26,17 +26,11 @@ from sigmaepsilon.math.linalg.sparse import csr_matrix
 from sigmaepsilon.math.linalg import Vector, ReferenceFrame as FrameLike
 from sigmaepsilon.math import atleast1d, minmax
 
-from ..typing import (
-    PolyDataProtocol as PDP,
-    PolyDataLike,
-    PointDataLike,
-    PolyCellLike
-)
+from ..typing import PolyDataProtocol as PDP, PolyDataLike, PointDataLike, PolyCellLike
 
 from .akwrapper import AkWrapper
 from .pointdata import PointData
 from .polycell import PolyCell
-from .celldata import CellData
 from .polycell import PolyCell
 from ..space import CartesianFrame, PointCloud
 from ..indexmanager import IndexManager
@@ -155,8 +149,8 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
 
     def __init__(
         self,
-        pd: Optional[Union[PointData, CellData]] = None,
-        cd: Optional[CellData] = None,
+        pd: Optional[Union[PointData, PolyCell, None]] = None,
+        cd: Optional[Union[PolyCell, None]] = None,
         *args,
         **kwargs,
     ):
@@ -175,17 +169,16 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
 
         if isinstance(pd, PointData):
             self.pointdata = pd
-            if isinstance(cd, CellData):
+            if isinstance(cd, PolyCell):
                 self.celldata = cd
-        elif isinstance(pd, CellData):
+        elif isinstance(pd, PolyCell):
             self.celldata = pd
             if isinstance(cd, PointData):
                 self.pointdata = cd
-        elif isinstance(cd, CellData):
+        elif isinstance(cd, PolyCell):
             self.celldata = cd
 
         pidkey = self.__class__._point_class_._dbkey_id_
-        cidkey = CellData._dbkey_id_
 
         if self.pointdata is not None:
             if self.pd.has_id:
@@ -198,9 +191,9 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
             self.pd.container = self
 
         if self.celldata is not None:
-            N = len(self.celldata)
+            N = len(self.celldata.db)
             GIDs = self.root.cim.generate_np(N)
-            self.cd[cidkey] = GIDs
+            self.cd.db.id = GIDs
             try:
                 pd = self.source().pd
             except Exception:
@@ -720,7 +713,7 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
         return self._parent
 
     @parent.setter
-    def parent(self, value: PolyDataLike):
+    def parent(self, value: PolyDataLike) -> None:
         """Sets the parent."""
         self._parent = value
 
@@ -1065,7 +1058,7 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
                 coords.append(v.show(global_frame))
                 inds.append(i)
 
-            if len(coords) == 0:
+            if len(coords) == 0:  # pragme: no cover
                 raise Exception("There are no points belonging to this block")
 
             coords = np.vstack(list(coords))
@@ -1656,11 +1649,11 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
 
     def _in_all_pointdata_(self, key: str) -> bool:
         blocks = self.pointblocks(inclusive=True)
-        return all(list(map(lambda b: key in b.db.fields, blocks)))
+        return all(list(map(lambda b: key in b.pointdata.db.fields, blocks)))
 
     def _in_all_celldata_(self, key: str) -> bool:
         blocks = self.cellblocks(inclusive=True)
-        return all(list(map(lambda b: key in b.db.fields, blocks)))
+        return all(list(map(lambda b: key in b.celldata.db.fields, blocks)))
 
     def _detach_block_data_(self, data: Union[str, ndarray] = None) -> Tuple:
         blocks = self.cellblocks(inclusive=True, deep=True)
@@ -1785,8 +1778,10 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
             pyvista.UnstructuredGrid or pyvista.MultiBlock
             """
             exporter: Callable = exporters["PyVista"]
-            return exporter(self, deepcopy=deepcopy, multiblock=multiblock, scalars=scalars)
-            
+            return exporter(
+                self, deepcopy=deepcopy, multiblock=multiblock, scalars=scalars
+            )
+
     if __hask3d__:
 
         def to_k3d(self, *args, **kwargs) -> k3d.Plot:
@@ -1823,7 +1818,7 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
             -------
             k3d.Plot
                 A K3D Plot Widget, which is a result of a call to `k3d.plot`.
-            
+
             See Also
             --------
             :func:`to_k3d`
@@ -1899,17 +1894,17 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
     def __join_parent__(self, parent: DeepDict, key: Hashable = None) -> None:
         super().__join_parent__(parent, key)
         if self.celldata is not None:
-            GIDs = self.root.cim.generate_np(len(self.celldata))
-            self.celldata.id = atleast1d(GIDs)
+            GIDs = self.root.cim.generate_np(len(self.celldata.db))
+            self.celldata.db.id = atleast1d(GIDs)
             if self.celldata.pd is None:
                 self.celldata.pd = self.source().pd
             self.celldata.container = self
 
     def __leave_parent__(self) -> None:
         if self.celldata is not None:
-            self.root.cim.recycle(self.celldata.id)
-            dbkey = self.celldata._dbkey_id_
-            del self.celldata._wrapped[dbkey]
+            self.root.cim.recycle(self.celldata.db.id)
+            dbkey = self.celldata.db._dbkey_id_
+            del self.celldata.db._wrapped[dbkey]
         super().__leave_parent__()
 
     def __repr__(self):

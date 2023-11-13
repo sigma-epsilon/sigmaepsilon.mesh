@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
+from functools import partial
+
 from ..geometry import PolyCellGeometry1d
 from ..data.polycell import PolyCell
-from ..utils.cells.numint import Gauss_Legendre_Line_Grid
+from ..utils.numint import Gauss_Legendre_Line_Grid
 from ..utils.cells.l3 import monoms_L3
 
 
@@ -18,5 +20,6 @@ class L3(PolyCell):
         vtk_cell_id = 21
         monomial_evaluator: monoms_L3
         quadrature = {
-            "full": Gauss_Legendre_Line_Grid(3),
+            "full": partial(Gauss_Legendre_Line_Grid, 3),
+            "geometry": "full",
         }

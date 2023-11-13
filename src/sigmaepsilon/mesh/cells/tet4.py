@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from typing import Tuple, List
+
 import numpy as np
 from numpy import ndarray
 from sympy import symbols
@@ -12,7 +13,9 @@ from ..utils.cells.tet4 import (
     shape_function_matrix_TET4_multi,
     monoms_TET4,
 )
-from ..utils.cells.numint import Gauss_Legendre_Tet_1
+from ..utils.numint import Gauss_Legendre_Tet_1
+from ..utils.tet import vol_tet_bulk
+from ..utils.utils import cells_coords
 
 
 class TET4(PolyCell):
@@ -30,7 +33,8 @@ class TET4(PolyCell):
         shape_function_derivative_evaluator: dshp_TET4_multi
         monomial_evaluator: monoms_TET4
         quadrature = {
-            "full": Gauss_Legendre_Tet_1(),
+            "full": Gauss_Legendre_Tet_1,
+            "geometry": "full",
         }
 
         @classmethod
@@ -52,12 +56,17 @@ class TET4(PolyCell):
         @classmethod
         def master_coordinates(cls) -> ndarray:
             return np.array(
-                [[0.0, 0.0, 0.0], [1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]]
+                [
+                    [-1 / 3, -1 / 3, -1 / 3],
+                    [2 / 3, -1 / 3, -1 / 3],
+                    [-1 / 3, 2 / 3, -1 / 3],
+                    [-1 / 3, -1 / 3, 2 / 3],
+                ]
             )
 
         @classmethod
         def master_center(cls) -> ndarray:
-            return np.array([[1 / 3, 1 / 3, 1 / 3]])
+            return np.array([[0.0, 0.0, 0.0]], dtype=float)
 
         @classmethod
         def tetmap(cls) -> ndarray:
@@ -69,3 +78,13 @@ class TET4(PolyCell):
             return tetra
         else:
             return tetra.reshape(len(tetra), 1, 4)
+        
+    def volumes(self) -> ndarray:
+        coords = self.source_coords()
+        topo = self.topology().to_numpy()
+        volumes = vol_tet_bulk(cells_coords(coords, topo))
+        res = np.sum(
+            volumes.reshape(topo.shape[0], int(len(volumes) / topo.shape[0])),
+            axis=1,
+        )
+        return res
