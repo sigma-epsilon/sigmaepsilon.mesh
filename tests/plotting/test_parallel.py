@@ -68,7 +68,7 @@ class TestMplParallel(SigmaEpsilonTestCase):
         labels = ["a", "b", "c"]
         values = np.array([np.random.rand(10) for _ in labels]).T
         datapos = np.linspace(-1, 1, 10)
-        
+
         aligned_parallel_mpl(
             values,
             datapos,
@@ -77,34 +77,34 @@ class TestMplParallel(SigmaEpsilonTestCase):
             return_figure=False,
             slider=True,
         )
-        
+
         aligned_parallel_mpl(
             values,
             datapos,
             labels=labels,
             yticks=[-1, 1],
             return_figure=True,
-            y0 = 0.0,
+            y0=0.0,
             slider=True,
         )
-        
+
         aligned_parallel_mpl(
             values,
             datapos,
             yticks=[-1, 1],
             return_figure=True,
-            y0 = 0.0,
+            y0=0.0,
             slider=True,
         )
-        
-        values = {label : np.random.rand(10) for label in labels}
-        
+
+        values = {label: np.random.rand(10) for label in labels}
+
         aligned_parallel_mpl(
             values,
             datapos,
             yticks=[-1, 1],
             return_figure=True,
-            y0 = 0.0,
+            y0=0.0,
             slider=True,
         )
 

@@ -57,7 +57,7 @@ class TestHex(unittest.TestCase):
         self.assertTrue(gdshp.shape, (topo.shape[0], 2, topo.shape[1], 3))
 
         del gdshp, mesh
-        
+
     def test_H8_block(self):
         Lx, Ly, Lz = 800, 600, 100
         nx, ny, nz = 8, 6, 2
@@ -70,7 +70,7 @@ class TestHex(unittest.TestCase):
         pd = PointData(coords=coords)
         cd = H8(topo=topo, frames=frame)
         _ = PolyData(pd, cd, frame=frame)
-        
+
         cd.to_tetrahedra(flatten=False)
         cd.to_simplices()
         self.assertEqual(len(cd.frames), len(topo))
@@ -80,8 +80,8 @@ class TestHex(unittest.TestCase):
         cd.source_frame()
         cd.points_of_cells()
         cd.coords()
-        cd.loc_to_glob([0., 0., 0.])
-        cd.locate([0., 0., 0.])
+        cd.loc_to_glob([0.0, 0.0, 0.0])
+        cd.locate([0.0, 0.0, 0.0])
         cd.centers()
         cd.unique_indices()
         cd.points_involved()

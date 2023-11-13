@@ -12,13 +12,13 @@ def monoms_T3(x: ndarray) -> ndarray:
 
 
 @njit(nogil=True, cache=__cache)
-def shp_T3(pcoord: ndarray):
+def shp_T3(pcoord: ndarray) -> ndarray:
     r, s = pcoord
-    return np.array([1 - r - s, r, s], dtype=pcoord.dtype)
+    return np.array([1 / 3 - r - s, r + 1 / 3, s + 1 / 3], dtype=pcoord.dtype)
 
 
 @njit(nogil=True, parallel=True, cache=__cache)
-def shp_T3_multi(pcoords: ndarray):
+def shp_T3_multi(pcoords: ndarray) -> ndarray:
     nP = pcoords.shape[0]
     res = np.zeros((nP, 3), dtype=pcoords.dtype)
     for iP in prange(nP):
@@ -27,7 +27,7 @@ def shp_T3_multi(pcoords: ndarray):
 
 
 @njit(nogil=True, parallel=False, cache=__cache)
-def shape_function_matrix_T3(pcoord: np.ndarray, ndof: int = 2):
+def shape_function_matrix_T3(pcoord: ndarray, ndof: int = 2) -> ndarray:
     eye = np.eye(ndof, dtype=pcoord.dtype)
     shp = shp_T3(pcoord)
     res = np.zeros((ndof, ndof * 3), dtype=pcoord.dtype)
@@ -37,7 +37,7 @@ def shape_function_matrix_T3(pcoord: np.ndarray, ndof: int = 2):
 
 
 @njit(nogil=True, parallel=True, cache=__cache)
-def shape_function_matrix_T3_multi(pcoords: np.ndarray, ndof: int = 2):
+def shape_function_matrix_T3_multi(pcoords: ndarray, ndof: int = 2) -> ndarray:
     nP = pcoords.shape[0]
     res = np.zeros((nP, ndof, ndof * 3), dtype=pcoords.dtype)
     for iP in prange(nP):
@@ -46,12 +46,12 @@ def shape_function_matrix_T3_multi(pcoords: np.ndarray, ndof: int = 2):
 
 
 @njit(nogil=True, cache=__cache)
-def dshp_T3(x):
+def dshp_T3(x) -> ndarray:
     return np.array([[-1.0, -1.0], [1.0, 0.0], [0.0, 1.0]])
 
 
 @njit(nogil=True, parallel=True, cache=__cache)
-def dshp_T3_multi(pcoords: ndarray):
+def dshp_T3_multi(pcoords: ndarray) -> ndarray:
     nP = pcoords.shape[0]
     res = np.zeros((nP, 3, 2), dtype=pcoords.dtype)
     for iP in prange(nP):

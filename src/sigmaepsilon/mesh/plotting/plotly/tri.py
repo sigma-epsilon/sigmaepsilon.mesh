@@ -1,6 +1,15 @@
 from ...config import __hasplotly__
 
-if __hasplotly__:
+if not __hasplotly__:  # pragma: no cover
+
+    def triplot_plotly(*_, **__):
+        raise ImportError(
+            "You need Plotly for this. Install it with 'pip install plotly'. "
+            "You may also need to restart your kernel and reload the package."
+        )
+
+
+else:
     from typing import Optional, Union
 
     import plotly.graph_objects as go
@@ -30,17 +39,17 @@ if __hasplotly__:
             If True, plots the edges of the mesh. Default is False.
         edges: numpy.ndarray, Optional
             The edges to plot. If provided, `plot_edges` is ignored. Default is None.
-        
+
         Returns
         -------
         figure: :class:`plotly.graph_objects.Figure`
             The figure object.
-            
+
         Example
         -------
         .. plotly::
             :include-source: True
-        
+
             from sigmaepsilon.mesh.plotting import triplot_plotly
             from sigmaepsilon.mesh import grid
             from sigmaepsilon.mesh.utils.topology.tr import Q4_to_T3
@@ -111,14 +120,6 @@ if __hasplotly__:
             scatter_lines_plotly(points, edges, fig=fig)
 
         return fig
-
-else:  # pragma: no cover
-
-    def triplot_plotly(*_, **__):
-        raise ImportError(
-            "You need Plotly for this. Install it with 'pip install plotly'. "
-            "You may also need to restart your kernel and reload the package."
-        )
 
 
 __all__ = ["triplot_plotly"]

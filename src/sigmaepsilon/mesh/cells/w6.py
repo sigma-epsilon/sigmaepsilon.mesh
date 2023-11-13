@@ -1,13 +1,12 @@
 from typing import Tuple, List
+
 import numpy as np
 from numpy import ndarray
 from sympy import symbols
 
 from ..geometry import PolyCellGeometry3d
 from ..data.polycell import PolyCell
-from ..utils.cells.numint import Gauss_Legendre_Wedge_3x2
-from ..utils.cells.utils import volumes
-from ..utils.utils import cells_coords
+from ..utils.numint import Gauss_Legendre_Wedge_3x2
 from ..utils.cells.w6 import monoms_W6
 
 
@@ -23,7 +22,8 @@ class W6(PolyCell):
         vtk_cell_id = 13
         monomial_evaluator: monoms_W6
         quadrature = {
-            "full": Gauss_Legendre_Wedge_3x2(),
+            "full": Gauss_Legendre_Wedge_3x2,
+            "geometry": "full",
         }
 
         @classmethod
@@ -46,30 +46,22 @@ class W6(PolyCell):
         def master_coordinates(cls) -> ndarray:
             return np.array(
                 [
-                    [0.0, 0.0, -1.0],
-                    [1.0, 0.0, -1.0],
-                    [0.0, 1.0, -1.0],
-                    [0.0, 0.0, 1.0],
-                    [1.0, 0.0, 1.0],
-                    [0.0, 1.0, 1.0],
+                    [-1 / 3, -1 / 3, -1.0],
+                    [2 / 3, -1 / 3, -1.0],
+                    [-1 / 3, 2 / 3, -1.0],
+                    [-1 / 3, -1 / 3, 1.0],
+                    [2 / 3, -1 / 3, 1.0],
+                    [-1 / 3, 2 / 3, 1.0],
                 ]
             )
 
         @classmethod
         def master_center(cls) -> ndarray:
-            return np.array([[1 / 3, 1 / 3, 0]])
+            return np.array([[0.0, 0.0, 0.0]], dtype=float)
 
         @classmethod
-        def tetmap(cls) -> np.ndarray:
+        def tetmap(cls) -> ndarray:
             return np.array(
                 [[0, 1, 2, 4], [3, 5, 4, 2], [2, 5, 0, 4]],
                 dtype=int,
             )
-
-    def volumes(self) -> ndarray:
-        coords = self.source_coords()
-        topo = self.topology().to_numpy()
-        ecoords = cells_coords(coords, topo)
-        qpos, qweight = self.Geometry.quadrature["full"]
-        dshp = self.Geometry.shape_function_derivatives(qpos)
-        return volumes(ecoords, dshp, qweight)
