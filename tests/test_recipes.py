@@ -7,6 +7,7 @@ from sigmaepsilon.mesh.recipes import (
     ribbed_plate,
     perforated_cube,
     cylinder,
+    circular_helix,
 )
 
 
@@ -60,6 +61,13 @@ class TestRecipes(unittest.TestCase):
 
         cyl = cylinder(shape, size, voxelize=False)
         self.assertTrue(np.isclose(cyl.volume(), vol, rtol=1e-2, atol=1e-2))
+        
+    def test_circular_helix(self):
+        fnc = circular_helix(1, 5)
+        fnc(1)
+        
+        fnc = circular_helix(slope=1, pitch=5)
+        fnc(1)
 
 
 if __name__ == "__main__":

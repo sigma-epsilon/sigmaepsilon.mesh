@@ -11,7 +11,7 @@ from sigmaepsilon.mesh.plotting import (
     triplot_mpl_mesh,
     triplot_mpl_hinton,
 )
-import matplotlib.tri as mpltri 
+import matplotlib.tri as mpltri
 
 
 class TestMplTriplot(SigmaEpsilonTestCase):
@@ -33,14 +33,14 @@ class TestMplTriplot(SigmaEpsilonTestCase):
         data = np.random.rand(len(triangles))
         triplot_mpl_data(triobj, data=data)
         triplot_mpl_hinton(triobj, data=data)
-        
+
         data = np.random.rand(len(triangles), 3)
         triplot_mpl_data(triobj, data=data)
 
         data = np.random.rand(len(points))
         triplot_mpl_data(triobj, data=data, cmap="bwr")
         triplot_mpl_data(triobj, data=data, cmap="bwr", refine=True, draw_contours=True)
-        refiner = mpltri.UniformTriRefiner(triobj) 
+        refiner = mpltri.UniformTriRefiner(triobj)
         triplot_mpl_data(triobj, data=data, cmap="bwr", refiner=refiner, nlevels=10)
 
     def circular_disk(self):

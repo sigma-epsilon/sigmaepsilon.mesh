@@ -44,17 +44,19 @@ def _approximator(
     if shp_source_inverse is None:
         assert isinstance(x_source, Iterable)
         shp_source = shp_fnc(x_source)  # (nP_source, nNE)
-        
+
         num_rows, num_columns = shp_source.shape
         rank = np.linalg.matrix_rank(shp_source)
-        square_and_full_rank = (num_rows == num_columns) and rank == num_columns == num_rows
+        square_and_full_rank = (
+            num_rows == num_columns
+        ) and rank == num_columns == num_rows
         if not square_and_full_rank:  # pragma: no cover
             warnings.warn(
                 "The approximation involves the calculation of a generalized inverse "
                 "which probably results in loss of precision.",
-                SigmaEpsilonPerformanceWarning
+                SigmaEpsilonPerformanceWarning,
             )
-        
+
         shp_source_inverse = generalized_inverse(shp_source)
 
     if not isinstance(values_source, ndarray):

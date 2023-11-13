@@ -45,13 +45,13 @@ def monoms_TET4(x: ndarray) -> ndarray:
 
 
 @njit(nogil=True, cache=__cache)
-def shp_TET4(pcoord: ndarray):
+def shp_TET4(pcoord: ndarray) -> ndarray:
     r, s, t = pcoord
-    return np.array([1 - r - s - t, r, s, t])
+    return np.array([1 / 3 - r - s - t, r + 1 / 3, s + 1 / 3, t + 1 / 3])
 
 
 @njit(nogil=True, parallel=True, cache=__cache)
-def shp_TET4_multi(pcoords: np.ndarray):
+def shp_TET4_multi(pcoords: ndarray) -> ndarray:
     nP = pcoords.shape[0]
     res = np.zeros((nP, 4), dtype=pcoords.dtype)
     for iP in prange(nP):
@@ -60,7 +60,7 @@ def shp_TET4_multi(pcoords: np.ndarray):
 
 
 @njit(nogil=True, parallel=True, cache=__cache)
-def shape_function_matrix_TET4(pcoord: np.ndarray, ndof: int = 3):
+def shape_function_matrix_TET4(pcoord: ndarray, ndof: int = 3) -> ndarray:
     eye = np.eye(ndof, dtype=pcoord.dtype)
     shp = shp_TET4(pcoord)
     res = np.zeros((ndof, ndof * 4), dtype=pcoord.dtype)
@@ -70,7 +70,7 @@ def shape_function_matrix_TET4(pcoord: np.ndarray, ndof: int = 3):
 
 
 @njit(nogil=True, parallel=True, cache=__cache)
-def shape_function_matrix_TET4_multi(pcoords: np.ndarray, ndof: int = 3):
+def shape_function_matrix_TET4_multi(pcoords: ndarray, ndof: int = 3) -> ndarray:
     nP = pcoords.shape[0]
     res = np.zeros((nP, ndof, ndof * 4), dtype=pcoords.dtype)
     for iP in prange(nP):
@@ -79,7 +79,7 @@ def shape_function_matrix_TET4_multi(pcoords: np.ndarray, ndof: int = 3):
 
 
 @njit(nogil=True, cache=__cache)
-def dshp_TET4(x):
+def dshp_TET4(x: float) -> ndarray:
     res = np.array(
         [[-1.0, -1.0, -1.0], [1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]]
     )
@@ -87,7 +87,7 @@ def dshp_TET4(x):
 
 
 @njit(nogil=True, parallel=True, cache=__cache)
-def dshp_TET4_multi(pcoords: ndarray):
+def dshp_TET4_multi(pcoords: ndarray) -> ndarray:
     nP = pcoords.shape[0]
     res = np.zeros((nP, 4, 3), dtype=pcoords.dtype)
     for iP in prange(nP):

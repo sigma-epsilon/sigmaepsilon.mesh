@@ -145,24 +145,48 @@ def _glob_to_nat_tet_bulk_knn_(
 
 
 @njit(nogil=True, cache=__cache)
-def lcoords_tet() -> ndarray:
+def lcoords_tet(center: ndarray = None) -> ndarray:
     """
     Returns coordinates of the master element
     of a simplex in 3d.
     """
-    return np.array(
-        [[0.0, 0.0, 0.0], [1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]]
+    res = np.array(
+        [
+            [-1 / 3, -1 / 3, -1 / 3],
+            [2 / 3, -1 / 3, -1 / 3],
+            [-1 / 3, 2 / 3, -1 / 3],
+            [-1 / 3, -1 / 3, 2 / 3],
+        ]
     )
+    if center is not None:
+        res += center
+    return res
 
 
 @njit(nogil=True, cache=__cache)
-def nat_to_loc_tet(acoord: np.ndarray) -> ndarray:
+def nat_to_loc_tet(
+    acoord: ndarray, lcoords: ndarray = None, center: ndarray = None
+) -> ndarray:
     """
     Transformation from natural to local coordinates
     within a tetrahedra.
+    
+    Parameters
+    ----------
+    acoord: numpy.ndarray
+        1d NumPy array of natural coordinates of a point.
+    lcoords: numpy.ndarray, Optional
+        2d NumPy array of parametric coordinates (r, s, t) of the
+        master cell of a tetrahedron.
+    center: numpy.ndarray
+        The local coordinates (r, s, t) of the geometric center
+        of the master tetrahedron. If not provided it is assumed to
+        be at (0, 0, 0).
 
     Notes
     -----
     This function is numba-jittable in 'nopython' mode.
     """
-    return acoord.T @ lcoords_tet()
+    if lcoords is None:
+        lcoords = lcoords_tet(center)
+    return acoord.T @ lcoords

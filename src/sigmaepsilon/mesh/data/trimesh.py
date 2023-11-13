@@ -1,4 +1,4 @@
-from typing import Tuple, Optional
+from typing import Tuple, Optional, Any
 
 import numpy as np
 from numpy import ndarray
@@ -48,9 +48,13 @@ class TriMesh(PolyData):
     Triangulate a rectangle of size 800x600 with a subdivision of 10x10
     and calculate the area
 
-    >>> from sigmaepsilon.mesh import TriMesh, CartesianFrame
+    >>> from sigmaepsilon.mesh import TriMesh, CartesianFrame, PointData, triangulate
+    >>> from sigmaepsilon.mesh.cells import T3
     >>> A = CartesianFrame(dim=3)
-    >>> trimesh = TriMesh(size=(800, 600), shape=(10, 10), frame=A)
+    >>> coords, topo = triangulate(size=(800, 600), shape=(10, 10))
+    >>> pd = PointData(coords=coords, frame=A)
+    >>> cd = T3(topo=topo)
+    >>> trimesh = TriMesh(pd, cd)
     >>> trimesh.area()
     480000.0
 
@@ -153,7 +157,7 @@ class TriMesh(PolyData):
         else:
             return edges
 
-    def to_triobj(self, *args, **kwargs):
+    def to_triobj(self) -> Any:
         """
         Returns a triangulation object of a specified backend.
         See :func:`~sigmaepsilon.mesh.triang.triangulate` for the details.

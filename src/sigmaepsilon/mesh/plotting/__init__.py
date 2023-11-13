@@ -27,5 +27,5 @@ __all__ = [
     "scatter_points_plotly",
     "plot_lines_plotly",
     "triplot_plotly",
-    "k3dplot"
+    "k3dplot",
 ]

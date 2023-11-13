@@ -15,7 +15,7 @@ from .config import __hasvtk__, __haspyvista__, __hasmatplotlib__
 
 if __hasvtk__:
     from vtk import vtkIdList
-    
+
 if __haspyvista__:
     import pyvista as pv
 
