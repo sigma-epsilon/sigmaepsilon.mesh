@@ -275,8 +275,7 @@ class PolyCell(Generic[MeshDataLike, PointDataLike], ABC_PolyCell):
 
         return points, rng
 
-    @staticmethod
-    def _parse_gauss_data(quad_dict: dict, key: Hashable) -> Iterable[Quadrature]:
+    def _parse_gauss_data(self, quad_dict: dict, key: Hashable) -> Iterable[Quadrature]:
         value: Union[Callable, str, dict] = quad_dict[key]
 
         if isinstance(value, Callable):
@@ -284,7 +283,7 @@ class PolyCell(Generic[MeshDataLike, PointDataLike], ABC_PolyCell):
             quad = Quadrature(x=qpos, w=qweight)
             yield quad
         elif isinstance(value, str):
-            for v in PolyCell._parse_gauss_data(quad_dict, value):
+            for v in self._parse_gauss_data(quad_dict, value):
                 yield v
         else:
             qpos, qweight = value
