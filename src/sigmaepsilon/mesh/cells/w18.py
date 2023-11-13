@@ -1,13 +1,12 @@
 from typing import Tuple, List
+
 import numpy as np
 from numpy import ndarray
 from sympy import symbols
 
 from ..geometry import PolyCellGeometry3d
 from ..data.polycell import PolyCell
-from ..utils.cells.numint import Gauss_Legendre_Wedge_3x3
-from ..utils.cells.utils import volumes
-from ..utils.utils import cells_coords
+from ..utils.numint import Gauss_Legendre_Wedge_3x3
 from ..utils.cells.w18 import monoms_W18
 from ..utils.topology import compose_trmap
 from .w6 import W6
@@ -25,7 +24,8 @@ class W18(PolyCell):
         vtk_cell_id = 32
         monomial_evaluator: monoms_W18
         quadrature = {
-            "full": Gauss_Legendre_Wedge_3x3(),
+            "full": Gauss_Legendre_Wedge_3x3,
+            "geometry": "full",
         }
 
         @classmethod
@@ -67,33 +67,33 @@ class W18(PolyCell):
         def master_coordinates(cls) -> ndarray:
             return np.array(
                 [
-                    [0.0, 0.0, -1.0],
-                    [1.0, 0.0, -1.0],
-                    [0.0, 1.0, -1.0],
-                    [0.0, 0.0, 1.0],
-                    [1.0, 0.0, 1.0],
-                    [0.0, 1.0, 1.0],
-                    [0.5, 0.0, -1.0],
-                    [0.5, 0.5, -1.0],
-                    [0.0, 0.5, -1.0],
-                    [0.5, 0.0, 1.0],
-                    [0.5, 0.5, 1.0],
-                    [0.0, 0.5, 1.0],
-                    [0.0, 0.0, 0.0],
-                    [1.0, 0.0, 0.0],
-                    [0.0, 1.0, 0.0],
-                    [0.5, 0.0, 0.0],
-                    [0.5, 0.5, 0.0],
-                    [0.0, 0.5, 0.0],
+                    [-1 / 3, -1 / 3, -1.0],
+                    [2 / 3, -1 / 3, -1.0],
+                    [-1 / 3, 2 / 3, -1.0],
+                    [-1 / 3, -1 / 3, 1.0],
+                    [2 / 3, -1 / 3, 1.0],
+                    [-1 / 3, 2 / 3, 1.0],
+                    [1 / 6, -1 / 3, -1.0],
+                    [1 / 6, 1 / 6, -1.0],
+                    [-1 / 3, 1 / 6, -1.0],
+                    [1 / 6, -1 / 3, 1.0],
+                    [1 / 6, 1 / 6, 1.0],
+                    [-1 / 3, 1 / 6, 1.0],
+                    [-1 / 3, -1 / 3, 0.0],
+                    [2 / 3, -1 / 3, 0.0],
+                    [-1 / 3, 2 / 3, 0.0],
+                    [1 / 6, -1 / 3, 0.0],
+                    [1 / 6, 1 / 6, 0.0],
+                    [-1 / 3, 1 / 6, 0.0],
                 ]
             )
 
         @classmethod
         def master_center(cls) -> ndarray:
-            return np.array([[1 / 3, 1 / 3, 0]])
+            return np.array([[0.0, 0.0, 0.0]], dtype=float)
 
         @classmethod
-        def tetmap(cls) -> np.ndarray:
+        def tetmap(cls) -> ndarray:
             w18_to_w6 = np.array(
                 [
                     [15, 13, 16, 9, 4, 10],
@@ -109,11 +109,3 @@ class W18(PolyCell):
             )
             w6_to_tet4 = W6.Geometry.tetmap()
             return compose_trmap(w18_to_w6, w6_to_tet4)
-
-    def volumes(self) -> ndarray:
-        coords = self.source_coords()
-        topo = self.topology().to_numpy()
-        ecoords = cells_coords(coords, topo)
-        qpos, qweight = self.Geometry.quadrature["full"]
-        dshp = self.Geometry.shape_function_derivatives(qpos)
-        return volumes(ecoords, dshp, qweight)

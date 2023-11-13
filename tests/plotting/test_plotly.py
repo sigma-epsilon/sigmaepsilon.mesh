@@ -13,7 +13,6 @@ from sigmaepsilon.mesh.plotting import (
 
 
 class TestPlotly(SigmaEpsilonTestCase):
-
     def test_points(self):
         gridparams = {
             "size": (1200, 600),
@@ -24,7 +23,7 @@ class TestPlotly(SigmaEpsilonTestCase):
         data = np.random.rand(len(points))
         scatter_points_plotly(points)
         scatter_points_plotly(points, scalars=data)
-    
+
     def test_lines(self):
         gridparams = {
             "size": (10, 10, 10),
@@ -37,8 +36,8 @@ class TestPlotly(SigmaEpsilonTestCase):
         plot_lines_plotly(coords, topo)
         plot_lines_plotly(coords, topo, scalars=data)
         plot_lines_plotly(coords, topo, scalars=data, scalar_labels=["X", "Y"])
-        
-    def test_triplot(self): 
+
+    def test_triplot(self):
         gridparams = {
             "size": (1200, 600),
             "shape": (4, 4),
@@ -50,7 +49,7 @@ class TestPlotly(SigmaEpsilonTestCase):
         triplot_plotly(points, triangles, plot_edges=False)
         triplot_plotly(points, triangles, data, plot_edges=False)
         triplot_plotly(points, triangles, data, plot_edges=True)
-        
-        
+
+
 if __name__ == "__main__":
     unittest.main()

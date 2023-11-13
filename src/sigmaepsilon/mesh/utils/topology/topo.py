@@ -852,7 +852,7 @@ def unique_topo_data(topo3d: TopoLike) -> Tuple[ndarray, ndarray]:
 
     Parameters
     ----------
-    topo : numpy.ndarray
+    topo: numpy.ndarray
         Hierarchical topology array. The array must be 3 dimensional containing node
         indices for every node as a subarray. For instance for a 2d cell, the node
         indices of the j-th edge of the i-th element read as `topo[i, j]`. In general,

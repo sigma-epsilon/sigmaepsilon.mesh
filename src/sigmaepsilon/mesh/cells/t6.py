@@ -1,26 +1,38 @@
 # -*- coding: utf-8 -*-
 from typing import Tuple, List
+
 import numpy as np
 from numpy import ndarray
 from sympy import symbols
 
 from ..geometry import PolyCellGeometry2d
 from ..data.polycell import PolyCell
-from ..utils.utils import cells_coords
 from ..utils.cells.t6 import (
     shp_T6_multi,
     dshp_T6_multi,
-    areas_T6,
     shape_function_matrix_T6_multi,
     monoms_T6,
 )
-from ..utils.cells.numint import Gauss_Legendre_Tri_3a
+from ..utils.numint import Gauss_Legendre_Tri_3a
 from ..utils.topology import T6_to_T3, T3_to_T6
 
 
 class T6(PolyCell):
     """
     A class to handle 6-noded triangles.
+
+    Example
+    -------
+    >>> from sigmaepsilon.mesh import TriMesh, CartesianFrame, PointData, triangulate
+    >>> from sigmaepsilon.mesh.cells import T6 as CellData
+    >>> from sigmaepsilon.mesh.utils.topology.tr import T3_to_T6
+    >>> A = CartesianFrame(dim=3)
+    >>> coords, topo = triangulate(size=(800, 600), shape=(10, 10))
+    >>> coords, topo = T3_to_T6(coords, topo)
+    >>> pd = PointData(coords=coords, frame=A)
+    >>> cd = CellData(topo=topo)
+    >>> trimesh = TriMesh(pd, cd)
+    >>> trimesh.area()
     """
 
     label = "T6"
@@ -33,7 +45,8 @@ class T6(PolyCell):
         shape_function_derivative_evaluator: dshp_T6_multi
         monomial_evaluator: monoms_T6
         quadrature = {
-            "full": Gauss_Legendre_Tri_3a(),
+            "full": Gauss_Legendre_Tri_3a,
+            "geometry": "full",
         }
 
         @classmethod
@@ -62,7 +75,14 @@ class T6(PolyCell):
             numpy.ndarray
             """
             return np.array(
-                [[0.0, 0.0], [1.0, 0.0], [0.0, 1.0], [0.5, 0.0], [0.5, 0.5], [0.0, 0.5]]
+                [
+                    [-1 / 3, -1 / 3],
+                    [2 / 3, -1 / 3],
+                    [-1 / 3, 2 / 3],
+                    [1 / 6, -1 / 3],
+                    [1 / 6, 1 / 6],
+                    [-1 / 3, 1 / 6],
+                ]
             )
 
         @classmethod
@@ -74,31 +94,20 @@ class T6(PolyCell):
             -------
             numpy.ndarray
             """
-            return np.array([[1 / 3, 1 / 3]])
+            return np.array([[0.0, 0.0]], dtype=float)
 
         @classmethod
-        def trimap(cls, subdivide: bool = True):
+        def trimap(cls, subdivide: bool = True) -> ndarray:
             if subdivide:
                 return np.array([[0, 3, 5], [3, 1, 4], [5, 4, 2], [5, 3, 4]], dtype=int)
             else:
                 return np.array([[0, 1, 2]], dtype=int)
 
     def to_triangles(self) -> ndarray:
+        """
+        Returns the topology as triangles.
+        """
         return T6_to_T3(None, self.topology().to_numpy())[1]
-
-    def areas(self) -> ndarray:
-        """
-        Returns the areas of the triangles of the block.
-
-        Returns
-        -------
-        numpy.ndarray
-        """
-        coords = self.source_coords()
-        topo = self.topology().to_numpy()
-        ecoords = cells_coords(coords[:, :2], topo)
-        qpos, qweight = self.Geometry.quadrature["full"]
-        return areas_T6(ecoords, qpos, qweight)
 
     @classmethod
     def from_TriMesh(cls, *args, coords=None, topo=None, **kwargs):
