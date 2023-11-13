@@ -9,7 +9,7 @@ from .utils import (
     center_of_points,
     k_nearest_neighbours as knn,
     knn_to_lines,
-    xy_to_xyz,
+    coords_to_3d,
 )
 
 __cache = True
@@ -200,7 +200,7 @@ def grid(
         path = np.array(path, dtype=int)
         topo = transform_topology(topo, path)
 
-    return xy_to_xyz(coords), topo
+    return coords_to_3d(coords), topo
 
 
 def gridQ4(*args, **kwargs) -> Tuple[ndarray, ndarray]:
@@ -227,7 +227,7 @@ def gridQ4(*args, **kwargs) -> Tuple[ndarray, ndarray]:
     """
     coords, topo = grid(*args, eshape=(2, 2), **kwargs)
     path = np.array([0, 2, 3, 1], dtype=int)
-    return xy_to_xyz(coords), transform_topology(topo, path)
+    return coords_to_3d(coords), transform_topology(topo, path)
 
 
 def gridQ9(*args, **kwargs) -> Tuple[ndarray, ndarray]:
@@ -241,7 +241,7 @@ def gridQ9(*args, **kwargs) -> Tuple[ndarray, ndarray]:
     """
     coords, topo = grid(*args, eshape=(3, 3), **kwargs)
     path = np.array([0, 6, 8, 2, 3, 7, 5, 1, 4], dtype=int)
-    return xy_to_xyz(coords), transform_topology(topo, path)
+    return coords_to_3d(coords), transform_topology(topo, path)
 
 
 def gridQ8(*args, **kwargs) -> Tuple[ndarray, ndarray]:
@@ -268,7 +268,7 @@ def gridH8(*args, **kwargs) -> Tuple[ndarray, ndarray]:
     """
     coords, topo = grid(*args, eshape=(2, 2, 2), **kwargs)
     path = np.array([0, 4, 6, 2, 1, 5, 7, 3], dtype=int)
-    return xy_to_xyz(coords), transform_topology(topo, path)
+    return coords_to_3d(coords), transform_topology(topo, path)
 
 
 # fmt: off
@@ -412,8 +412,8 @@ def rgridMT(size, shape, eshape, shift, start=0):
     nDime = len(size)
     if nDime == 1:
         lX = size[0]
-        ndivX = shape
-        nNodeX = eshape
+        ndivX = shape[0]
+        nNodeX = eshape[0]
         nX = ndivX * (nNodeX - 1) + 1
         dX = lX / ndivX
         ddX = dX / (nNodeX - 1)

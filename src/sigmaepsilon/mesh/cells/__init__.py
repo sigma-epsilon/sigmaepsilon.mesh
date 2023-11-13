@@ -7,7 +7,7 @@ from .t3 import T3
 from .t3 import T3 as Tri
 from .q4 import Q4
 from .q4 import Q4 as Quad
-from.q8 import Q8
+from .q8 import Q8
 from .q9 import Q9
 from .t6 import T6
 from .h8 import H8

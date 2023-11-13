@@ -8,17 +8,17 @@ __cache = True
 
 
 @njit(nogil=True, parallel=True, fastmath=True, cache=__cache)
-def volumes(ecoords: ndarray, dshp: ndarray, qweight: ndarray) -> ndarray:
+def cell_measures(ecoords: ndarray, dshp: ndarray, qweight: ndarray) -> ndarray:
     nE = ecoords.shape[0]
-    volumes = np.zeros(nE, dtype=ecoords.dtype)
-    nQ = len(qweight)
+    res = np.zeros(nE, dtype=ecoords.dtype)
+    nQ = qweight.shape[0]
     for iQ in range(nQ):
         _dshp = dshp[iQ]
-        for i in prange(nE):
-            jac = ecoords[i].T @ _dshp
+        for iE in prange(nE):
+            jac = ecoords[iE].T @ _dshp
             djac = np.linalg.det(jac)
-            volumes[i] += qweight[iQ] * djac
-    return volumes
+            res[iE] += qweight[iQ] * djac
+    return res
 
 
 @njit(nogil=True, parallel=True, cache=__cache)

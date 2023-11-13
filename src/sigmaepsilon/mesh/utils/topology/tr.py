@@ -217,16 +217,16 @@ def to_T3(
 ) -> Tuple[ndarray]:
     if path is None:
         raise TypeError("Expected Iterable for argument 'path', got 'NoneType'.")
-    
+
     if not isinstance(path, ndarray):
         raise TypeError(f"Expected 'ndarray' for argument 'path', got {type(path)}.")
-    
+
     if not len(path.shape) == 2:
         raise ValueError("'path' must be a 2d NumPy array")
-    
+
     if not path.shape[1] == 3:
         raise ValueError("Invalid 'path'.")
-    
+
     if data is None:
         return coords, +transform_topology(topo, path, *args, **kwargs)
     else:
@@ -239,12 +239,12 @@ def Q8_to_T3(
     data: DataLike = None,
     *,
     path: ndarray = None,
-    **kwargs
+    **kwargs,
 ) -> Tuple[ndarray]:
     if path is None:
         path = trimap_Q8()
     elif isinstance(path, str):
-        raise NotImplementedError   
+        raise NotImplementedError
     return to_T3(coords, topo, data, path=path, **kwargs)
 
 

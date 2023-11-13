@@ -1,6 +1,27 @@
 from ...config import __hasmatplotlib__
 
-if __hasmatplotlib__:
+if not __hasmatplotlib__:  # pragma: no cover
+
+    def triplot_mpl_mesh(*_, **__):
+        raise ImportError(
+            "You need Matplotlib for this. Install it with 'pip install matplotlib'. "
+            "You may also need to restart your kernel and reload the package."
+        )
+
+    def triplot_mpl_hinton(*_, **__):
+        raise ImportError(
+            "You need Matplotlib for this. Install it with 'pip install matplotlib'. "
+            "You may also need to restart your kernel and reload the package."
+        )
+
+    def triplot_mpl_data(*_, **__):
+        raise ImportError(
+            "You need Matplotlib for this. Install it with 'pip install matplotlib'. "
+            "You may also need to restart your kernel and reload the package."
+        )
+
+
+else:
     from typing import Any, Union, Optional, Iterable
 
     import numpy as np
@@ -17,12 +38,11 @@ if __hasmatplotlib__:
 
     from .utils import decorate_mpl_ax, triplotter, TriPatchCollection
 
-
     @triplotter
     def triplot_mpl_hinton(
         triobj: Any,
         data: ndarray,
-        *,
+        *_,
         fig: Optional[Union[Figure, None]] = None,
         ax: Optional[Union[Axes, Iterable[Axes], None]] = None,
         lw: Optional[float] = 0.5,
@@ -113,7 +133,7 @@ if __hasmatplotlib__:
     @triplotter
     def triplot_mpl_mesh(
         triobj: Any,
-        *,
+        *_,
         fig: Optional[Union[Figure, None]] = None,
         ax: Optional[Union[Axes, None]] = None,
         lw: Optional[float] = 0.5,
@@ -209,7 +229,7 @@ if __hasmatplotlib__:
     def triplot_mpl_data(
         triobj: Any,
         data: ndarray,
-        *,
+        *_,
         fig: Optional[Union[Figure, None]] = None,
         ax: Optional[Union[Axes, Iterable[Axes], None]] = None,
         cmap: Optional[str] = "jet",
@@ -383,26 +403,6 @@ if __hasmatplotlib__:
             **kwargs,
         )
         return axobj
-
-else:  # pragma: no cover
-
-    def triplot_mpl_mesh(*_, **__):
-        raise ImportError(
-            "You need Matplotlib for this. Install it with 'pip install matplotlib'. "
-            "You may also need to restart your kernel and reload the package."
-        )
-
-    def triplot_mpl_hinton(*_, **__):
-        raise ImportError(
-            "You need Matplotlib for this. Install it with 'pip install matplotlib'. "
-            "You may also need to restart your kernel and reload the package."
-        )
-
-    def triplot_mpl_data(*_, **__):
-        raise ImportError(
-            "You need Matplotlib for this. Install it with 'pip install matplotlib'. "
-            "You may also need to restart your kernel and reload the package."
-        )
 
 
 __all__ = ["triplot_mpl_hinton", "triplot_mpl_mesh", "triplot_mpl_data"]

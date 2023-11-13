@@ -1,22 +1,19 @@
 from typing import Tuple, List
+from functools import partial
 
 from sympy import symbols
 import numpy as np
 from numpy import ndarray
 
-from sigmaepsilon.math.numint import gauss_points as gp
-
 from ..geometry import PolyCellGeometry3d
 from ..data.polycell import PolyCell
-from ..utils.utils import cells_coords
 from ..utils.cells.h8 import (
     shp_H8_multi,
     dshp_H8_multi,
-    volumes_H8,
     shape_function_matrix_H8_multi,
     monoms_H8,
 )
-from ..utils.cells.numint import Gauss_Legendre_Hex_Grid
+from ..utils.numint import Gauss_Legendre_Hex_Grid
 
 
 class H8(PolyCell):
@@ -46,7 +43,8 @@ class H8(PolyCell):
         shape_function_derivative_evaluator: dshp_H8_multi
         monomial_evaluator: monoms_H8
         quadrature = {
-            "full": Gauss_Legendre_Hex_Grid(2, 2, 2),
+            "full": partial(Gauss_Legendre_Hex_Grid, 2, 2, 2),
+            "geometry": "full",
         }
 
         @classmethod
@@ -104,17 +102,3 @@ class H8(PolyCell):
                 [[1, 2, 0, 5], [3, 0, 2, 7], [5, 4, 7, 0], [6, 5, 7, 2], [0, 2, 7, 5]],
                 dtype=int,
             )
-
-    def volumes(self) -> ndarray:
-        """
-        Returns the volumes of the cells.
-
-        Returns
-        -------
-        numpy.ndarray
-        """
-        coords = self.source_coords()
-        topo = self.topology().to_numpy()
-        ecoords = cells_coords(coords, topo)
-        qpos, qweight = gp(2, 2, 2)
-        return volumes_H8(ecoords, qpos, qweight)

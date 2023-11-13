@@ -1,4 +1,5 @@
 from typing import Tuple, List
+
 import numpy as np
 from numpy import ndarray
 from sympy import symbols
@@ -11,7 +12,7 @@ from ..utils.cells.q9 import (
     shape_function_matrix_Q9_multi,
     monoms_Q9,
 )
-from ..utils.cells.numint import Gauss_Legendre_Quad_9
+from ..utils.numint import Gauss_Legendre_Quad_9
 from ..utils.topology import Q4_to_T3, Q9_to_Q4
 
 
@@ -30,7 +31,8 @@ class Q9(PolyCell):
         shape_function_derivative_evaluator: dshp_Q9_multi
         monomial_evaluator: monoms_Q9
         quadrature = {
-            "full": Gauss_Legendre_Quad_9(),
+            "full": Gauss_Legendre_Quad_9,
+            "geometry": "full",
         }
 
         @classmethod
