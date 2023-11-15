@@ -22,10 +22,10 @@ class L2(PolyCell):
     class Geometry(PolyCellGeometry1d):
         number_of_nodes = 2
         vtk_cell_id = 3
-        shape_function_evaluator: shp_L2_multi
-        shape_function_matrix_evaluator: shape_function_matrix_L2_multi
-        shape_function_derivative_evaluator: dshp_L2_multi
-        monomial_evaluator: monoms_L2
+        shape_function_evaluator = shp_L2_multi
+        shape_function_matrix_evaluator = shape_function_matrix_L2_multi
+        shape_function_derivative_evaluator = dshp_L2_multi
+        monomial_evaluator = monoms_L2
         quadrature = {
             "full": partial(Gauss_Legendre_Line_Grid, 2),
             "geometry": "full",

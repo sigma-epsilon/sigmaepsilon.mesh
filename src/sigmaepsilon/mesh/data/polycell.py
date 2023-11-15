@@ -833,7 +833,9 @@ class PolyCell(Generic[MeshDataLike, PointDataLike], ABC_PolyCell):
             A NumPy array of shape (nE, nP, nD), where nP is the number of points in 'x',
             nE is the number of cells in the block and nD is the number of spatial dimensions.
         """
-        x = atleast2d(x, front=True)
+        nD = self.Geometry.number_of_spatial_dimensions
+        if nD > 1:
+            x = atleast2d(x, front=True)
         shp = self.Geometry.shape_function_values(x)  # (nP, nNE)
         if ec is None:
             ec = self.points_of_cells()
@@ -1107,7 +1109,7 @@ class PolyCell(Generic[MeshDataLike, PointDataLike], ABC_PolyCell):
 
     def __hasattr__(self, attr: str) -> Any:
         return attr in self.__dict__ or hasattr(self.db, attr)
-    
+
     def __getattr__(self, attr: str) -> Any:
         if attr in self.__dict__:
             return self.__dict__[attr]

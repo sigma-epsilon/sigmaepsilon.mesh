@@ -20,7 +20,7 @@ class W6(PolyCell):
     class Geometry(PolyCellGeometry3d):
         number_of_nodes = 6
         vtk_cell_id = 13
-        monomial_evaluator: monoms_W6
+        monomial_evaluator = monoms_W6
         quadrature = {
             "full": Gauss_Legendre_Wedge_3x2,
             "geometry": "full",

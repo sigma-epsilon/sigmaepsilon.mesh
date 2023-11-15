@@ -39,10 +39,10 @@ class T3(PolyCell):
     class Geometry(PolyCellGeometry2d):
         number_of_nodes = 3
         vtk_cell_id = 5
-        shape_function_evaluator: shp_T3_multi
-        shape_function_matrix_evaluator: shape_function_matrix_T3_multi
-        shape_function_derivative_evaluator: dshp_T3_multi
-        monomial_evaluator: monoms_T3
+        shape_function_evaluator = shp_T3_multi
+        shape_function_matrix_evaluator = shape_function_matrix_T3_multi
+        shape_function_derivative_evaluator = dshp_T3_multi
+        monomial_evaluator = monoms_T3
         quadrature = {
             "full": Gauss_Legendre_Tri_1,
             "geometry": "full",

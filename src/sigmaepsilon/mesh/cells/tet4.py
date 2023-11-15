@@ -28,10 +28,10 @@ class TET4(PolyCell):
     class Geometry(PolyCellGeometry3d):
         number_of_nodes = 4
         vtk_cell_id = 10
-        shape_function_evaluator: shp_TET4_multi
-        shape_function_matrix_evaluator: shape_function_matrix_TET4_multi
-        shape_function_derivative_evaluator: dshp_TET4_multi
-        monomial_evaluator: monoms_TET4
+        shape_function_evaluator = shp_TET4_multi
+        shape_function_matrix_evaluator = shape_function_matrix_TET4_multi
+        shape_function_derivative_evaluator = dshp_TET4_multi
+        monomial_evaluator = monoms_TET4
         quadrature = {
             "full": Gauss_Legendre_Tet_1,
             "geometry": "full",

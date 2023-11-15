@@ -38,10 +38,10 @@ class H8(PolyCell):
     class Geometry(PolyCellGeometry3d):
         number_of_nodes = 8
         vtk_cell_id = 12
-        shape_function_evaluator: shp_H8_multi
-        shape_function_matrix_evaluator: shape_function_matrix_H8_multi
-        shape_function_derivative_evaluator: dshp_H8_multi
-        monomial_evaluator: monoms_H8
+        shape_function_evaluator = shp_H8_multi
+        shape_function_matrix_evaluator = shape_function_matrix_H8_multi
+        shape_function_derivative_evaluator = dshp_H8_multi
+        monomial_evaluator = monoms_H8
         quadrature = {
             "full": partial(Gauss_Legendre_Hex_Grid, 2, 2, 2),
             "geometry": "full",
