@@ -377,7 +377,7 @@ else:
                 axobj = ax.tricontourf(tri, data, levels=levels, cmap=cmap)
                 if draw_contours:
                     contour_colors = (
-                        cmap if contour_colors == "auto" else contour_colors
+                        None if contour_colors == "auto" else contour_colors
                     )
                     ax.tricontour(tri, data, levels=levels, colors=contour_colors)
             else:
