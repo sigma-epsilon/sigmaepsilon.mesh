@@ -379,7 +379,7 @@ else:
                     contour_colors = (
                         cmap if contour_colors == "auto" else contour_colors
                     )
-                    ax.tricontour(tri, data, levels=levels)
+                    ax.tricontour(tri, data, levels=levels, colors=contour_colors)
             else:
                 axobj = ax.tripcolor(tri, data, cmap=cmap, shading=shading)
                 dmin = axobj.get_array().min()
