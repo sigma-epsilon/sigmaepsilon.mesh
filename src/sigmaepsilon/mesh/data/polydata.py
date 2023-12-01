@@ -1109,10 +1109,58 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
         c = self.coords(*args, **kwargs)
         return [minmax(c[:, 0]), minmax(c[:, 1]), minmax(c[:, 2])]
 
-    def surface(self: PolyDataLike) -> PolyDataLike:
+    def is_2d_mesh(self) -> bool:
+        """
+        Returns true if the mesh is a 2-dimensional, ie. it only contains 2 dimensional
+        cells.
+        """
+        blocks = self.cellblocks(inclusive=True)
+        m = map(lambda b: b.cd.Geometry.number_of_spatial_dimensions, blocks)
+        return np.all(np.array(list(m)) == 2)
+
+    def surface_normals(self, *args, **kwargs) -> np.ndarray:
+        """
+        Retuns the surface normals as a 2d numpy array.
+
+        .. versionadded:: 2.3.0
+
+        Note
+        ----
+        It only works in cases where the call to `surface` returns a mesh
+        with a `normals` method, like a `Trimesh` instance.
+        """
+        return self.surface(*args, **kwargs).cd.normals()
+    
+    def surface_centers(self, *args, **kwargs) -> np.ndarray:
+        """
+        Retuns the surface centers as a 3d numpy array.
+
+        .. versionadded:: 2.3.0
+
+        Note
+        ----
+        It only works in cases where the call to `surface` returns a mesh
+        with a `normals` method, like a `Trimesh` instance.
+        """
+        return self.surface(*args, **kwargs).centers()
+
+    def surface(
+        self: PolyDataLike, mesh_class: Optional[Union[PolyDataLike, None]] = None
+    ) -> PolyDataLike:
         """
         Returns the surface of the mesh as another `PolyData` instance.
+
+        Parameters
+        ----------
+        mesh_class: PolyDataLike, Optional
+            The class of the resulting mesh instance.
+            The default is :class:`sigmaepsilon.mesh.PolyData`.
+
+            .. versionadded:: 2.3.0
         """
+        if mesh_class is None:
+            mesh_class = PolyData
+
         blocks = list(self.cellblocks(inclusive=True))
         source = self.source()
         coords = source.coords()
@@ -1135,7 +1183,7 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
         pd = pointtype(coords=coords, frame=frame)
         cd = Triangle(topo=triangles, pointdata=pd, frames=frames)
 
-        return self.__class__(pd, cd)
+        return mesh_class(pd, cd)
 
     def topology(self, *args, return_inds: bool = False, **kwargs) -> TopologyArray:
         """
