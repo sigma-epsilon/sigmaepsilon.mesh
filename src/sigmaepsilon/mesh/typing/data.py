@@ -117,6 +117,20 @@ class PolyCellProtocol(
 
     label: ClassVar[Optional[str]] = None
     Geometry: ClassVar[GeometryProtocol]
+    
+    @property
+    def db(self) -> CellDataProtocol[PolyDataLike, PointDataLike]:
+        """
+        Returns the database of the block.
+        """
+        ...
+
+    @db.setter
+    def db(self, value: CellDataProtocol[PolyDataLike, PointDataLike]) -> None:
+        """
+        Sets the database of the block.
+        """
+        ...
 
     def local_coordinates(self) -> ndarray:
         """Ought to return the coordinates of the cells in their local
