@@ -134,6 +134,10 @@ class PolyCellProtocol(
     def measures(self) -> ndarray:
         """Ought to return meaninful measures for each cell."""
         ...
+        
+    def normals(self) -> ndarray:
+        """Ought to return the normal vectors of the surface of the mesh."""
+        ...
 
     def measure(self) -> float:
         """Ought to return a single measure for a collection of cells."""
