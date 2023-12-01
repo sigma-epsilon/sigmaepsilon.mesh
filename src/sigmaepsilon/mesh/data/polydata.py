@@ -26,7 +26,7 @@ from sigmaepsilon.math.linalg.sparse import csr_matrix
 from sigmaepsilon.math.linalg import Vector, ReferenceFrame as FrameLike
 from sigmaepsilon.math import atleast1d, minmax
 
-from ..typing import PolyDataProtocol as PDP, PolyDataLike, PointDataLike, PolyCellLike
+from ..typing import PolyDataProtocol as PDP, PolyCellProtocol, PolyDataLike, PointDataLike, PolyCellLike
 
 from .akwrapper import AkWrapper
 from .pointdata import PointData
@@ -1117,7 +1117,7 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
         blocks = self.cellblocks(inclusive=True)
         m = map(lambda b: b.cd.Geometry.number_of_spatial_dimensions, blocks)
         return np.all(np.array(list(m)) == 2)
-
+    
     def surface_normals(self, *args, **kwargs) -> np.ndarray:
         """
         Retuns the surface normals as a 2d numpy array.
@@ -1143,7 +1143,17 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
         with a `normals` method, like a `Trimesh` instance.
         """
         return self.surface(*args, **kwargs).centers()
-
+    
+    @property
+    def is_surface(self: PolyDataLike) -> bool:
+        blocks: Iterable[PolyData] = list(self.cellblocks(inclusive=True))
+        if not len(blocks) == 1:
+            return False
+        cell_data: PolyCellProtocol = blocks[0].cd
+        if not cell_data.Geometry.number_of_spatial_dimensions == 2:
+            return False
+        return True
+    
     def surface(
         self: PolyDataLike, mesh_class: Optional[Union[PolyDataLike, None]] = None
     ) -> PolyDataLike:
@@ -1158,6 +1168,9 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
 
             .. versionadded:: 2.3.0
         """
+        if self.is_surface:
+            return self
+        
         if mesh_class is None:
             mesh_class = PolyData
 
