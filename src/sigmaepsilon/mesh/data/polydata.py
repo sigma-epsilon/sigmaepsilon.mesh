@@ -1577,9 +1577,9 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
 
     def centralize(
         self: PolyDataLike,
-        target: FrameLike = None,
-        inplace: bool = True,
-        axes: Iterable = None,
+        target: Optional[Union[FrameLike, None]] = None,
+        inplace: Optional[bool] = True,
+        axes: Optional[Union[Iterable[int], None]] = None,
     ) -> PolyDataLike:
         """
         Moves all the meshes that belong to the same source such that the current object's
@@ -1593,7 +1593,7 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
         inplace: bool, Optional
             If True, the transformation is done on the instance, otherwise
             a deep copy is created first. Default is True.
-        axes: Iterable, Optional
+        axes: Iterable[int], Optional
             The axes on which centralization is to be performed. A `None` value
             means all axes. Default is None.
 
@@ -1611,7 +1611,9 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
             block.pd.x = block_points - center
         return subject
 
-    def k_nearest_cell_neighbours(self, k, *args, knn_options: dict = None, **kwargs):
+    def k_nearest_cell_neighbours(
+        self, k, *args, knn_options: Optional[Union[dict, None]] = None, **kwargs
+    ):
         """
         Returns the k closest neighbours of the cells of the mesh, based
         on the centers of each cell.
@@ -1681,7 +1683,7 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
         return index_of_furthest_point(self.centers(), np.array(target, dtype=float))
 
     def nodal_distribution_factors(
-        self, weights: Union[str, ndarray] = "volume"
+        self, weights: Optional[Union[str, ndarray]] = "volume"
     ) -> Union[ndarray, csr_matrix]:
         """
         Retruns nodal distribution factors for all nodes of all cells
@@ -1823,7 +1825,7 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
     if __hasvtk__:
 
         def to_vtk(
-            self, deepcopy: bool = False, multiblock: bool = False
+            self, deepcopy: Optional[bool] = False, multiblock: Optional[bool] = False
         ) -> Union[vtk.vtkUnstructuredGrid, vtk.vtkMultiBlockDataSet]:
             """
             Returns the mesh as a `VTK` object.
@@ -1948,9 +1950,9 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
     def plot(
         self,
         *,
-        notebook: bool = False,
-        backend: str = "pyvista",
-        config_key: str = None,
+        notebook: Optional[bool] = False,
+        backend: Optional[str] = "pyvista",
+        config_key: Optional[Union[str, None]] = None,
         **kwargs,
     ) -> Any:
         """
