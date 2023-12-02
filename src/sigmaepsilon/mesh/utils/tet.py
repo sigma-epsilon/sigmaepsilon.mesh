@@ -170,7 +170,7 @@ def nat_to_loc_tet(
     """
     Transformation from natural to local coordinates
     within a tetrahedra.
-    
+
     Parameters
     ----------
     acoord: numpy.ndarray

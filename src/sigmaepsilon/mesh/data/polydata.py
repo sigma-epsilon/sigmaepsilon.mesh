@@ -22,11 +22,17 @@ from meshio import Mesh as MeshioMesh
 
 from sigmaepsilon.deepdict import DeepDict
 from sigmaepsilon.core.warning import SigmaEpsilonPerformanceWarning
-from sigmaepsilon.math.linalg.sparse import csr_matrix
+from sigmaepsilon.math.linalg.sparse import csr_matrix, JaggedArray
 from sigmaepsilon.math.linalg import Vector, ReferenceFrame as FrameLike
 from sigmaepsilon.math import atleast1d, minmax
 
-from ..typing import PolyDataProtocol as PDP, PolyCellProtocol, PolyDataLike, PointDataLike, PolyCellLike
+from ..typing import (
+    PolyDataProtocol as PDP,
+    PolyCellProtocol,
+    PolyDataLike,
+    PointDataLike,
+    PolyCellLike,
+)
 
 from .akwrapper import AkWrapper
 from .pointdata import PointData
@@ -1058,7 +1064,7 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
                 coords.append(v.show(global_frame))
                 inds.append(i)
 
-            if len(coords) == 0:  # pragme: no cover
+            if len(coords) == 0:  # pragma: no cover
                 raise Exception("There are no points belonging to this block")
 
             coords = np.vstack(list(coords))
@@ -1117,7 +1123,7 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
         blocks = self.cellblocks(inclusive=True)
         m = map(lambda b: b.cd.Geometry.number_of_spatial_dimensions, blocks)
         return np.all(np.array(list(m)) == 2)
-    
+
     def surface_normals(self, *args, **kwargs) -> np.ndarray:
         """
         Retuns the surface normals as a 2d numpy array.
@@ -1130,7 +1136,7 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
         with a `normals` method, like a `Trimesh` instance.
         """
         return self.surface(*args, **kwargs).cd.normals()
-    
+
     def surface_centers(self, *args, **kwargs) -> np.ndarray:
         """
         Retuns the surface centers as a 3d numpy array.
@@ -1143,7 +1149,7 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
         with a `normals` method, like a `Trimesh` instance.
         """
         return self.surface(*args, **kwargs).centers()
-    
+
     @property
     def is_surface(self: PolyDataLike) -> bool:
         blocks: Iterable[PolyData] = list(self.cellblocks(inclusive=True))
@@ -1153,7 +1159,7 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
         if not cell_data.Geometry.number_of_spatial_dimensions == 2:
             return False
         return True
-    
+
     def surface(
         self: PolyDataLike, mesh_class: Optional[Union[PolyDataLike, None]] = None
     ) -> PolyDataLike:
@@ -1170,7 +1176,7 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
         """
         if self.is_surface:
             return self
-        
+
         if mesh_class is None:
             mesh_class = PolyData
 
@@ -1307,12 +1313,8 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
             pc = subject.points()
             pc.move(v, frame)
             subject.pointdata.x = pc.array
-        else:
-            source = subject.source()
-            inds = np.unique(subject.topology())
-            pc = source.points()[inds]
-            pc.move(v, frame)
-            source.pointdata.x = pc.array
+        else:  # pragma: no cover
+            raise Exception("This is only for blocks with a point source.")
         return subject
 
     def rotate(
@@ -1346,10 +1348,8 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
         if subject.is_source():
             pc = subject.points()
             source = subject
-        else:
-            source = subject.source()
-            inds = np.unique(subject.topology())
-            pc = source.points()[inds]
+        else:  # pragma: no cover
+            raise Exception("This is only for blocks with a point source.")
 
         pc.rotate(*args, **kwargs)
         subject._rotate_attached_cells_(*args, **kwargs)
@@ -1386,10 +1386,8 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
         if subject.is_source():
             pc = subject.points()
             source = subject
-        else:
-            source = subject.source()
-            inds = np.unique(subject.topology())
-            pc = source.points()[inds]
+        else:  # pragma: no cover
+            raise Exception("This is only for blocks with a point source.")
 
         center = pc.center()
         pc.centralize()
@@ -1424,7 +1422,9 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
 
         return cells_at_nodes(topo, *args, **kwargs)
 
-    def cells_around_cells(self, radius: float, frmt: str = "dict"):
+    def cells_around_cells(
+        self, radius: float, frmt: str = "dict"
+    ) -> Union[JaggedArray, csr_matrix, dict]:
         """
         Returns the neares cells to cells.
 
@@ -1439,7 +1439,6 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
         See Also
         --------
         :func:`cells_around`
-
         """
         return cells_around(self.centers(), radius, frmt=frmt)
 

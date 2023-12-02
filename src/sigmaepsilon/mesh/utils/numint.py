@@ -43,8 +43,7 @@ def _complete_natural_coordinates(nat: ndarray) -> ndarray:
 
 
 def Gauss_Legendre_Tri_1(
-    center: Optional[Union[ndarray, None]] = None,
-    natural: Optional[bool] = False
+    center: Optional[Union[ndarray, None]] = None, natural: Optional[bool] = False
 ) -> Tuple[ndarray, ndarray]:
     p, w = np.array([[0.0, 0.0]]), np.array([1 / 2])
     if isinstance(center, ndarray):
@@ -55,8 +54,7 @@ def Gauss_Legendre_Tri_1(
 
 
 def Gauss_Legendre_Tri_3a(
-    center: Optional[Union[ndarray, None]] = None,
-    natural: Optional[bool] = False
+    center: Optional[Union[ndarray, None]] = None, natural: Optional[bool] = False
 ) -> Tuple[ndarray, ndarray]:
     nat = np.array(
         [
@@ -75,8 +73,7 @@ def Gauss_Legendre_Tri_3a(
 
 
 def Gauss_Legendre_Tri_3b(
-    center: Optional[Union[ndarray, None]] = None,
-    natural: Optional[bool] = False
+    center: Optional[Union[ndarray, None]] = None, natural: Optional[bool] = False
 ) -> Tuple[ndarray, ndarray]:
     nat = np.array(
         [
@@ -95,8 +92,7 @@ def Gauss_Legendre_Tri_3b(
 
 
 def Gauss_Legendre_Tri_4(
-    center: Optional[Union[ndarray, None]] = None,
-    natural: Optional[bool] = False
+    center: Optional[Union[ndarray, None]] = None, natural: Optional[bool] = False
 ) -> Tuple[ndarray, ndarray]:
     nat = np.array(
         [
@@ -116,8 +112,7 @@ def Gauss_Legendre_Tri_4(
 
 
 def Gauss_Legendre_Tri_6(
-    center: Optional[Union[ndarray, None]] = None,
-    natural: Optional[bool] = False
+    center: Optional[Union[ndarray, None]] = None, natural: Optional[bool] = False
 ) -> Tuple[ndarray, ndarray]:
     nat = np.array(
         [
@@ -175,8 +170,7 @@ def Gauss_Legendre_Quad_9() -> Tuple[ndarray, ndarray]:
 
 
 def Gauss_Legendre_Tet_1(
-    center: Optional[Union[ndarray, None]] = None,
-    natural: Optional[bool] = False
+    center: Optional[Union[ndarray, None]] = None, natural: Optional[bool] = False
 ) -> Tuple[ndarray, ndarray]:
     nat = np.array([[0.25, 0.25, 0.25, 0.25]])
     if not natural:
@@ -188,8 +182,7 @@ def Gauss_Legendre_Tet_1(
 
 
 def Gauss_Legendre_Tet_4(
-    center: Optional[Union[ndarray, None]] = None,
-    natural: Optional[bool] = False
+    center: Optional[Union[ndarray, None]] = None, natural: Optional[bool] = False
 ) -> Tuple[ndarray, ndarray]:
     nat = np.array(
         [
@@ -228,8 +221,7 @@ def Gauss_Legendre_Tet_4(
 
 
 def Gauss_Legendre_Tet_5(
-    center: Optional[Union[ndarray, None]] = None,
-    natural: Optional[bool] = False
+    center: Optional[Union[ndarray, None]] = None, natural: Optional[bool] = False
 ) -> Tuple[ndarray, ndarray]:
     nat = np.array(
         [
@@ -249,8 +241,7 @@ def Gauss_Legendre_Tet_5(
 
 
 def Gauss_Legendre_Tet_11(
-    center: Optional[Union[ndarray, None]] = None,
-    natural: Optional[bool] = False
+    center: Optional[Union[ndarray, None]] = None, natural: Optional[bool] = False
 ) -> Tuple[ndarray, ndarray]:
     nat = np.array(
         [

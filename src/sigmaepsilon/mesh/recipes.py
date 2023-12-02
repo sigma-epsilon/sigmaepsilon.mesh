@@ -476,7 +476,7 @@ def sphere(
 
     if not n_polar_divisions:
         n_polar_divisions = n_azimuthal_divisions
-    
+
     # Create points (vertices)
     phi = np.linspace(0, np.pi, n_polar_divisions)  # Polar angle
     theta = np.linspace(0, 2 * np.pi, n_azimuthal_divisions)  # Azimuthal angle

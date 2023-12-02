@@ -271,13 +271,13 @@ class AkWrapper(Wrapper):
         except Exception:
             name = self.__class__.__name__
             raise AttributeError(f"'{name}' object has no attribute called '{attr}'")
-        
+
     def __getitem__(self, index: str) -> Any:
         is_str = isinstance(index, str)
-        
+
         if is_str and index in self.__class__._attr_map_:
             index = self.__class__._attr_map_[index]
-        
+
         return self.db[index]
 
     def __setitem__(self, index: str, value: Iterable[Any]) -> None:

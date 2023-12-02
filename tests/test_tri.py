@@ -72,5 +72,32 @@ class TestTri(unittest.TestCase):
         assert test_area_circular_disk_T6(1.0, 10.0, 120, 80)
 
 
+class TestTriMeshT3(unittest.TestCase):
+    
+    def setUp(self):
+        min_radius, max_radius, n_angles, n_radii = 1.0, 10.0, 120, 80
+        self.mesh = circular_disk(n_angles, n_radii, min_radius, max_radius)
+    
+    def test_trimesh_edges(self):
+        self.mesh.edges()
+        self.mesh.edges(return_cells=True)
+        
+    def test_trimesh_to_triobj(self):
+        self.mesh.to_triobj()
+        
+
+class TestTriMeshT6(TestTriMeshT3):
+    
+    def setUp(self):
+        Lx, Ly, nx, ny = 1.0, 1.0, 2, 2
+        A = CartesianFrame(dim=3)
+        coords, topo, _ = triangulate(size=(Lx, Ly), shape=(nx, ny))
+        coords, topo = T3_to_T6(coords, topo)
+        pd = PointData(coords=coords, frame=A)
+        cd = T6(topo=topo)
+        self.mesh = TriMesh(pd, cd)
+
+
+
 if __name__ == "__main__":
     unittest.main()

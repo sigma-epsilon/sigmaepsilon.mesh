@@ -179,7 +179,7 @@ def points_of_cells(
     *,
     local_axes: ndarray = None,
     centralize: bool = True,
-    centers: ndarray = None
+    centers: ndarray = None,
 ) -> ndarray:
     """
     Returns an explicit representation of coordinates of the cells from a

@@ -78,7 +78,7 @@ class TET4(PolyCell):
             return tetra
         else:
             return tetra.reshape(len(tetra), 1, 4)
-        
+
     def volumes(self) -> ndarray:
         coords = self.source_coords()
         topo = self.topology().to_numpy()

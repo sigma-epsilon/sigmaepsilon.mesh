@@ -46,8 +46,8 @@ def frames_of_surfaces(coords: ndarray, topo: ndarray) -> ndarray:
     """
     Returns the coordinates of the axes forming the local
     coordinate systems of the surfaces using the first three vertices
-    of the cells. 
-    
+    of the cells.
+
     Note
     ----
     This is only working for flat 2d cells.

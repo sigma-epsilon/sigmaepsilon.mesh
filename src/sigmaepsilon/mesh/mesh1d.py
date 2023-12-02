@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from typing import Tuple
+from typing import Tuple, Optional, Union
 
 import numpy as np
 from numpy import ndarray
@@ -7,7 +7,7 @@ from numba import njit
 
 from sigmaepsilon.math import atleast3d, repeat
 
-from .space import frames_of_lines
+from .utils.space import frames_of_lines
 from .grid import rgridMT as grid
 
 
@@ -22,7 +22,7 @@ def _mesh1d_uniform_(
     coords: ndarray, topo: ndarray, eshape: ndarray, N: int, frames: ndarray
 ) -> Tuple[ndarray, ndarray, ndarray]:
     origo = np.zeros(1)
-    subcoords_, subtopo_ = grid((1,), N, eshape, origo, 0)
+    subcoords_, subtopo_ = grid((1,), (N,), eshape, origo, 0)
     num_node_sub = len(subcoords_)
     N_new = len(coords) + len(topo) * (N - 1)
     coords_new = np.zeros((N_new, coords.shape[1]), dtype=coords.dtype)
@@ -50,10 +50,10 @@ def mesh1d_uniform(
     topo: ndarray,
     eshape: ndarray,
     *,
-    N: int = 2,
-    refZ=None,
-    return_frames=False,
-    **__
+    N: Optional[int] = 2,
+    refZ: Optional[Union[ndarray, None]] = None,
+    return_frames: Optional[bool] = False,
+    **__,
 ) -> Tuple[ndarray, ndarray]:
     """
     Returns the representation of a uniform 1d mesh as a tuple of numpy arrays.

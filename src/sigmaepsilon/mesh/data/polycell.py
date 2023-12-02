@@ -1003,14 +1003,14 @@ class PolyCell(Generic[MeshDataLike, PointDataLike], ABC_PolyCell):
             pc = PointCloud(centers, frame=self.source_frame())
             centers = pc.show(target)
         return centers
-    
+
     def normals(self) -> ndarray:
         """
         Returns the normals of the cells as a 2d NumPy array.
         """
         if self.Geometry.number_of_spatial_dimensions == 2:
             return ascont(self.frames[:, 2, :])
-        else: 
+        else:
             raise NotImplementedError("This is only available for 2d cells.")
 
     def unique_indices(self) -> ndarray:

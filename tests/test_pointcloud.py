@@ -1,11 +1,14 @@
 import unittest
-from sigmaepsilon.mesh.space import PointCloud
-from sigmaepsilon.mesh.triang import triangulate
 from numba import njit
 import numpy as np
 
+from sigmaepsilon.core.testing import SigmaEpsilonTestCase
+from sigmaepsilon.mesh import CartesianFrame
+from sigmaepsilon.mesh.space import PointCloud
+from sigmaepsilon.mesh.triang import triangulate
 
-class TestPointCloud(unittest.TestCase):
+
+class TestPointCloud(SigmaEpsilonTestCase):
     def test_1(self):
         coords, *_ = triangulate(size=(800, 600), shape=(3, 3))
         inds = np.arange(len(coords))
@@ -14,11 +17,13 @@ class TestPointCloud(unittest.TestCase):
         coords.closest(coords[:3])
         coords.furthest(coords[:3])
         coords.frame
-        coords.x
-        coords.y
-        coords.z
+        coords.x()
+        coords.y()
+        coords.z()
         coords.center()
         coords.idsort()
+        coords.id
+        coords[0]
 
         self.assertTrue(np.all(np.isclose(coords[3:6].inds, [3, 4, 5])))
         self.assertTrue(np.isclose(coords.index_of_closest(coords.center()), 4))
@@ -39,6 +44,15 @@ class TestPointCloud(unittest.TestCase):
         coords.sort_indices()
         d = np.array([0.0, 1.0, 0.0])
         coords.move(d).move(d)
+        
+    def test_frames(self):
+        frame = CartesianFrame(dim=3)
+        coords, *_ = triangulate(size=(800, 600), shape=(3, 3))
+        inds = np.arange(len(coords))
+        points = PointCloud(coords, inds=inds)
+        points.frame = frame
+        
+        self.assertFailsProperly(TypeError, setattr, points, "frame", "_")
 
 
 if __name__ == "__main__":

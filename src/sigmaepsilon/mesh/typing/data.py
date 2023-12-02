@@ -39,7 +39,7 @@ PolyCellLike = TypeVar("PolyCellLike", bound="PolyCellProtocol")
 
 
 @runtime_checkable
-class PointDataProtocol(Protocol):
+class PointDataProtocol(Protocol):  # pragma: no cover
     """
     A protocol class for storing point-related data in a mesh.
     """
@@ -81,7 +81,7 @@ class CellDataProtocol(Generic[PolyDataLike, PointDataLike], Protocol):
     def frames(self) -> ndarray:
         """Ought to return the reference frames of the cells."""
         ...
-        
+
     @property
     def nodes(self) -> ndarray:
         """
@@ -96,8 +96,8 @@ class CellDataProtocol(Generic[PolyDataLike, PointDataLike], Protocol):
     @property
     def container(self) -> PolyDataLike:
         """Returns the container object of the block."""
-    
-    @property    
+
+    @property
     def has_frames(self) -> bool:
         """
         Ought to return `True` if the cells are equipped with frames,
@@ -110,14 +110,14 @@ class PolyCellProtocol(
     CellDataProtocol[PolyDataLike, PointDataLike],
     Generic[PolyDataLike, PointDataLike],
     Protocol,
-):
+):  # pragma: no cover
     """
     A generic protocol class for polygonal cell containers.
     """
 
     label: ClassVar[Optional[str]] = None
     Geometry: ClassVar[GeometryProtocol]
-    
+
     @property
     def db(self) -> CellDataProtocol[PolyDataLike, PointDataLike]:
         """
@@ -148,7 +148,7 @@ class PolyCellProtocol(
     def measures(self) -> ndarray:
         """Ought to return meaninful measures for each cell."""
         ...
-        
+
     def normals(self) -> ndarray:
         """Ought to return the normal vectors of the surface of the mesh."""
         ...
@@ -178,7 +178,9 @@ class PolyCellProtocol(
 
 
 @runtime_checkable
-class PolyDataProtocol(Generic[PointDataLike, PolyCellLike], Protocol):
+class PolyDataProtocol(
+    Generic[PointDataLike, PolyCellLike], Protocol
+):  # pragma: no cover
     """A generic protocol class for polygonal mesh containers."""
 
     @property
