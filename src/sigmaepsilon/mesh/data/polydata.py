@@ -16,7 +16,7 @@ import warnings
 
 from numpy import ndarray
 import numpy as np
-from scipy.sparse import spmatrix
+from scipy.sparse import spmatrix, csr_matrix as csr_scipy
 import awkward as ak
 from meshio import Mesh as MeshioMesh
 
@@ -1500,15 +1500,22 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
         """
         return self.nodal_adjacency(frmt="scipy-csr", assume_regular=assume_regular)
 
-    def neighbourhood_matrix(self) -> spmatrix:
+    def nodal_neighbourhood_matrix(self) -> csr_scipy:
         """
-        Returns a sparse SciPy matrix as a representation of the first order
+        Returns a sparse SciPy CSR matrix as a representation of the first order
         neighbourhood structure of the mesh.
-
+        
+        The [i, j] entry of the returned matrix is 1 if points i and j are
+        neighbours (they share a cell) 0 if they are not. Points are not considered
+        to be neighbours of themselfes, therefore rntries in the main diagonal are zero.
+        
         .. versionadded:: 2.3.0
         """
         adj: spmatrix = self.nodal_adjacency_matrix()
-        return adj - adj.diagonal()
+        adj_csr = csr_scipy(adj - adj.diagonal())
+        adj_csr.sum_duplicates()
+        adj_csr.eliminate_zeros()
+        return adj_csr
 
     def number_of_cells(self) -> int:
         """Returns the number of cells."""
