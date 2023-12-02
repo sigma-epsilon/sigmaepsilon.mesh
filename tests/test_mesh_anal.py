@@ -25,7 +25,7 @@ class TestMeshAnalysis(unittest.TestCase):
         pd.nodal_adjacency(frmt="nx")
         pd.nodal_adjacency(frmt="jagged")
         pd.nodal_adjacency_matrix()
-        pd.neighbourhood_matrix()
+        pd.nodal_neighbourhood_matrix()
 
     def test_knn(self):
         size = 80, 60, 20
