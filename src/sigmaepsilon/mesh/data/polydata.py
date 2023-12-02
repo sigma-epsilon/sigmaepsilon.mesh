@@ -402,7 +402,7 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
         self._bid2b = None  # maps block indices to block addresses
         return self
 
-    def blocks_of_cells(self, i: Union[int, Iterable] = None) -> dict:
+    def blocks_of_cells(self, i: Optional[Union[int, Iterable, None]] = None) -> dict:
         """
         Returns a dictionary that maps cell indices to blocks.
         """
@@ -504,8 +504,8 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
     def to_dataframe(
         self,
         *args,
-        point_fields: Iterable[str] = None,
-        cell_fields: Iterable[str] = None,
+        point_fields: Optional[Union[Iterable[str], None]] = None,
+        cell_fields: Optional[Union[Iterable[str], None]] = None,
         **kwargs,
     ):
         """
@@ -536,8 +536,8 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
         path_pd: str,
         path_cd: str,
         *args,
-        point_fields: Iterable[str] = None,
-        cell_fields: Iterable[str] = None,
+        point_fields: Optional[Union[Iterable[str], None]] = None,
+        cell_fields: Optional[Union[Iterable[str], None]] = None,
         **kwargs,
     ):
         """
@@ -571,8 +571,8 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
     def to_ak(
         self,
         *args,
-        point_fields: Iterable[str] = None,
-        cell_fields: Iterable[str] = None,
+        point_fields: Optional[Union[Iterable[str], None]] = None,
+        cell_fields: Optional[Union[Iterable[str], None]] = None,
         **__,
     ) -> Tuple[ak.Array]:
         """
@@ -600,7 +600,10 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
         return ak.from_iter(lp), ak.from_iter(lc)
 
     def to_lists(
-        self, *, point_fields: Iterable[str] = None, cell_fields: Iterable[str] = None
+        self,
+        *,
+        point_fields: Optional[Union[Iterable[str], None]] = None,
+        cell_fields: Optional[Union[Iterable[str], None]] = None,
     ) -> Tuple[list]:
         """
         Returns data of the object as a tuple of lists. The first is a list
@@ -723,7 +726,7 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
         """Sets the parent."""
         self._parent = value
 
-    def is_source(self, key: str = None) -> bool:
+    def is_source(self, key: Optional[Union[str, None]] = None) -> bool:
         """
         Returns `True`, if the object is a valid source of data
         specified by `key`.
@@ -738,7 +741,7 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
         return self.pointdata is not None and key in self.pointdata.fields
 
     def source(
-        self, key: Optional[str] = None
+        self, key: Optional[Union[str, None]] = None
     ) -> Union[PDP[PointDataLike, PolyCellLike], None]:
         """
         Returns the closest (going upwards in the hierarchy) block that holds
@@ -886,9 +889,9 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
 
     def rewire(
         self: PolyDataLike,
-        deep: bool = True,
-        imap: ndarray = None,
-        invert: bool = False,
+        deep: Optional[bool] = True,
+        imap: Optional[Union[ndarray, None]] = None,
+        invert: Optional[bool] = False,
     ) -> PolyDataLike:
         """
         Rewires topology according to the index mapping of the source object.
@@ -936,9 +939,9 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
 
     def to_standard_form(
         self: PolyDataLike,
-        inplace: bool = True,
-        default_point_fields: dict = None,
-        default_cell_fields: dict = None,
+        inplace: Optional[bool] = True,
+        default_point_fields: Optional[Union[dict, None]] = None,
+        default_cell_fields: Optional[Union[dict, None]] = None,
     ) -> PolyDataLike:
         """
         Transforms the problem to standard form, which means
@@ -1078,7 +1081,11 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
         return points
 
     def coords(
-        self, *args, return_inds: bool = False, from_cells: bool = False, **kwargs
+        self,
+        *args,
+        return_inds: Optional[bool] = False,
+        from_cells: Optional[bool] = False,
+        **kwargs,
     ) -> ndarray:
         """
         Returns the coordinates as an array.
@@ -1204,7 +1211,9 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
 
         return mesh_class(pd, cd)
 
-    def topology(self, *args, return_inds: bool = False, **kwargs) -> TopologyArray:
+    def topology(
+        self, *args, return_inds: Optional[bool] = False, **kwargs
+    ) -> TopologyArray:
         """
         Returns the topology.
 
@@ -1235,7 +1244,7 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
         m = map(lambda b: b.cd.id, blocks)
         return np.concatenate(list(m))
 
-    def detach(self: PolyDataLike, nummrg: bool = False) -> PolyDataLike:
+    def detach(self: PolyDataLike, nummrg: Optional[bool] = False) -> PolyDataLike:
         """
         Returns a detached version of the mesh.
 
@@ -1283,7 +1292,10 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
         return self
 
     def move(
-        self: PolyDataLike, v: VectorLike, frame: FrameLike = None, inplace: bool = True
+        self: PolyDataLike,
+        v: VectorLike,
+        frame: Optional[Union[FrameLike, None]] = None,
+        inplace: Optional[bool] = True,
     ) -> PolyDataLike:
         """
         Moves and returns the object or a deep copy of it.
@@ -1318,7 +1330,7 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
         return subject
 
     def rotate(
-        self: PolyDataLike, *args, inplace: bool = True, **kwargs
+        self: PolyDataLike, *args, inplace: Optional[bool] = True, **kwargs
     ) -> PolyDataLike:
         """
         Rotates and returns the object. Positional and keyword arguments
@@ -1357,7 +1369,9 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
 
         return subject
 
-    def spin(self: PolyDataLike, *args, inplace: bool = True, **kwargs) -> PolyDataLike:
+    def spin(
+        self: PolyDataLike, *args, inplace: Optional[bool] = True, **kwargs
+    ) -> PolyDataLike:
         """
         Like rotate, but rotation happens around centroidal axes. Positional and keyword
         arguments not listed here are forwarded to :class:`sigmaepsilon.math.linalg.frame.ReferenceFrame`
@@ -1444,13 +1458,17 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
 
     def nodal_adjacency(self, *args, **kwargs) -> Any:
         """
-        Returns the nodal adjecency matrix. The arguments are
-        forwarded to the corresponding utility function (see below)
-        alongside the topology of the mesh as the first argument.
+        Returns the nodal adjecency matrix.
 
-        See also
-        --------
-        :func:`~sigmaepsilon.mesh.utils.topology.topo.nodal_adjacency`
+        Parameters
+        ----------
+        frmt: str
+            A string specifying the output format. Valid options are
+            'jagged', 'csr', 'nx' and 'scipy-csr'. See below for the details on the
+            returned object.
+        assume_regular: bool
+            If the topology is regular, you can gain some speed with providing
+            it as `True`. Default is `False`.
         """
         topo = self.topology(jagged=True).to_array()
 
@@ -1462,21 +1480,35 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
 
         return nodal_adjacency(topo, *args, **kwargs)
 
-    def nodal_adjacency_matrix(self) -> spmatrix:
+    def nodal_adjacency_matrix(
+        self, assume_regular: Optional[bool] = False
+    ) -> spmatrix:
         """
-        Returns the nodal adjecency matrix. The arguments are
-        forwarded to the corresponding utility function (see below)
-        alongside the topology of the mesh as the first argument.
+        Returns the nodal adjecency information as a SciPy CSR matrix.
 
-        See also
-        --------
-        :func:`~sigmaepsilon.mesh.utils.topology.topo.nodal_adjacency`
+        Parameters
+        ----------
+        assume_regular: bool
+            If the topology is regular, you can gain some speed with providing
+            it as `True`. Default is `False`.
+
+            .. versionadded:: 2.3.0
 
         Returns
         -------
         scipy.sparse.spmatrix
         """
-        return self.nodal_adjacency(frmt="scipy-csr")
+        return self.nodal_adjacency(frmt="scipy-csr", assume_regular=assume_regular)
+
+    def neighbourhood_matrix(self) -> spmatrix:
+        """
+        Returns a sparse SciPy matrix as a representation of the first order
+        neighbourhood structure of the mesh.
+
+        .. versionadded:: 2.3.0
+        """
+        adj: spmatrix = self.nodal_adjacency_matrix()
+        return adj - adj.diagonal()
 
     def number_of_cells(self) -> int:
         """Returns the number of cells."""
@@ -1487,12 +1519,11 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
         """Returns the number of points."""
         return len(self.source().pointdata)
 
-    def cells_coords(self, *, _topo=None, **kwargs) -> ndarray:
+    def cells_coords(self) -> ndarray:
         """Returns the coordiantes of the cells in explicit format."""
-        _topo = self.topology().to_numpy() if _topo is None else _topo
-        return cells_coords(self.source().coords(), _topo)
+        return cells_coords(self.source().coords(), self.topology().to_numpy())
 
-    def center(self, target: FrameLike = None) -> ndarray:
+    def center(self, target: Optional[Union[FrameLike, None]] = None) -> ndarray:
         """
         Returns the center of the pointcloud of the mesh.
 
@@ -1513,7 +1544,7 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
             dtype=centers.dtype,
         )
 
-    def centers(self, target: FrameLike = None) -> ndarray:
+    def centers(self, target: Optional[Union[FrameLike, None]] = None) -> ndarray:
         """
         Returns the centers of the cells.
 
