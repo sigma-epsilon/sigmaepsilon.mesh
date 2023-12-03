@@ -16,7 +16,7 @@ import warnings
 
 from numpy import ndarray
 import numpy as np
-from scipy.sparse import spmatrix, csr_matrix as csr_scipy
+from scipy.sparse import spmatrix, csr_matrix as csr_scipy, diags as scipy_diags
 import awkward as ak
 from meshio import Mesh as MeshioMesh
 
@@ -1507,12 +1507,12 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
         
         The [i, j] entry of the returned matrix is 1 if points i and j are
         neighbours (they share a cell) 0 if they are not. Points are not considered
-        to be neighbours of themselfes, therefore rntries in the main diagonal are zero.
+        to be neighbours of themselfes, therefore entries in the main diagonal are zero.
         
         .. versionadded:: 2.3.0
         """
         adj: spmatrix = self.nodal_adjacency_matrix()
-        adj_csr = csr_scipy(adj - adj.diagonal())
+        adj_csr = csr_scipy(adj - scipy_diags(adj.diagonal()))
         adj_csr.sum_duplicates()
         adj_csr.eliminate_zeros()
         return adj_csr
