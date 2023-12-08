@@ -24,7 +24,7 @@ def cells_around(*args, **kwargs) -> Union[JaggedArray, csr_matrix, dict]:
 
 
 def points_around(
-    points: np.ndarray,
+    points: ndarray,
     r_max: float,
     *,
     frmt: str = "dict",
@@ -63,6 +63,7 @@ def points_around(
         data, widths = _cells_around_MT_(points, r_max, n_max)
     else:
         raise NotImplementedError
+
     if frmt == "dict":
         return _cells_data_to_dict(data, widths)
     elif frmt == "jagged":
@@ -71,6 +72,7 @@ def points_around(
         d = _cells_data_to_dict(data, widths)
         data, inds, indptr, shp = _dict_to_spdata(d, widths)
         return csr_matrix(data=data, indices=inds, indptr=indptr, shape=shp)
+
     raise RuntimeError("Unhandled case!")
 
 
@@ -142,24 +144,10 @@ def _cells_data_to_jagged(data, widths):
     return JaggedArray(data, cuts=widths)
 
 
-@njit(nogil=True, cache=__cache)
-def _cells_around_ST_(centers: np.ndarray, r_max: float):
-    res = nbDict.empty(
-        key_type=nbint64,
-        value_type=nbint64A,
-    )
-    nE = len(centers)
-    normsbuf = np.zeros(nE, dtype=centers.dtype)
-    widths = np.zeros(nE, dtype=np.int64)
-    for iE in range(nE):
-        normsbuf[:] = norms(centers - centers[iE])
-        res[iE] = np.where(normsbuf <= r_max)[0]
-        widths[iE] = len(res[iE])
-    return res, widths
-
-
 @njit(nogil=True, parallel=True, cache=__cache)
-def _cells_around_MT_(centers: np.ndarray, r_max: float, n_max: int = 10):
+def _cells_around_MT_(
+    centers: ndarray, r_max: float, n_max: int = 10
+) -> Tuple[ndarray, ndarray]:
     nE = len(centers)
     res = np.zeros((nE, n_max), dtype=np.int64)
     widths = np.zeros(nE, dtype=np.int64)
@@ -167,9 +155,10 @@ def _cells_around_MT_(centers: np.ndarray, r_max: float, n_max: int = 10):
         inds = np.where(norms(centers - centers[iE]) <= r_max)[0]
         if inds.shape[0] <= n_max:
             res[iE, : inds.shape[0]] = inds
+            widths[iE] = len(inds)
         else:
             res[iE, :] = inds[:n_max]
-        widths[iE] = len(res[iE])
+            widths[iE] = n_max
     return res, widths
 
 
@@ -342,7 +331,7 @@ def cell_coords(coords: ndarray, topo: ndarray) -> ndarray:
 
 
 @njit(nogil=True, cache=__cache)
-def cell_center_2d(ecoords: np.ndarray):
+def cell_center_2d(ecoords: ndarray) -> ndarray:
     """
     Returns the center of a 2d cell.
 
@@ -363,7 +352,7 @@ def cell_center_2d(ecoords: np.ndarray):
 
 
 @njit(nogil=True, cache=__cache)
-def cell_center(coords: np.ndarray):
+def cell_center(coords: ndarray) -> ndarray:
     """
     Returns the center of a single cell.
 
