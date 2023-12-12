@@ -53,6 +53,7 @@ __all__ = [
     "H27_to_TET10",
     "TET4_to_L2",
     "TET4_to_TET10",
+    "TET10_to_TET4",
     "W6_to_W18",
     "W6_to_TET4",
     "W18_to_W6",
@@ -601,6 +602,41 @@ def TET4_to_TET10(coords: ndarray, topo: ndarray) -> Tuple[ndarray]:
     topo_res = np.hstack((topo, topo_e))
     coords_res = np.vstack((coords, coords_e))
     return coords_res, topo_res
+
+
+def TET10_to_TET4(
+    coords: ndarray,
+    topo: ndarray,
+    data: DataLike = None,
+    *args,
+    path: ndarray = None,
+    subdivide: bool = True,
+    **kwargs,
+) -> Tuple[ndarray]:
+    if isinstance(path, ndarray):
+        assert path.shape[1] == 4
+    else:
+        if path is None:
+            if subdivide:
+                path = np.array(
+                    [
+                        [4, 1, 5, 8],
+                        [0, 4, 6, 7],
+                        [7, 8, 9, 3],
+                        [6, 5, 2, 9],
+                        [7, 4, 6, 8],
+                        [4, 5, 6, 8],
+                        [6, 5, 9, 8],
+                        [7, 6, 9, 8],
+                    ],
+                    dtype=topo.dtype,
+                )
+            else:
+                path = np.array([[0, 1, 2, 3]], dtype=topo.dtype)
+    if data is None:
+        return coords, +transform_topology(topo, path, *args, **kwargs)
+    else:
+        return (coords,) + transform_topology(topo, path, data, *args, **kwargs)
 
 
 def H8_to_H27(coords: ndarray, topo: ndarray) -> Tuple[ndarray]:
