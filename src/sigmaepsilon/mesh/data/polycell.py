@@ -347,7 +347,8 @@ class PolyCell(Generic[MeshDataLike, PointDataLike], ABC_PolyCell):
         path: str
             Path of the file being created.
         """
-        return cls(db=CellData.from_parquet(path))
+        db_class = cls.data_class
+        return cls(db=db_class.from_parquet(path))
 
     def to_triangles(self) -> ndarray:
         """
