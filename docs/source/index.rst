@@ -22,7 +22,7 @@
 :doc:`user_guide` |
 :doc:`examples_gallery` |
 :ref:`API Reference` |
-`Source Repository <https://github.com/sigma-epsilon/sigmaepsilon.deepdict>`_
+`Source Repository <https://github.com/sigma-epsilon/sigmaepsilon.mesh>`_
 
 .. _sigmaepsilon.mesh: https://sigmaepsilon.mesh.readthedocs.io/en/latest/
 .. _VTK: https://vtk.org/
