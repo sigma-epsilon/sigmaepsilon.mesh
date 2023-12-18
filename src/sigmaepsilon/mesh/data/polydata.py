@@ -1602,7 +1602,8 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
             a deep copy is created first. Default is True.
         axes: Iterable[int], Optional
             The axes on which centralization is to be performed. A `None` value
-            means all axes. Default is None.
+            means all axes. For instance providing `axes=[2]` would only centralize
+            coordinates in Z direction. Default is None.
 
         Notes
         -----
@@ -1613,6 +1614,11 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
         source = subject.source()
         target = source.frame if target is None else target
         center = self.center(target)
+        if axes is not None:
+            all_axes = set([0, 1, 2])
+            input_axes = set(axes)
+            missing_axes = list(all_axes - input_axes)
+            center[missing_axes] = 0.0
         for block in source.pointblocks(inclusive=True):
             block_points = block.pd.x
             block.pd.x = block_points - center
