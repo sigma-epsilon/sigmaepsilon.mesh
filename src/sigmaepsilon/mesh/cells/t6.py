@@ -33,6 +33,7 @@ class T6(PolyCell):
     >>> cd = CellData(topo=topo)
     >>> trimesh = TriMesh(pd, cd)
     >>> trimesh.area()
+    480000.0
     """
 
     label = "T6"

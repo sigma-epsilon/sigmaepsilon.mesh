@@ -314,7 +314,7 @@ class PointCloud(Vector):
 
         Returns
         -------
-        ~`sigmaepsilon.mesh.space.point.Point`
+        `~sigmaepsilon.mesh.space.point.Point`
         """
         id = self.index_of_closest(p, frame)
         arr = self._array[id, :]
@@ -343,7 +343,7 @@ class PointCloud(Vector):
 
         Returns
         -------
-        ~`sigmaepsilon.mesh.space.point.Point`
+        `~sigmaepsilon.mesh.space.point.Point`
         """
         id = self.index_of_furthest(p, frame)
         arr = self._array[id, :]
@@ -491,10 +491,10 @@ class PointCloud(Vector):
         To apply a 90 degree rotation about the Z axis:
 
         >>> from sigmaepsilon.mesh.space import PointCloud
-        >>> from sigmaepsilon.mesh.triang import triangulate
+        >>> from sigmaepsilon.mesh import triangulate
         >>> coords, *_ = triangulate(size=(800, 600), shape=(10, 10))
         >>> points = PointCloud(coords)
-        >>> points.rotate('Body', [0, 0, np.pi/2], 'XYZ')
+        >>> points.rotate('Space', [0, 0, np.pi/2], 'XYZ')
         """
         if isinstance(args[0], FrameLike):
             self.orient(dcm=args[0].dcm())
