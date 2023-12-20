@@ -1,4 +1,6 @@
 from typing import Union, Iterable
+import warnings
+
 import numpy as np
 
 from sigmaepsilon.math.linalg import Vector, FrameLike, CartesianFrame, ReferenceFrame
@@ -6,25 +8,29 @@ from sigmaepsilon.math.linalg import Vector, FrameLike, CartesianFrame, Referenc
 
 class Point(Vector):
     """
+    .. deprecated:: 2.3.0
+       Use :class:`~sigmaepsilon.mesh.space.pointcloud.PointCloud` instead.
+   
     A class a to handle one or more points in Euclidean space.
 
     It inherits :class:`Vector <sigmaepsilon.math.linalg.vector.Vector>`,
-    and extends its behaviour with default frame management for domain
-    specific applications.
+    and extends its behaviour with default frame management for domain specific applications.
 
-    If data is provided on object creation, the class can infer an appropriate
-    default frame, hence the specification of such can be omitted.
+    If data is provided on object creation, the class can infer an appropriate default frame, 
+    hence the specification of such can be omitted.
 
     Parameters
     ----------
-    frame: Union[ReferenceFrame, np.ndarray, Iterable], Optional
+    frame: Union[ReferenceFrame, numpy.ndarray, Iterable], Optional
         A suitable reference frame, or an iterable representing coordinate axes of one.
         Default is None.
 
     Note
     ----
-    This is class is superseded by :class:`PointCloud <sigmaepsilon.mesh.space.coordarray.PointCloud>`.
-
+    1) This is class is superseded by :class:`PointCloud <sigmaepsilon.mesh.space.pointcloud.PointCloud>`.
+    2) This class does not take the origo of the supporting reference frame into consideration when
+    transforming coordinates between frames.
+    
     Examples
     --------
     >>> from sigmaepsilon.mesh.space import Point
@@ -32,7 +38,7 @@ class Point(Vector):
     >>> type(p.frame)
     sigmaepsilon.math.linalg.frame.CartesianFrame
 
-    If we want to handle more than one points:
+    If we want to handle more than one point:
 
     >>> import math
     >>> p = Point([[1., 0., 0.], [0., 1., 0.]])
@@ -51,8 +57,13 @@ class Point(Vector):
         frame: Union[ReferenceFrame, np.ndarray, Iterable] = None,
         id: int = None,
         gid: int = None,
-        **kwargs
+        **kwargs,
     ):
+        warnings.warn(
+            "The Point class is deprecated and will be removed in a future version. "
+            "Use a PointCloud instead.", DeprecationWarning, stacklevel=2
+        )
+        
         if frame is None:
             if len(args) > 0:
                 if isinstance(args[0], np.ndarray):
@@ -80,9 +91,9 @@ class Point(Vector):
         self._gid = id if gid is None else gid
 
     @property
-    def id(self):
+    def id(self) -> int:
         return self._id
 
     @property
-    def gid(self):
+    def gid(self) -> int:
         return self._gid
