@@ -1,5 +1,5 @@
 import operator
-from typing import Union, Iterable
+from typing import Union, Iterable, Optional
 from contextlib import suppress
 
 from numba import njit, prange
@@ -70,7 +70,7 @@ class PointCloud(Vector):
 
     Parameters
     ----------
-    frame: numpy.ndarray, Optional
+    frame: FrameLike or numpy.ndarray, Optional
         A numpy array representing coordinate axes of a reference frame.
         Default is None.
     inds: numpy.ndarray, Optional
@@ -140,9 +140,15 @@ class PointCloud(Vector):
 
     _frame_cls_ = CartesianFrame
 
-    def __init__(self, *args, frame=None, inds=None, **kwargs):
+    def __init__(
+        self,
+        *args,
+        frame: Optional[Union[CartesianFrame, FrameLike, None]] = None,
+        inds:Optional[Union[ndarray, None]]=None,
+        **kwargs,
+    ):
         if frame is None:
-            if len(args) > 0 and isinstance(args[0], np.ndarray):
+            if len(args) > 0 and isinstance(args[0], ndarray):
                 frame = self._frame_cls_(dim=args[0].shape[-1])
         super().__init__(*args, frame=frame, **kwargs)
         self.inds = inds if inds is None else np.array(inds, dtype=int)
