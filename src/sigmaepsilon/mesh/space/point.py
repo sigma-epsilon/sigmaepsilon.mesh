@@ -11,7 +11,7 @@ class Point(Vector):
     .. deprecated:: 2.3.0
        Use :class:`~sigmaepsilon.mesh.space.pointcloud.PointCloud` instead.
    
-    A class a to handle one or more points in Euclidean space.
+    A class a to handle a single point in Euclidean space.
 
     It inherits :class:`Vector <sigmaepsilon.math.linalg.vector.Vector>`,
     and extends its behaviour with default frame management for domain specific applications.
