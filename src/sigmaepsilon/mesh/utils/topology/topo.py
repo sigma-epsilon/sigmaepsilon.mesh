@@ -454,12 +454,13 @@ def cells_at_nodes(
 
     `frmt` = None
 
-        counts : np.ndarray(nN) - numbers of connecting elements
+        counts : np.ndarray(nN) - numbers of connecting elements, only returned
+            if 'return_counts' is `True`
 
         ereg : np.ndarray(nN, nmax) - indices of connecting elements
 
         nreg : np.ndarray(nN, nmax) - node indices with respect to the
-                                        connecting elements
+            connecting elements
     where
 
         nN - is the number of nodes,
@@ -469,7 +470,8 @@ def cells_at_nodes(
 
     `frmt` = 'csr'
 
-        counts(optionally) : np.ndarray(nN) - number of connecting elements
+        counts(optionally) : np.ndarray(nN) - number of connecting elements, only returned
+            if 'return_counts' is `True`
 
         csr : csr_matrix - sparse matrix in a numba-jittable csr format.
                             Column indices denote element indices, values
@@ -477,14 +479,16 @@ def cells_at_nodes(
 
     `frmt` = 'scipy-csr' or 'csr-scipy'
 
-        counts(optionally) : np.ndarray(nN) - number of connecting elements
+        counts(optionally) : np.ndarray(nN) - number of connecting elements, only returned
+            if 'return_counts' is `True`
 
         csr : csr_matrix - An instance of scipy.linalg.sparse.csr_matrix.
                             Column indices denote element indices, values
                             have the meaning of element node locations.
     `frmt` = 'dicts'
 
-        counts(optionally) : np.ndarray(nN) - number of connecting elements
+        counts(optionally) : np.ndarray(nN) - number of connecting elements, only returned
+            if 'return_counts' is `True`
 
         ereg : numba Dict(int : int[:]) - indices of elements for each node
                                             index
@@ -494,7 +498,8 @@ def cells_at_nodes(
 
     `frmt` = 'jagged'
 
-        counts(optionally) : np.ndarray(nN) - number of connecting elements
+        counts(optionally) : np.ndarray(nN) - number of connecting elements, only returned
+            if 'return_counts' is `True`
 
         ereg : JaggedArray - indices of elements for each node index
 

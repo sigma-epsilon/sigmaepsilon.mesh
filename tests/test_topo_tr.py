@@ -17,6 +17,7 @@ from sigmaepsilon.mesh.utils.topology import (
     Q9_to_T6,
     H8_to_TET4,
     TET4_to_TET10,
+    TET10_to_TET4,
     H8_to_L2,
     TET4_to_L2,
     L2_to_L3,
@@ -128,6 +129,31 @@ class TestTopoTR(SigmaEpsilonTestCase):
             return True
 
         assert test_8(1, 1, 1, 2, 2, 2)
+
+    def test_9(self):
+        def test_9(Lx, Ly, Lz, nx, ny, nz, subdivide=True, path=None):
+            """H8 -> TET4 -> TET10 -> TET4"""
+            coords, topo = grid(size=(Lx, Ly, Lz), shape=(nx, ny, nz), eshape="H8")
+            coords, topo = H8_to_TET4(coords, topo)
+            coords, topo = TET4_to_TET10(coords, topo)
+            coords, topo = TET10_to_TET4(coords, topo, subdivide=subdivide, path=path)
+
+        test_9(1, 1, 1, 2, 2, 2)
+        test_9(1, 1, 1, 2, 2, 2, subdivide=False)
+        path = np.array(
+            [
+                [4, 1, 5, 8],
+                [0, 4, 6, 7],
+                [7, 8, 9, 3],
+                [6, 5, 2, 9],
+                [7, 4, 6, 8],
+                [4, 5, 6, 8],
+                [6, 5, 9, 8],
+                [7, 6, 9, 8],
+            ],
+            dtype=int,
+        )
+        test_9(1, 1, 1, 2, 2, 2, path=path)
 
     def test_Q8_to_T3(self):
         coords, topo = grid(size=(1, 1), shape=(2, 3), eshape="Q8")

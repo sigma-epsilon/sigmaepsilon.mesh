@@ -189,7 +189,7 @@ class CellData(Generic[PolyDataLike, PointDataLike], AkWrapper, ABC_AkWrapper):
     @property
     def has_nodes(self) -> bool:
         return self._dbkey_nodes_ in self._wrapped.fields
-    
+
     @property
     def has_id(self) -> bool:
         return self._dbkey_id_ in self._wrapped.fields
@@ -305,13 +305,18 @@ class CellData(Generic[PolyDataLike, PointDataLike], AkWrapper, ABC_AkWrapper):
         """
         if isinstance(value, int):
             if len(self) == 1:
-                value = np.array([value,], dtype=int)
+                value = np.array(
+                    [
+                        value,
+                    ],
+                    dtype=int,
+                )
             else:
                 raise ValueError(f"Expected an array, got {type(value)}")
-            
+
         if not isinstance(value, ndarray):
             raise TypeError(f"Expected ndarray, got {type(value)}")
-        
+
         self._wrapped[self._dbkey_id_] = value
 
     @property
@@ -353,4 +358,3 @@ class CellData(Generic[PolyDataLike, PointDataLike], AkWrapper, ABC_AkWrapper):
             self._wrapped[key] = factors[self._wrapped.id]
         else:
             self._wrapped[key] = factors
-

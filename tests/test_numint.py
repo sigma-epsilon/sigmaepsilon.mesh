@@ -61,7 +61,8 @@ class TestNumint(SigmaEpsilonTestCase):
         Gauss_Legendre_Wedge_3x3()
         
     def test_gauss_parser(self):
-        parser = PolyCell._parse_gauss_data
+        pc = PolyCell()
+        parser = pc._parse_gauss_data
         
         quadratures = {
             "1": Gauss_Legendre_Tri_1(),

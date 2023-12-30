@@ -26,10 +26,10 @@ class Q8(PolyCell):
     class Geometry(PolyCellGeometry2d):
         number_of_nodes = 8
         vtk_cell_id = 23
-        shape_function_evaluator: shp_Q8_multi
-        shape_function_matrix_evaluator: shape_function_matrix_Q8_multi
-        shape_function_derivative_evaluator: dshp_Q8_multi
-        monomial_evaluator: monoms_Q8
+        shape_function_evaluator = shp_Q8_multi
+        shape_function_matrix_evaluator = shape_function_matrix_Q8_multi
+        shape_function_derivative_evaluator = dshp_Q8_multi
+        monomial_evaluator = monoms_Q8
         quadrature = {
             "full": Gauss_Legendre_Quad_9,
             "geometry": "full",

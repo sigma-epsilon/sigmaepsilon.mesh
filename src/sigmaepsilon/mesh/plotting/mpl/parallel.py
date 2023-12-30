@@ -208,7 +208,8 @@ else:
         y0=None,
         xoffset=0.0,
         yoffset=0.0,
-        return_figure: bool = True,
+        return_figure: Optional[bool] = True,
+        wspace: Optional[float] = 0.4,
         **kwargs,
     ) -> Union[Figure, None]:
         """
@@ -254,6 +255,8 @@ else:
             Margin of the plot in the vertical direction. Default is 0.
         yoffset: float, Optional
             Margin of the plot in the horizontal direction. Default is 0.
+        wspace: float, Optional
+            Spacing between the axes. Default is 0.4.
         **kwargs: dict, Optional
             Extra keyword arguments are forwarded to the creator of the matplotlib figure.
             Default is None.
@@ -333,7 +336,7 @@ else:
             nrows=1,
             width_ratios=width_ratios,
             figure=fig,
-            wspace=0.2,
+            wspace=wspace,
             left=0.1,
         )
 

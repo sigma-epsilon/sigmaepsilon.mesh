@@ -45,7 +45,7 @@ def tetrahedralize(
     """
     assert (
         len(list(mesh.cellblocks(inclusive=True))) == 1
-    ), "The mesh must contain exactly block of solid cells."
+    ), "The mesh must contain exactly one block of solid cells."
 
     pv_body = mesh.to_pv()[0]
     pv_surf = pv_body.extract_surface().triangulate()

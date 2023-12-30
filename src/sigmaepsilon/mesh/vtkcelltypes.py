@@ -107,12 +107,12 @@ def celltype_by_value(value: int):
 def meshio_to_vtk(category: str, default=None):
     try:
         return _meshio_to_vtk[category]
-    except:
+    except Exception:
         return default
 
 
 def CellTypeId(celltype):
     try:
         return vtkCellTypes[celltype].value
-    except:
+    except Exception:
         return None

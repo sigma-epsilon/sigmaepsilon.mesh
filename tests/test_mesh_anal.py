@@ -25,6 +25,22 @@ class TestMeshAnalysis(unittest.TestCase):
         pd.nodal_adjacency(frmt="nx")
         pd.nodal_adjacency(frmt="jagged")
         pd.nodal_adjacency_matrix()
+        
+    def test_neighbourhood_matrix(self):
+        d, h, a = 6.0, 15.0, 15.0
+        cyl = pv.CylinderStructured(
+            center=(0.0, 0.0, 0.0),
+            direction=(0.0, 0.0, 1.0),
+            radius=np.linspace(d / 2, a / 2, 15),
+            height=h,
+            theta_resolution=4,
+            z_resolution=4,
+        )
+        pd: PolyData = PolyData.from_pv(cyl)
+        nnm = pd.nodal_neighbourhood_matrix()
+        self.assertEqual(nnm.min(), 0)
+        self.assertEqual(nnm.max(), 1)
+        self.assertEqual(np.sum(nnm.diagonal()), 0)
 
     def test_knn(self):
         size = 80, 60, 20

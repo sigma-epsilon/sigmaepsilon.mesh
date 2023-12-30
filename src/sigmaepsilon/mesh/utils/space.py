@@ -1,3 +1,5 @@
+from typing import Tuple
+
 import numpy as np
 from numpy import ndarray
 from numba import njit, prange
@@ -12,7 +14,7 @@ __cache = True
 
 
 @njit(nogil=True, cache=__cache)
-def frame_of_plane(coords: ndarray):
+def frame_of_plane(coords: ndarray) -> Tuple[ndarray, ndarray]:
     """
     Returns the frame of a planar surface. It needs
     at least 3 pointds to work properly (len(coords>=3)).
@@ -40,10 +42,15 @@ def frame_of_plane(coords: ndarray):
 
 
 @njit(nogil=True, parallel=True, cache=__cache)
-def frames_of_surfaces(coords: ndarray, topo: ndarray):
+def frames_of_surfaces(coords: ndarray, topo: ndarray) -> ndarray:
     """
     Returns the coordinates of the axes forming the local
-    coordinate systems of the surfaces.
+    coordinate systems of the surfaces using the first three vertices
+    of the cells.
+
+    Note
+    ----
+    This is only working for flat 2d cells.
 
     Parameters
     ----------
@@ -57,19 +64,20 @@ def frames_of_surfaces(coords: ndarray, topo: ndarray):
     numpy.ndarray
         3d array of 3x3 transformation matrices
     """
-    nE, nNE = topo.shape
-    nNE -= 1
+    nE = topo.shape[0]
     tr = np.zeros((nE, 3, 3), dtype=coords.dtype)
     for iE in prange(nE):
         tr[iE, 0, :] = normalize(coords[topo[iE, 1]] - coords[topo[iE, 0]])
-        tr[iE, 1, :] = normalize(coords[topo[iE, nNE]] - coords[topo[iE, 0]])
+        tr[iE, 1, :] = normalize(coords[topo[iE, 2]] - coords[topo[iE, 0]])
         tr[iE, 2, :] = normalize(np.cross(tr[iE, 0, :], tr[iE, 1, :]))
         tr[iE, 1, :] = np.cross(tr[iE, 2, :], tr[iE, 0, :])
     return tr
 
 
 @njit(nogil=True, parallel=True, cache=__cache)
-def tr_cell_glob_to_loc_bulk(coords: np.ndarray, topo: np.ndarray):
+def tr_cell_glob_to_loc_bulk(
+    coords: ndarray, topo: ndarray
+) -> Tuple[ndarray, ndarray, ndarray]:
     """
     Returns the coordinates of the cells in their local coordinate
     system, the coordinates of their centers and the coordinates of
@@ -125,7 +133,7 @@ def _frames_of_lines_auto(coords: ndarray, topo: ndarray) -> ndarray:
 
 
 @njit(nogil=True, parallel=True, cache=__cache)
-def _frames_of_lines_ref(coords: ndarray, topo: ndarray, refZ: ndarray):
+def _frames_of_lines_ref(coords: ndarray, topo: ndarray, refZ: ndarray) -> ndarray:
     nE, nNE = topo.shape
     nNE -= 1
     tr = np.zeros((nE, 3, 3), dtype=coords.dtype)

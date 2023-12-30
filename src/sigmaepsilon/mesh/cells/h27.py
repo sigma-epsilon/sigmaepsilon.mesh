@@ -49,10 +49,10 @@ class H27(PolyCell):
     class Geometry(PolyCellGeometry3d):
         number_of_nodes = 27
         vtk_cell_id = 29
-        shape_function_evaluator: shp_H27_multi
-        shape_function_matrix_evaluator: shape_function_matrix_H27_multi
-        shape_function_derivative_evaluator: dshp_H27_multi
-        monomial_evaluator: monoms_H27
+        shape_function_evaluator = shp_H27_multi
+        shape_function_matrix_evaluator = shape_function_matrix_H27_multi
+        shape_function_derivative_evaluator = dshp_H27_multi
+        monomial_evaluator = monoms_H27
         quadrature = {
             "full": partial(Gauss_Legendre_Hex_Grid, 3, 3, 3),
             "geometry": "full",

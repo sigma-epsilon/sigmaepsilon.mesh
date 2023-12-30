@@ -8,6 +8,7 @@ from sigmaepsilon.mesh.recipes import (
     perforated_cube,
     cylinder,
     circular_helix,
+    sphere
 )
 
 
@@ -68,6 +69,10 @@ class TestRecipes(unittest.TestCase):
         
         fnc = circular_helix(slope=1, pitch=5)
         fnc(1)
+        
+    def test_sphere(self):
+        sphere(1.0, 10, 10)
+        sphere(1.0, 10)
 
 
 if __name__ == "__main__":

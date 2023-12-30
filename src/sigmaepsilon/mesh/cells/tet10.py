@@ -22,7 +22,7 @@ class TET10(PolyCell):
     class Geometry(PolyCellGeometry3d):
         number_of_nodes = 10
         vtk_cell_id = 24
-        monomial_evaluator: monoms_TET10
+        monomial_evaluator = monoms_TET10
         quadrature = {
             "full": Gauss_Legendre_Tet_4,
             "geometry": "full",

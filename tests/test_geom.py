@@ -44,6 +44,7 @@ class TestPolyData(unittest.TestCase):
         pd.center()
         pd.move(np.array([1.0, 0.0, 0.0]))
         pd.centralize()
+        pd.centralize(inplace=False, axes=[0, 2])
         pd.center()
 
     def test_pd_2(self):

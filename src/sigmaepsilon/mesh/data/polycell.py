@@ -275,8 +275,7 @@ class PolyCell(Generic[MeshDataLike, PointDataLike], ABC_PolyCell):
 
         return points, rng
 
-    @staticmethod
-    def _parse_gauss_data(quad_dict: dict, key: Hashable) -> Iterable[Quadrature]:
+    def _parse_gauss_data(self, quad_dict: dict, key: Hashable) -> Iterable[Quadrature]:
         value: Union[Callable, str, dict] = quad_dict[key]
 
         if isinstance(value, Callable):
@@ -284,7 +283,7 @@ class PolyCell(Generic[MeshDataLike, PointDataLike], ABC_PolyCell):
             quad = Quadrature(x=qpos, w=qweight)
             yield quad
         elif isinstance(value, str):
-            for v in PolyCell._parse_gauss_data(quad_dict, value):
+            for v in self._parse_gauss_data(quad_dict, value):
                 yield v
         else:
             qpos, qweight = value
@@ -348,7 +347,8 @@ class PolyCell(Generic[MeshDataLike, PointDataLike], ABC_PolyCell):
         path: str
             Path of the file being created.
         """
-        return cls(db=CellData.from_parquet(path))
+        db_class = cls.data_class
+        return cls(db=db_class.from_parquet(path))
 
     def to_triangles(self) -> ndarray:
         """
@@ -834,7 +834,9 @@ class PolyCell(Generic[MeshDataLike, PointDataLike], ABC_PolyCell):
             A NumPy array of shape (nE, nP, nD), where nP is the number of points in 'x',
             nE is the number of cells in the block and nD is the number of spatial dimensions.
         """
-        x = atleast2d(x, front=True)
+        nD = self.Geometry.number_of_spatial_dimensions
+        if nD > 1:
+            x = atleast2d(x, front=True)
         shp = self.Geometry.shape_function_values(x)  # (nP, nNE)
         if ec is None:
             ec = self.points_of_cells()
@@ -1003,6 +1005,15 @@ class PolyCell(Generic[MeshDataLike, PointDataLike], ABC_PolyCell):
             centers = pc.show(target)
         return centers
 
+    def normals(self) -> ndarray:
+        """
+        Returns the normals of the cells as a 2d NumPy array.
+        """
+        if self.Geometry.number_of_spatial_dimensions == 2:
+            return ascont(self.frames[:, 2, :])
+        else:
+            raise NotImplementedError("This is only available for 2d cells.")
+
     def unique_indices(self) -> ndarray:
         """
         Returns the indices of the points involved in the cells of the block
@@ -1108,7 +1119,7 @@ class PolyCell(Generic[MeshDataLike, PointDataLike], ABC_PolyCell):
 
     def __hasattr__(self, attr: str) -> Any:
         return attr in self.__dict__ or hasattr(self.db, attr)
-    
+
     def __getattr__(self, attr: str) -> Any:
         if attr in self.__dict__:
             return self.__dict__[attr]

@@ -306,7 +306,6 @@ class PolyCellGeometry(ABC):
         cls,
         return_symbolic: Optional[bool] = True,
         update: Optional[bool] = True,
-        N: Optional[Union[int, None]] = None,
     ) -> Tuple:
         """
         Generates functions to evaulate shape functions, their derivatives

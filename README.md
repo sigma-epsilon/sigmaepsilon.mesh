@@ -86,7 +86,7 @@ Python 3.8.10 (tags/v3.8.10:3d8993a, May  3 2021, 11:48:03) [MSC v.1928 64 bit (
 Type "help", "copyright", "credits" or "license" for more information.
 >>> import sigmaepsilon.mesh
 >>> sigmaepsilon.mesh.__version__
-'1.1.0'
+'2.2.0'
 ```
 
 ## Testing and coverage

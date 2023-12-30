@@ -27,10 +27,10 @@ class Q4(PolyCell):
     class Geometry(PolyCellGeometry2d):
         number_of_nodes = 4
         vtk_cell_id = 9
-        shape_function_evaluator: shp_Q4_multi
-        shape_function_matrix_evaluator: shape_function_matrix_Q4_multi
-        shape_function_derivative_evaluator: dshp_Q4_multi
-        monomial_evaluator: monoms_Q4
+        shape_function_evaluator = shp_Q4_multi
+        shape_function_matrix_evaluator = shape_function_matrix_Q4_multi
+        shape_function_derivative_evaluator = dshp_Q4_multi
+        monomial_evaluator = monoms_Q4
         quadrature = {
             "full": Gauss_Legendre_Quad_4,
             "geometry": "full",

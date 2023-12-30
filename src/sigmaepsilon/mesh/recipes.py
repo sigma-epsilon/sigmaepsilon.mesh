@@ -437,3 +437,70 @@ def perforated_cube(
     pd = PointData(coords=coords, frame=frame)
     cd = celltype(topo=topo, frames=frame)
     return PolyData(pd, cd)
+
+
+def sphere(
+    radius: float,
+    n_azimuthal_divisions: int,
+    n_polar_divisions: Optional[Union[int, None]] = None,
+) -> PolyData:
+    """
+    Generate a triangulated mesh representing a sphere.
+
+    Parameters
+    ----------
+    radius : float
+        Radius of the sphere.
+    n_azimuthal_divisions : int
+        Number of divisions for azimuthal angle (longitude).
+    n_polar_divisions : int, Optional
+        Number of divisions for polar angle (latitude). If not provided
+        it is equal to 'n_azimuthal_divisions'.
+
+    Returns
+    -------
+    :class:`~sigmaepsilon.mesh.data.polydata.PolyData`
+
+    Notes
+    -----
+    This function generates a triangulated mesh of a sphere using separate
+    divisions for azimuthal and polar angles. The resulting mesh represents
+    a sphere with given radius and resolution.
+
+    Examples
+    --------
+    >>> from sigmaepsilon.mesh import PolyData
+    >>> from sigmaepsilon.mesh.recipes import sphere
+    >>> mesh: PolyData = sphere(1.0, 20, 10)
+    """
+
+    if not n_polar_divisions:
+        n_polar_divisions = n_azimuthal_divisions
+
+    # Create points (vertices)
+    phi = np.linspace(0, np.pi, n_polar_divisions)  # Polar angle
+    theta = np.linspace(0, 2 * np.pi, n_azimuthal_divisions)  # Azimuthal angle
+    phi, theta = np.meshgrid(phi, theta)
+
+    x = radius * np.sin(phi) * np.cos(theta)
+    y = radius * np.sin(phi) * np.sin(theta)
+    z = radius * np.cos(phi)
+
+    points = np.vstack([x.flatten(), y.flatten(), z.flatten()]).T
+
+    # Create faces (triangles)
+    faces = []
+    for i in range(n_azimuthal_divisions - 1):
+        for j in range(n_polar_divisions - 1):
+            p1 = i * n_polar_divisions + j
+            p2 = p1 + 1
+            p3 = (i + 1) * n_polar_divisions + j
+            p4 = p3 + 1
+
+            faces.extend([[p1, p2, p3], [p2, p4, p3]])
+
+    frame = CartesianFrame(dim=3)
+    pd = PointData(coords=points, frame=frame)
+    cd = T3(topo=np.array(faces))
+    mesh = PolyData(pd, cd)
+    return mesh

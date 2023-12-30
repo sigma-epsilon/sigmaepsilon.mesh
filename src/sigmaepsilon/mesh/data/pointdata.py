@@ -35,7 +35,7 @@ class PointData(AkWrapper, ABC_AkWrapper):
        to avoid leading double underscores when assigning custom data to a PointData instance,
        unless you are sure, that it is of no importance for the correct behaviour of the
        class instances.
-    
+
     Parameters
     ----------
     points: numpy.ndarray, Optional
