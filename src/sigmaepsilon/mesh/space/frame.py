@@ -19,8 +19,8 @@ class CartesianFrame(Frame):
     A field-specific reference frame to be used in problems related to
     Euclidean geometry.
 
-    It builds on top of :class:`~sigmaepsilon.math.linalg.meta.FrameLike` from 
-    `sigmaepsilon.math`, but adds the contept of 'origo', and some other applications 
+    It builds on top of :class:`~sigmaepsilon.math.linalg.meta.FrameLike` from
+    `sigmaepsilon.math`, but adds the contept of 'origo', and some other applications
     related to the field.
 
     See Also

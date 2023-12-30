@@ -10,13 +10,13 @@ class Point(Vector):
     """
     .. deprecated:: 2.3.0
        Use :class:`~sigmaepsilon.mesh.space.pointcloud.PointCloud` instead.
-   
+
     A class a to handle a single point in Euclidean space.
 
     It inherits :class:`Vector <sigmaepsilon.math.linalg.vector.Vector>`,
     and extends its behaviour with default frame management for domain specific applications.
 
-    If data is provided on object creation, the class can infer an appropriate default frame, 
+    If data is provided on object creation, the class can infer an appropriate default frame,
     hence the specification of such can be omitted.
 
     Parameters
@@ -30,7 +30,7 @@ class Point(Vector):
     1) This is class is superseded by :class:`PointCloud <sigmaepsilon.mesh.space.pointcloud.PointCloud>`.
     2) This class does not take the origo of the supporting reference frame into consideration when
     transforming coordinates between frames.
-    
+
     Examples
     --------
     >>> from sigmaepsilon.mesh.space import Point
@@ -61,9 +61,11 @@ class Point(Vector):
     ):
         warnings.warn(
             "The Point class is deprecated and will be removed in a future version. "
-            "Use a PointCloud instead.", DeprecationWarning, stacklevel=2
+            "Use a PointCloud instead.",
+            DeprecationWarning,
+            stacklevel=2,
         )
-        
+
         if frame is None:
             if len(args) > 0:
                 if isinstance(args[0], np.ndarray):

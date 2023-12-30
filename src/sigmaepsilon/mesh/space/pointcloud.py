@@ -144,7 +144,7 @@ class PointCloud(Vector):
         self,
         *args,
         frame: Optional[Union[CartesianFrame, FrameLike, None]] = None,
-        inds:Optional[Union[ndarray, None]]=None,
+        inds: Optional[Union[ndarray, None]] = None,
         **kwargs,
     ):
         if frame is None:
