@@ -104,6 +104,10 @@ class CellDataProtocol(Generic[PolyDataLike, PointDataLike], Protocol):
         `False` if they are not.
         """
         ...
+        
+    @property
+    def has_nodes(self) -> bool:
+        ...
 
 
 class PolyCellProtocol(
