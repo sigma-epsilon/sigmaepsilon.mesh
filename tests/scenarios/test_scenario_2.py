@@ -1,7 +1,7 @@
 import numpy as np
 import unittest
 
-from linkeddeepdict import LinkedDeepDict
+from sigmaepsilon.deepdict import DeepDict
 from sigmaepsilon.mesh import PolyData, PointData
 from sigmaepsilon.mesh.space import StandardFrame, PointCloud
 from sigmaepsilon.mesh.utils import centralize, center_of_points
@@ -31,7 +31,7 @@ class TestScenario2(unittest.TestCase):
             color="grey",
         )
 
-        database = LinkedDeepDict(
+        database = DeepDict(
             {
                 "left": {
                     "geom": CHS(d=100, t=10, n=64),

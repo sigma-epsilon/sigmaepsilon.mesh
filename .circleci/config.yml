@@ -1,108 +1,41 @@
-# Python CircleCI 2.1 configuration file
 version: 2.1
 
 orbs:
-  # The python orb contains a set of prepackaged circleci configuration you can use repeatedly in your configurations files
-  # Orb commands and jobs help you with common scripting around a language/tool
-  # so you dont have to copy and paste it everywhere.
-  # See the orb documentation here: https://circleci.com/developer/orbs/orb/circleci/python
   python: circleci/python@2.1.1
-  codecov: codecov/codecov@3.3.0
+
+executors:
+  my-executor:
+    docker:
+      - image: cimg/python:3.10
 
 jobs:
-  build_test:
-    docker:
-      - image: cimg/python:3.10
-    steps:
-      - checkout  # checkout source code to working directory
-      - python/install-packages:
-          pkg-manager: pip
-          pip-dependency-file: requirements-test.txt
-      - run:
-          command: pip install pytest pytest-cov
-      - run:
-          name: Build wheel
-          command: |
-            pip install wheel twine
-            pip install ".[test, dev]"
-            pip install 'build<0.10.0'
-            python -m build
-      - run:
-          name: Refresh packages
-          command: sudo apt-get update
-      - run:
-          name: Install xvfb for offline rendering
-          command: sudo apt-get install libgl1-mesa-glx xvfb
-      - run:
-          name: Run tests
-          # This assumes pytest is installed via the install-package step above
-          command: python -m pytest
-  
-  test_pypi_publish:
-    docker:
-      - image: cimg/python:3.10
-    steps:
-      - checkout  # checkout source code to working directory
-      - run:
-          name: Deploy to testpypi
-          command: |
-            pip install wheel twine
-            pip install .
-            pip install 'build<0.10.0'
-            python -m build
-            python -m twine upload --repository testpypi --skip-existing dist/*
-
-  pypi_publish:
-    docker:
-      - image: cimg/python:3.10
-    steps:
-      - checkout  # checkout source code to working directory
-      - run:
-          name: Deploy to pypi
-          command: |
-            pip install wheel twine
-            pip install .
-            pip install 'build<0.10.0'
-            python -m build
-            python -m twine upload --skip-existing dist/*
-
-  test-cov-py310:  # This is the name of the job, feel free to change it to better match what you're trying to do!
-    # These next lines defines a docker executors: https://circleci.com/docs/2.0/executor-types/
-    # You can specify an image from dockerhub or use one of the convenience images from CircleCI's Developer Hub
-    # A list of available CircleCI docker convenience images are available here: https://circleci.com/developer/images/image/cimg/python
-    # The executor is the environment in which the steps below will be executed - below will use a python 3.9 container
-    # Change the version below to your required version of python
-    docker:
-      - image: cimg/python:3.10
-    # Checkout the code as the first step. This is a dedicated CircleCI step.
-    # The python orb's install-packages step will install the dependencies from a Pipfile via Pipenv by default.
-    # Here we're making sure we use just use the system-wide pip. By default it uses the project root's requirements.txt.
-    # Then run your tests!
-    # CircleCI will report the results back to your VCS provider.
-        
+  run_tests_3_10:
+    executor: my-executor
     steps:
       - checkout
       - run:
-          name: Install package for testing
-          command: pip install ".[test, dev]"
-      - run:
           name: Refresh packages
           command: sudo apt-get update
       - run:
           name: Install xvfb for offline rendering
           command: sudo apt-get install libgl1-mesa-glx xvfb
+      - python/install-packages:
+          pkg-manager: poetry
+      - run:
+          name: Install project
+          command: |
+            poetry install --with test
       - run:
           name: Run tests and generate coverage report
           command: |
-            chmod +x ./run_pytest_cov.sh
-            ./run_pytest_cov.sh
+            chmod +x ./run_tests_with_coverage.sh
+            ./run_tests_with_coverage.sh
       - run:
-          name: List working directory contents
-          command: ls -al
-      - run:
-          name: List home directory contents
-          command: ls -a ~
-      - codecov/upload
+          name: Upload coverage reports to Codecov
+          command: |
+            curl -Os https://uploader.codecov.io/latest/linux/codecov
+            chmod +x codecov
+            ./codecov -t ${CODECOV_TOKEN}
       - store_artifacts:
           name: Store coverage report as artifact
           path: htmlcov
@@ -110,36 +43,75 @@ jobs:
           name: Store test results
           path: test-results
 
-workflows:
-  
-  testing-and-coverage:  # This is the name of the workflow, feel free to change it to better match your workflow.
-    # Inside the workflow, you define the jobs you want to run.
-    # For more details on extending your workflow, see the configuration docs: https://circleci.com/docs/2.0/configuration-reference/#workflows
-    jobs:
-      - test-cov-py310
+  deploy_to_test_pypi:
+    executor: my-executor
+    steps:
+      - checkout
+      - python/install-packages:
+          pkg-manager: poetry
+      - run:
+          name: Add new command
+          command: chmod +x ./export_requirements.sh
+      - run:
+          name: Build project
+          command: |
+            poetry check
+            poetry lock
+            ./export_requirements.sh 
+            poetry install
+            poetry build
+      - run:
+          name: Deploy to TestPyPI
+          command: |
+            poetry config repositories.testpypi https://test.pypi.org/legacy/
+            poetry config pypi-token.testpypi $TEST_PYPI_TOKEN
+            poetry publish -r testpypi --skip-existing
 
-  build_test_publish:
+  deploy_to_pypi:
+    executor: my-executor
+    steps:
+      - checkout
+      - python/install-packages:
+          pkg-manager: poetry
+      - run:
+          name: Add new command
+          command: chmod +x ./export_requirements.sh
+      - run:
+          name: Build project
+          command: |
+            poetry check
+            poetry lock
+            ./export_requirements.sh 
+            poetry install
+            poetry build
+      - run:
+          name: Deploy to PyPI
+          command: |
+            poetry config pypi-token.pypi $PYPI_TOKEN
+            poetry publish --skip-existing
+
+workflows:
+  test_and_deploy:
     jobs:
-      - build_test:
-          filters:
-            branches:
-              only:
-                - main
-      - test_pypi_publish:
+      - run_tests_3_10
+
+      - deploy_to_test_pypi:
           context:
             - TestPyPI deploy
           requires:
-            - build_test
+            - run_tests_3_10
           filters:
             branches:
               only:
-                - main
-      - pypi_publish:
+                - test
+
+      - deploy_to_pypi:
           context:
             - PyPI deploy
           requires:
-            - test_pypi_publish
+            - run_tests_3_10
           filters:
             branches:
               only:
                 - main
+                

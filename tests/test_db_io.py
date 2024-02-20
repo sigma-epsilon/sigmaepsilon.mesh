@@ -80,7 +80,7 @@ class TestIO(unittest.TestCase):
         self.assertTrue(isclose(volume, mesh.volume(), atol=1e-5, rtol=None))
 
         mesh.to_standard_form()
-        t = mesh.topology()
+        t = mesh.topology().to_numpy()
         t0 = mesh.coords().shape[0]
         imin = np.min(t)
         t1 = np.max(t) - imin + 1

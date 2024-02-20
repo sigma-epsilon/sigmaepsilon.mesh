@@ -1,5 +1,6 @@
 from copy import copy, deepcopy
 from typing import (
+    Iterator,
     Union,
     Hashable,
     Collection,
@@ -480,7 +481,7 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
         return importer(mesh)
 
     @classmethod
-    def from_pv(cls: PolyDataLike, pvobj: pyVistaLike) -> PolyDataLike:
+    def from_pv(cls: PolyDataLike, pvobj) -> PolyDataLike:
         """
         Returns a :class:`~sigmaepsilon.mesh.polydata.PolyData` instance from
         a :class:`pyvista.PolyData` or a :class:`pyvista.UnstructuredGrid`
@@ -1470,7 +1471,9 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
             If the topology is regular, you can gain some speed with providing
             it as `True`. Default is `False`.
         """
-        topo = self.topology(jagged=True).to_array()
+        # FIXME This doesn't work with Awkward arrays.
+        #topo = self.topology(jagged=True).to_array()
+        topo = self.topology(jagged=True).to_numpy()
 
         if isinstance(topo, ak.Array):
             topo = ak.values_astype(topo, "int64")
@@ -1761,7 +1764,7 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
         blocks = self.cellblocks(inclusive=True)
         return all(list(map(lambda b: key in b.celldata.db.fields, blocks)))
 
-    def _detach_block_data_(self, data: Union[str, ndarray] = None) -> Tuple:
+    def _detach_block_data_(self, data: Union[str, ndarray] = None) -> Iterator:
         blocks = self.cellblocks(inclusive=True, deep=True)
         for block in blocks:
             source = block.source()
