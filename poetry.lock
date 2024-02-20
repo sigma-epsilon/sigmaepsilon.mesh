@@ -2410,7 +2410,10 @@ files = [
 ]
 
 [package.dependencies]
-numpy = {version = ">=1.22.4,<2", markers = "python_version < \"3.11\""}
+numpy = [
+    {version = ">=1.22.4,<2", markers = "python_version < \"3.11\""},
+    {version = ">=1.23.2,<2", markers = "python_version == \"3.11\""},
+]
 python-dateutil = ">=2.8.2"
 pytz = ">=2020.1"
 tzdata = ">=2022.7"
@@ -2611,13 +2614,13 @@ testing = ["pytest", "pytest-benchmark"]
 
 [[package]]
 name = "pooch"
-version = "1.8.0"
+version = "1.8.1"
 description = "\"Pooch manages your Python library's sample data files: it automatically downloads and stores them in a local directory, with support for versioning and corruption checks.\""
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "pooch-1.8.0-py3-none-any.whl", hash = "sha256:1bfba436d9e2ad5199ccad3583cca8c241b8736b5bb23fe67c213d52650dbb66"},
-    {file = "pooch-1.8.0.tar.gz", hash = "sha256:f59981fd5b9b5d032dcde8f4a11eaa492c2ac6343fae3596a2fdae35fc54b0a0"},
+    {file = "pooch-1.8.1-py3-none-any.whl", hash = "sha256:6b56611ac320c239faece1ac51a60b25796792599ce5c0b1bb87bf01df55e0a9"},
+    {file = "pooch-1.8.1.tar.gz", hash = "sha256:27ef63097dd9a6e4f9d2694f5cfbf2f0a5defa44fccafec08d601e731d746270"},
 ]
 
 [package.dependencies]
@@ -3714,13 +3717,13 @@ sigmaepsilon-core = ">=1.2.1,<2.0.0"
 
 [[package]]
 name = "sigmaepsilon-math"
-version = "1.1.1"
+version = "1.1.2"
 description = "A Python Library for Applied Mathematics in Physical Sciences."
 optional = false
-python-versions = ">=3.10,<3.11"
+python-versions = ">=3.10,<4.0"
 files = [
-    {file = "sigmaepsilon_math-1.1.1-py3-none-any.whl", hash = "sha256:98344174d4e55aef20ab35681e485c0a33da4c66d0b7fb2145a7ec6ad0b96f0b"},
-    {file = "sigmaepsilon_math-1.1.1.tar.gz", hash = "sha256:9df57e055a97ac0cada5907a206cf19e2a75d2b7d42839515d9dbc470d341e00"},
+    {file = "sigmaepsilon_math-1.1.2-py3-none-any.whl", hash = "sha256:51337ce8fef1f296ccc29a10694aa042f1b64f163eaa53513d8618befdf6829b"},
+    {file = "sigmaepsilon_math-1.1.2.tar.gz", hash = "sha256:14b897cb0f212e0f6bdfd212d063918617111b0ec470a0151c034aaee23c61a6"},
 ]
 
 [package.dependencies]
@@ -4465,5 +4468,5 @@ testing = ["big-O", "jaraco.functools", "jaraco.itertools", "more-itertools", "p
 
 [metadata]
 lock-version = "2.0"
-python-versions = ">=3.10,<3.11"
-content-hash = "a21919cebba997b445b55b7e314e61a0ca4783c0c040f552b20319023a928867"
+python-versions = ">=3.10,<3.12"
+content-hash = "e37b2add11044ab891791750f9f43d52940c7b8595eb0a086058825245c0babe"

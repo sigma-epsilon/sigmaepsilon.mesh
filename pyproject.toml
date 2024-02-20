@@ -28,7 +28,7 @@ documentation = "https://sigmaepsilonmath.readthedocs.io/en/latest/?badge=latest
 packages = [{ include = "sigmaepsilon", from = "src" }]
 
 [tool.poetry.dependencies]
-python = ">=3.10,<4.0"
+python = ">=3.10,<3.12"
 toml = "^0.10.2"
 sigmaepsilon-deepdict = ">=1.2.4"
 sigmaepsilon-math = ">=1.1.2"
