@@ -251,7 +251,7 @@ class TestPolyDataMultiBlock(SigmaEpsilonTestCase):
         self.mesh.centers(target=target)
 
     def test_adjacency(self):
-        #self.mesh.nodal_adjacency()
+        self.mesh.nodal_adjacency()
         self.mesh.cells_at_nodes()
         self.mesh.cells_around_cells(radius=1.0)
         
