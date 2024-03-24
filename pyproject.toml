@@ -4,7 +4,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "sigmaepsilon.mesh"
-version = "2.3.2"
+version = "2.3.3"
 description = "A Python package to build, manipulate and analyze polygonal meshes."
 classifiers=[
         "Development Status :: 5 - Production/Stable",
