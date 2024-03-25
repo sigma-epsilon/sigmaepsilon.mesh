@@ -50,6 +50,9 @@ jobs:
     executor: my-executor
     steps:
       - checkout
+      - run:
+          name: Create lock file
+          command: poetry lock --no-update
       - python/install-packages:
           pkg-manager: poetry
       - run:
@@ -74,6 +77,9 @@ jobs:
     executor: my-executor
     steps:
       - checkout
+      - run:
+          name: Create lock file
+          command: poetry lock --no-update
       - python/install-packages:
           pkg-manager: poetry
       - run:
