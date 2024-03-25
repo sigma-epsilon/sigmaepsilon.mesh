@@ -254,6 +254,12 @@ class PolyCell(Generic[MeshDataLike, PointDataLike], ABC_PolyCell):
         points: Optional[Union[None, Iterable[Number]]] = None,
         rng: Optional[Union[None, Iterable[Number]]] = None,
     ) -> Tuple[ndarray, ndarray]:
+        """
+        Returns the points and the domain in which they are defined.
+        Currently the range is only a matter of interest for 1d cells. Then,
+        the points are returned in the range [-1, 1]. In the future it is planned
+        to make the target range a parameter of the function.
+        """
         nDIM = self.Geometry.number_of_spatial_dimensions
         if nDIM == 1:
             if points is None:
@@ -684,10 +690,11 @@ class PolyCell(Generic[MeshDataLike, PointDataLike], ABC_PolyCell):
 
         if points is None:
             return ecoords
-        else:
-            points, rng = self._get_points_and_range(points, rng)
+        
+        points, rng = self._get_points_and_range(points, rng)
 
         if NDIM == 1:
+            points = to_range_1d(points, source=rng, target=[0, 1]).flatten()
             res = pcoords_to_coords_1d(points, ecoords)  # (nE * nP, nD)
             nE = ecoords.shape[0]
             nP = points.shape[0]

@@ -19,6 +19,9 @@ jobs:
       - run:
           name: Install xvfb for offline rendering
           command: sudo apt-get install libgl1-mesa-glx xvfb
+      - run:
+          name: Create lock file
+          command: poetry lock --no-update
       - python/install-packages:
           pkg-manager: poetry
       - run:
