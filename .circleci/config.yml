@@ -22,6 +22,9 @@ jobs:
       - python/install-packages:
           pkg-manager: poetry
       - run:
+          name: Create lock file
+          command: poetry lock --no-update
+      - run:
           name: Install project
           command: |
             poetry install --with test
