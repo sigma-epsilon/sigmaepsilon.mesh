@@ -110,7 +110,8 @@ class PolyCellGeometry(ABC):
 
         return CustomClass
 
-    @classmethod @abstractmethod
+    @classmethod 
+    @abstractmethod
     def master_coordinates(cls) -> ndarray:
         """
         Returns the coordinates of the master element.
