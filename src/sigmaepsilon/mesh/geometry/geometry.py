@@ -7,7 +7,7 @@ from typing import (
     List,
     Union,
 )
-from abc import abstractclassmethod
+from abc import abstractmethod
 
 import numpy as np
 from numpy import ndarray
@@ -110,7 +110,7 @@ class PolyCellGeometry(ABC):
 
         return CustomClass
 
-    @abstractclassmethod
+    @classmethod @abstractmethod
     def master_coordinates(cls) -> ndarray:
         """
         Returns the coordinates of the master element.
