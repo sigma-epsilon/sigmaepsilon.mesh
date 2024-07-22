@@ -1,5 +1,3 @@
-from typing import Union
-
 from sigmaepsilon.core.downloads import download_file, delete_downloads
 from sigmaepsilon.mesh import PolyData
 
@@ -11,10 +9,11 @@ __all__ = [
     "download_bunny_coarse",
     "download_gt40",
     "download_badacsony",
+    "download_bike_stem",
 ]
 
 
-def _download(path: str, read: bool = False) -> Union[str, PolyData]:
+def _download(path: str, read: bool = False) -> str | PolyData:
     vtkpath = download_file(path)
     if read:
         return PolyData.read(vtkpath)
@@ -22,7 +21,7 @@ def _download(path: str, read: bool = False) -> Union[str, PolyData]:
         return vtkpath
 
 
-def download_stand(*, read: bool = False) -> Union[str, PolyData]:
+def download_stand(*, read: bool = False) -> str | PolyData:
     """
     Downloads a tetrahedral mesh of a stand in vtk format.
 
@@ -46,7 +45,7 @@ def download_stand(*, read: bool = False) -> Union[str, PolyData]:
     return _download("stand.vtk", read=read)
 
 
-def download_bunny(*, tetra: bool = False, read: bool = False) -> Union[str, PolyData]:
+def download_bunny(*, tetra: bool = False, read: bool = False) -> str | PolyData:
     """
     Downloads a tetrahedral mesh of a bunny in vtk format.
 
@@ -74,9 +73,7 @@ def download_bunny(*, tetra: bool = False, read: bool = False) -> Union[str, Pol
     return _download(filename, read=read)
 
 
-def download_bunny_coarse(
-    tetra: bool = False, read: bool = False
-) -> Union[str, PolyData]:
+def download_bunny_coarse(tetra: bool = False, read: bool = False) -> str | PolyData:
     """
     Downloads and optionally reads the bunny example as a vtk file.
 
@@ -98,7 +95,7 @@ def download_bunny_coarse(
     return _download(filename, read=read)
 
 
-def download_gt40(read: bool = False) -> Union[str, PolyData]:
+def download_gt40(read: bool = False) -> str | PolyData:
     """
     Downloads and optionally reads the Gt40 example as a vtk file.
 
@@ -116,7 +113,7 @@ def download_gt40(read: bool = False) -> Union[str, PolyData]:
     return _download("gt40.vtk", read=read)
 
 
-def download_badacsony(read: bool = False) -> Union[str, PolyData]:
+def download_badacsony(read: bool = False) -> str | PolyData:
     """
     Downloads and optionally reads the badacsony example as a vtk file.
 
@@ -132,3 +129,21 @@ def download_badacsony(read: bool = False) -> Union[str, PolyData]:
     >>> mesh = download_badacsony(read=True)
     """
     return _download("badacsony.vtk", read=read)
+
+
+def download_bike_stem(read: bool = False) -> str | PolyData:
+    """
+    Downloads and optionally reads the bike stem example as an STL file.
+
+    Parameters
+    ----------
+    read: bool, Optional
+        If False, the path of the mesh file is returned instead of a
+        :class:`~sigmaepsilon.mesh.data.polydata.PolyData` object. Default is False.
+
+    Example
+    -------
+    >>> from sigmaepsilon.mesh.downloads import download_bike_stem
+    >>> mesh = download_bike_stem(read=True)
+    """
+    return _download("bike_stem_nomanifold.stl", read=read)
