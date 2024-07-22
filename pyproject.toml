@@ -10,6 +10,8 @@ classifiers=[
         "Development Status :: 5 - Production/Stable",
         "License :: OSI Approved :: MIT License",
         "Programming Language :: Python :: 3.10",
+        "Programming Language :: Python :: 3.11",
+        "Programming Language :: Python :: 3.12",
         "Programming Language :: Python :: 3 :: Only",
         "Operating System :: OS Independent",
 ]
@@ -18,7 +20,7 @@ authors = ["Bence Balogh <bencebalogh@sigmaepsilon.com>"]
 maintainers = ["Bence Balogh <bencebalogh@sigmaepsilon.com>"]
 license = "MIT"
 keywords = [
-    "engineering", "mathematics", "optimization", "vector", "tensor", 
+    "engineering", "mathematics", "optimization", "vector", "tensor",
     "vector algebra", "tensor algebra", "symbolic mathematics", 
     "nonlinear optimization"
 ]
@@ -77,6 +79,7 @@ networkx = ">=3.0"
 pillow = ">=10.2.0"
 fonttools = ">=4.43.0"
 testbook = "^0.4.2"
+pymeshfix = "^0.17.0"
 
 [tool.poetry.group.docs.dependencies]
 ipython = "^8.21.0"
