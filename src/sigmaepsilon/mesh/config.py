@@ -11,6 +11,14 @@ try:
     __haspyvista__ = True
 except Exception:  # pragma: no cover
     __haspyvista__ = False
+    
+
+try:
+    import pymeshfix
+
+    __haspymeshfix__ = True
+except Exception:  # pragma: no cover
+    __haspymeshfix__ = False
 
 try:
     import matplotlib as mpl
