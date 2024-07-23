@@ -7,7 +7,7 @@
 [![Documentation Status](https://readthedocs.org/projects/sigmaepsilonmesh/badge/?version=latest)](https://sigmaepsilonmesh.readthedocs.io/en/latest/?badge=latest)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![PyPI](https://badge.fury.io/py/sigmaepsilon.mesh.svg)](https://pypi.org/project/sigmaepsilon.mesh)
-[![Python 3.7‒3.10](https://img.shields.io/badge/python-3.7%E2%80%923.10-blue)](https://www.python.org)
+[![Python 3.10‒3.12](https://img.shields.io/badge/python-3.7%E2%80%923.10-blue)](https://www.python.org)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 [![Requirements Status](https://dependency-dash.repo-helper.uk/github/sigma-epsilon/sigmaepsilon.mesh/badge.svg)](https://dependency-dash.repo-helper.uk/github/sigma-epsilon/sigmaepsilon.mesh)
 
@@ -24,7 +24,7 @@ Here and there we also use [NetworkX](https://networkx.org/documentation/stable/
 
 * Classes to handle points, pointclouds, reference frames and jagged topologies.
 * Array-like mesh composition with a Numba-jittable database model. Join or split meshes, attach numerical data and save to and load from disk.
-* Simplified and preconfigured plotting facility using PyVista.
+* Simplified and preconfigured plotting facility using PyVista, K3D, Plotly and Matplotlib.
 * Grid generation in 1, 2 and 3 dimensions for arbitrarily structured Lagrangian cells.
 * A mechanism for all sorts of geometrical and topological transformations.
 * A customizable nodal distribution mechanism to effortlessly pass around data between points and cells.
@@ -35,7 +35,7 @@ Here and there we also use [NetworkX](https://networkx.org/documentation/stable/
 
 ## Projects using sigmaepsilon.mesh
 
-* [SigmaEpsilon.Solid](https://github.com/sigma-epsilon/sigmaepsilon.solid) - A Python library for computational solid mechanics.
+* Many of the other packages in the `SigmaEpsilon` ecosystem.
 * [PyAxisVM](https://github.com/AxisVM/pyaxisvm) - The official Python package of [AxisVM](https://axisvm.eu/), a popular structural analysis and design software.
 
 ## Documentation
@@ -134,4 +134,4 @@ This package is licensed under the [MIT license](LICENSE).
 
 ## Third-party licenses
 
-This package is licensed under the [MIT license](THIRD-PARTY-LICENSES).
+You find license information of all the dependencies [in this file](THIRD-PARTY-LICENSES).
