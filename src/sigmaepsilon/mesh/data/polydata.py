@@ -467,34 +467,6 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
         return cls.from_pv(pv.read(*args, **kwargs))
 
     @classmethod
-    def from_stl(
-        cls: PolyDataLike,
-        stl_file_path: str,
-        clean: bool = True,
-        repair: bool = False,
-        verbose: bool = False,
-    ) -> PolyDataLike:
-        """
-        Returns a :class:`~sigmaepsilon.mesh.polydata.PolyData` instance from
-        an STL file. The imported mesh is optionally cleaned using `PyVista` 
-        and fixed using `PyMeshFix`.
-
-        Parameters
-        ----------
-        stl_file_path : str
-            The path to the STL file.
-        clean : bool, optional
-            Whether to clean the mesh using `PyVista`, by default True.
-        repair : bool, optional
-            Whether to fix the mesh using `PyMeshfix`, by default False.
-        verbose : bool, optional
-            Whether to print verbose output, by default False. Currently this
-            only affects the PyMeshFix repair function.
-        """
-        importer: Callable = importers["stl"]
-        return importer(stl_file_path, clean=clean, repair=repair, verbose=verbose)
-
-    @classmethod
     def from_meshio(cls: PolyDataLike, mesh: MeshioMesh) -> PolyDataLike:
         """
         Returns a :class:`~sigmaepsilon.mesh.polydata.PolyData` instance from
