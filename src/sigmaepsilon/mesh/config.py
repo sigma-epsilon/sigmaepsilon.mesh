@@ -11,14 +11,6 @@ try:
     __haspyvista__ = True
 except Exception:  # pragma: no cover
     __haspyvista__ = False
-    
-
-try:
-    import pymeshfix
-
-    __haspymeshfix__ = True
-except Exception:  # pragma: no cover
-    __haspymeshfix__ = False
 
 try:
     import matplotlib as mpl
@@ -48,11 +40,3 @@ try:
     __hask3d__ = True
 except Exception:  # pragma: no cover
     __hask3d__ = False
-
-
-try:
-    import tetgen
-
-    __has_tetgen__ = True
-except Exception:  # pragma: no cover
-    __has_tetgen__ = False
