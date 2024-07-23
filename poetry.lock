@@ -1174,19 +1174,6 @@ ssh = ["paramiko"]
 tqdm = ["tqdm"]
 
 [[package]]
-name = "gmsh"
-version = "4.12.2"
-description = "Gmsh is a three-dimensional finite element mesh generator with built-in pre- and post-processing facilities."
-optional = false
-python-versions = "*"
-files = [
-    {file = "gmsh-4.12.2-py2.py3-none-macosx_10_15_x86_64.whl", hash = "sha256:28d91487f1666eacbcf3b24bf832ee5e4e09acfb8cff966e90a263623fbd26e0"},
-    {file = "gmsh-4.12.2-py2.py3-none-macosx_12_0_arm64.whl", hash = "sha256:0620c62006443da23fffb211e6c579bf284b2340a1b9a74b5636b3367fc14096"},
-    {file = "gmsh-4.12.2-py2.py3-none-manylinux_2_24_x86_64.whl", hash = "sha256:df6981be2dee9e6083a6d4f6a9b1d1ebd56e7c0cf2ed49ae97bc791f268af78e"},
-    {file = "gmsh-4.12.2-py2.py3-none-win_amd64.whl", hash = "sha256:3af271f67efe7cb921fbcbd66bf994bf0e556324cc3b33b6ae582359cb12cd9e"},
-]
-
-[[package]]
 name = "h11"
 version = "0.14.0"
 description = "A pure-Python, bring-your-own-I/O implementation of HTTP/1.1"
@@ -3346,22 +3333,6 @@ plugins = ["importlib-metadata"]
 windows-terminal = ["colorama (>=0.4.6)"]
 
 [[package]]
-name = "pygmsh"
-version = "7.1.17"
-description = "Python frontend for Gmsh"
-optional = false
-python-versions = ">=3.7"
-files = [
-    {file = "pygmsh-7.1.17-py3-none-any.whl", hash = "sha256:3b3da976a4da5070eaf1b0d2c5eec3fc4902524580c6d256c32a390f720e86d4"},
-    {file = "pygmsh-7.1.17.tar.gz", hash = "sha256:563724abff4f8517598d3354b9c795feddbe0675786145bfeaf20cbee6691c1d"},
-]
-
-[package.dependencies]
-gmsh = "*"
-meshio = ">=4.3.2,<6"
-numpy = ">=1.20.0"
-
-[[package]]
 name = "pyparsing"
 version = "3.1.2"
 description = "pyparsing module - Classes and methods to define and execute parsing grammars"
@@ -4671,34 +4642,6 @@ sphinx = ["Sphinx (>=1.7,<3.0)", "myst-parser (==0.9.1)", "sphinx-book-theme (==
 test = ["black", "bumpversion", "check-manifest", "codecov", "coverage", "flake8", "ipykernel", "ipython", "ipywidgets", "pandas", "pip (>=18.1)", "pytest (>=4.1)", "pytest-cov (>=2.6.1)", "setuptools (>=38.6.0)", "tox", "twine (>=1.11.0)", "wheel (>=0.31.0)", "xmltodict"]
 
 [[package]]
-name = "tetgen"
-version = "0.6.4"
-description = "Python interface to tetgen"
-optional = false
-python-versions = ">=3.7"
-files = [
-    {file = "tetgen-0.6.4-cp310-cp310-macosx_10_9_universal2.whl", hash = "sha256:696abda7472f5ed58148bc37c774546ee418346eeb3fb994778ccefa1a9c6596"},
-    {file = "tetgen-0.6.4-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:4d16523a8a3981c77de19890a2331951c4fa78574ae74a1d5905d3ab79d01982"},
-    {file = "tetgen-0.6.4-cp310-cp310-win_amd64.whl", hash = "sha256:b7c9522b9c18b9778b7aec72b47db9ba9a60792b427a77a69dc9f0b2e62820ca"},
-    {file = "tetgen-0.6.4-cp311-cp311-macosx_10_9_universal2.whl", hash = "sha256:d75a35219184a7a99ff1eea753212d1db5b5331f33a64e00eb6b26d7c683a7bc"},
-    {file = "tetgen-0.6.4-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:37c7a10c7365dbbf5e9bebe79f096ab44be3bd3f65e285dc28e757429ad40a02"},
-    {file = "tetgen-0.6.4-cp311-cp311-win_amd64.whl", hash = "sha256:f2fad7dedca0b4af62711f4906901e665d82d36b3240a88a2a7d2d40b57a9253"},
-    {file = "tetgen-0.6.4-cp312-cp312-macosx_10_9_universal2.whl", hash = "sha256:cf4bc060c6a9330acd36fb053d08e47c76488b0ac5a5e7296636b9137f83395a"},
-    {file = "tetgen-0.6.4-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:6ee7c61430e121d489ee4c2997cd3b4ff8ab4dd812baf5e3997091ffb2178920"},
-    {file = "tetgen-0.6.4-cp312-cp312-win_amd64.whl", hash = "sha256:e0bec4fc7ce5620b805f3be7bea43321d1c76dcae53b57a1097e523825699f7e"},
-    {file = "tetgen-0.6.4-cp38-cp38-macosx_10_9_universal2.whl", hash = "sha256:d56954947417b6b2de3bca291151decdb4a8ab579775d4c362c21afae17e65f3"},
-    {file = "tetgen-0.6.4-cp38-cp38-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:90cd7a9e3d4d08283c36d6bc9d85ffcdfcec3e0cba385e73f72255cf27e1a4e8"},
-    {file = "tetgen-0.6.4-cp38-cp38-win_amd64.whl", hash = "sha256:404a05135b3fd331048deaec5ee8a5cd8d8a7365c442961a080c5a6c1c8e586a"},
-    {file = "tetgen-0.6.4-cp39-cp39-macosx_10_9_universal2.whl", hash = "sha256:a5fc93db4f910129953d93150fc824ecf08c76c3d4638ffce3af0a10d6001ee5"},
-    {file = "tetgen-0.6.4-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:77fae8b30296e761a75ce52ab6eba649ffd9e45f7fbddc4f3cfd4f1dce7178a1"},
-    {file = "tetgen-0.6.4-cp39-cp39-win_amd64.whl", hash = "sha256:401f4ec0c832365ec471670c781907845d64255b03a662934a88a0b9e81d62d2"},
-]
-
-[package.dependencies]
-numpy = ">1.16.0"
-pyvista = ">=0.31.0"
-
-[[package]]
 name = "tinycss2"
 version = "1.2.1"
 description = "A tiny CSS parser"
@@ -5140,4 +5083,4 @@ testing = ["big-O", "jaraco.functools", "jaraco.itertools", "more-itertools", "p
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.10,<3.13"
-content-hash = "d7acb509ecd1849f8165fd213eac55970ce1bfde838150ada94158512f2cc8aa"
+content-hash = "e46aa54176674495b51b83fe3e3d6721854d3facae6b6756fe3bf1f018656233"

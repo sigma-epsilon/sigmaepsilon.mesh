@@ -1,13 +1,13 @@
 # **SigmaEpsilon.Mesh** - Data Structures, Computation and Visualization for Complex Polygonal Meshes in Python
 
-![ ](logo.png)
+![ ](https://github.com/sigma-epsilon/sigmaepsilon.mesh/blob/main/logo.png?raw=true)
 
 [![CircleCI](https://dl.circleci.com/status-badge/img/gh/sigma-epsilon/sigmaepsilon.mesh/tree/main.svg?style=shield)](https://dl.circleci.com/status-badge/redirect/gh/sigma-epsilon/sigmaepsilon.mesh/tree/main)
 [![codecov](https://codecov.io/gh/sigma-epsilon/sigmaepsilon.mesh/graph/badge.svg?token=7JKJ3HHSX3)](https://codecov.io/gh/sigma-epsilon/sigmaepsilon.mesh)
 [![Documentation Status](https://readthedocs.org/projects/sigmaepsilonmesh/badge/?version=latest)](https://sigmaepsilonmesh.readthedocs.io/en/latest/?badge=latest)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![PyPI](https://badge.fury.io/py/sigmaepsilon.mesh.svg)](https://pypi.org/project/sigmaepsilon.mesh)
-[![Python 3.7‒3.10](https://img.shields.io/badge/python-3.7%E2%80%923.10-blue)](https://www.python.org)
+[![Python 3.10‒3.12](https://img.shields.io/badge/python-3.7%E2%80%923.10-blue)](https://www.python.org)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 [![Requirements Status](https://dependency-dash.repo-helper.uk/github/sigma-epsilon/sigmaepsilon.mesh/badge.svg)](https://dependency-dash.repo-helper.uk/github/sigma-epsilon/sigmaepsilon.mesh)
 
@@ -24,7 +24,7 @@ Here and there we also use [NetworkX](https://networkx.org/documentation/stable/
 
 * Classes to handle points, pointclouds, reference frames and jagged topologies.
 * Array-like mesh composition with a Numba-jittable database model. Join or split meshes, attach numerical data and save to and load from disk.
-* Simplified and preconfigured plotting facility using PyVista.
+* Simplified and preconfigured plotting facility using PyVista, K3D, Plotly and Matplotlib.
 * Grid generation in 1, 2 and 3 dimensions for arbitrarily structured Lagrangian cells.
 * A mechanism for all sorts of geometrical and topological transformations.
 * A customizable nodal distribution mechanism to effortlessly pass around data between points and cells.
@@ -35,7 +35,7 @@ Here and there we also use [NetworkX](https://networkx.org/documentation/stable/
 
 ## Projects using sigmaepsilon.mesh
 
-* [SigmaEpsilon.Solid](https://github.com/sigma-epsilon/sigmaepsilon.solid) - A Python library for computational solid mechanics.
+* Many of the other packages in the `SigmaEpsilon` ecosystem.
 * [PyAxisVM](https://github.com/AxisVM/pyaxisvm) - The official Python package of [AxisVM](https://axisvm.eu/), a popular structural analysis and design software.
 
 ## Documentation
@@ -44,7 +44,9 @@ The [documentation](https://sigmaepsilonmesh.readthedocs.io/en/latest/) is built
 
 ## Installation
 
-sigmaepsilon.mesh can be installed from PyPI using `pip` on Python >= 3.7:
+If you are a developer, skip this section and follow the instructions [in this section](#instructions-for-developers). If you are not, follow the instructions listed in this section and forget that you ever saw this paragraph.
+
+`sigmaepsilon.mesh` can be installed from `PyPI` using `pip` on Python >= 3.10:
 
 ```console
 >>> pip install sigmaepsilon.mesh
@@ -65,45 +67,41 @@ and install from source by typing
 If you want to run the tests, you can install the package along with the necessary optional dependencies like this
 
 ```console
->>> pip install ".[test]"
+>>> pip install ".[test,dev]"
 ```
+
+This would install the library with optional dependencies required for testing and development.
 
 ### Development mode
 
-If you are a developer and want to install the library in development mode, the suggested way is by using this command:
+If you want to install the library in development mode, use this command:
 
 ```console
->>> pip install "-e .[test, dev]"
+>>> pip install "-e .[test,dev]"
 ```
 
 ### Checking your installation
 
-You should be able to import sigmaepsilon.mesh from the Python prompt:
+If everything went well, you should be able to import `sigmaepsilon.mesh` from the Python prompt:
 
 ```console
 $ python
-Python 3.8.10 (tags/v3.8.10:3d8993a, May  3 2021, 11:48:03) [MSC v.1928 64 bit (AMD64)] on win32
+Python 3.10.11 (tags/v3.10.11:7d4cc5a, Apr  5 2023, 00:38:17) [MSC v.1929 64 bit (AMD64)] on win32
 Type "help", "copyright", "credits" or "license" for more information.
 >>> import sigmaepsilon.mesh
 >>> sigmaepsilon.mesh.__version__
-'2.2.0'
+'2.3.3'
 ```
-
-## Testing and coverage
-
-The following command runs all tests and creates a html report in a folder named `htmlcov` (the settings are governed by the `.coveragerc` file):
-
-```console
-python -m pytest --cov-report html --cov-config=.coveragerc --cov sigmaepsilon.mesh
-```
-
-Open `htmlcov/index.html` to see the results.
 
 ## Changes and versioning
 
 See the [changelog](CHANGELOG.md), for the most notable changes between releases.
 
 The project adheres to [semantic versioning](https://semver.org/).
+
+## Instructions for Developers
+
+If you are a developer or plannign to contribute, you find all related information in the [Developer Guide](DEV.md).
 
 ## How to contribute?
 
@@ -126,10 +124,14 @@ In all cases, read the [contributing guidelines](CONTRIBUTING.md) before you do 
 
 Although `sigmaepsilon.mesh` works without `VTK` or `PyVista` being installed, it is highly influenced by these libraries and works best with them around. Also shout-out for the developers of `NumPy`, `Scipy`, `Numba`, `Awkward`, `meshio` and all the third-party libraries involved in the project. Whithout these libraries the concept of writing performant, yet elegant Python code would be much more difficult.
 
-**A lot of the packages mentioned on this document here and the introduction have a citable research paper. If you use them in your work through sigmaepsilon.mesh, take a moment to check out their documentations and cite their papers.**
+**A lot of the packages mentioned in this document here and the introduction have a citable research paper. If you use them in your work through sigmaepsilon.mesh, take a moment to check out their documentations and cite their papers.**
 
 Also, funding of these libraries is partly based on the size of the community they are able to support. If what you are doing strongly relies on these libraries, don't forget to press the :star: button to show your support.
 
 ## License
 
-This package is licensed under the [MIT license](LICENSE.txt).
+This package is licensed under the [MIT license](LICENSE).
+
+## Third-party licenses
+
+You find license information of all the dependencies [in this file](THIRD-PARTY-LICENSES).

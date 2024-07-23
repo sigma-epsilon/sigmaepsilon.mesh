@@ -10,7 +10,6 @@ from .utils import k_nearest_neighbours as KNN
 from .topoarray import TopologyArray
 from .triang import triangulate
 from .grid import grid
-from .tetrahedralize import tetrahedralize
 from .cellapproximator import LagrangianCellApproximator
 from .io import from_pv, from_meshio, to_vtk, to_pv, to_k3d
 from .plotting import pvplot
@@ -30,7 +29,6 @@ __all__ = [
     "KNN",
     "triangulate",
     "grid",
-    "tetrahedralize",
     #
     "from_pv",
     "from_meshio",

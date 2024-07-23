@@ -10,6 +10,8 @@ classifiers=[
         "Development Status :: 5 - Production/Stable",
         "License :: OSI Approved :: MIT License",
         "Programming Language :: Python :: 3.10",
+        "Programming Language :: Python :: 3.11",
+        "Programming Language :: Python :: 3.12",
         "Programming Language :: Python :: 3 :: Only",
         "Operating System :: OS Independent",
 ]
@@ -18,7 +20,7 @@ authors = ["Bence Balogh <bencebalogh@sigmaepsilon.com>"]
 maintainers = ["Bence Balogh <bencebalogh@sigmaepsilon.com>"]
 license = "MIT"
 keywords = [
-    "engineering", "mathematics", "optimization", "vector", "tensor", 
+    "engineering", "mathematics", "optimization", "vector", "tensor",
     "vector algebra", "tensor algebra", "symbolic mathematics", 
     "nonlinear optimization"
 ]
@@ -35,7 +37,6 @@ sigmaepsilon-math = ">=1.1.2"
 fsspec = ">=2023.1.0"
 sectionproperties = ">2.1.3"
 meshio = "^5.3.5"
-triangle = "^20230923"
 numpy = ">=1.22.2"
 pillow = ">=10.2.0"
 
@@ -50,11 +51,9 @@ ipyvtklink = "^0.2.3"
 ipykernel = "^6.29.2"
 pandas = "^2.2.0"
 plotly = "^5.19.0"
-tetgen = "^0.6.3"
 autopep8 = "^2.0.4"
 awkward = "^2.6.1"
 pyarrow = "^15.0.0"
-pygmsh = "^7.1.17"
 asciitree = "^0.3.3"
 numpy = ">=1.22.2"
 pillow = ">=10.0.1"
@@ -66,7 +65,6 @@ poetry-plugin-export = "^1.6.0"
 
 [tool.poetry.group.test.dependencies]
 pyvista = "^0.43.3"
-tetgen = "^0.6.3"
 pytest = "^8.0.1"
 pytest-cov = "^4.1.0"
 coverage = "^7.4.1"
@@ -93,7 +91,6 @@ pydata-sphinx-theme = "^0.15.2"
 sphinx-plotly-directive = "^0.1.3"
 pyvista = "^0.43.3"
 pandas = "^2.2.0"
-tetgen = "^0.6.3"
 matplotlib = "^3.8.3"
 plotly = "^5.19.0"
 k3d = "^2.16.1"

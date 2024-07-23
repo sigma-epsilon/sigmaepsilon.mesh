@@ -1,9 +1,12 @@
+from packaging import version
+import warnings
+from typing import Tuple
+
 import numpy as np
 from numpy import ndarray
 from numba import njit, prange
 import scipy as sp
-from packaging import version
-import warnings
+
 
 try:
     from sklearn.neighbors import KDTree
@@ -31,7 +34,7 @@ def k_nearest_neighbours(
     leaf_size: int = 30,
     return_distance: bool = False,
     max_distance: float = None,
-):
+) -> Tuple[ndarray, ndarray] | ndarray:
     """
     Returns the k nearest neighbours (KNN) of a KDTree for a pointcloud using `scipy`
     or `sklearn`. The function acts as a uniform interface for similar functionality

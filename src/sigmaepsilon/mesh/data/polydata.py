@@ -508,7 +508,7 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
         point_fields: Optional[Union[Iterable[str], None]] = None,
         cell_fields: Optional[Union[Iterable[str], None]] = None,
         **kwargs,
-    ):
+    ) -> Any:
         """
         Returns the data contained within the mesh to pandas dataframes.
 
@@ -540,7 +540,7 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
         point_fields: Optional[Union[Iterable[str], None]] = None,
         cell_fields: Optional[Union[Iterable[str], None]] = None,
         **kwargs,
-    ):
+    ) -> None:
         """
         Saves the data contained within the mesh to parquet files.
 
@@ -1472,7 +1472,7 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
             it as `True`. Default is `False`.
         """
         # FIXME This doesn't work with Awkward arrays.
-        #topo = self.topology(jagged=True).to_array()
+        # topo = self.topology(jagged=True).to_array()
         topo = self.topology(jagged=True).to_numpy()
 
         if isinstance(topo, ak.Array):
