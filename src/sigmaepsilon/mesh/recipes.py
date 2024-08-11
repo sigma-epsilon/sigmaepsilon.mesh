@@ -197,7 +197,7 @@ def cylinder(
             coords, topo = extrude_T3_TET4(points, triangles, h, n_z)
         else:
             raise NotImplementedError("Celltype not supported!")
-        
+
     frame = CartesianFrame(dim=3) if frame is None else frame
     pd = PointData(coords=coords, frame=frame)
     cd = celltype(topo=topo, frames=frame)

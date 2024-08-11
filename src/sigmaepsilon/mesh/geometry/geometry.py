@@ -110,7 +110,7 @@ class PolyCellGeometry(ABC):
 
         return CustomClass
 
-    @classmethod 
+    @classmethod
     @abstractmethod
     def master_coordinates(cls) -> ndarray:
         """
