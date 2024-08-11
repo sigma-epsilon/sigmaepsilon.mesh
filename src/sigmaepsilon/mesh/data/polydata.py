@@ -1254,29 +1254,29 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
         nummrg: bool, Optional
             If True, merges node numbering. Default is False.
         """
-        s = self.source()
-        pd = PolyData(s.pd, frame=s.frame)
+        s : PolyData = self.source()
+        polydata = PolyData(s.pd, frame=s.frame)
         l0 = len(self.address)
 
         if self.celldata is not None:
             db = deepcopy(self.cd.db)
-            cd = self.celltype(pointdata=pd, db=db)
-            pd.celldata = cd
-            pd.celltype = self.celltype
+            cd = self.celltype(container=polydata, db=db)
+            polydata.celldata = cd
+            polydata.celltype = self.celltype
 
         for cb in self.cellblocks(inclusive=False):
             addr = cb.address
             if len(addr) > l0:
                 db = deepcopy(cb.cd.db)
-                cd = cb.celltype(pointdata=pd, db=db)
+                cd = cb.celltype(container=polydata, db=db)
                 assert cd is not None
-                pd[addr[l0:]] = PolyData(None, cd)
-                assert pd[addr[l0:]].celldata is not None
+                polydata[addr[l0:]] = PolyData(None, cd)
+                assert polydata[addr[l0:]].celldata is not None
 
         if nummrg:
-            pd.nummrg()
+            polydata.nummrg()
 
-        return pd
+        return polydata
 
     def nummrg(self: PolyDataLike) -> PolyDataLike:
         """
