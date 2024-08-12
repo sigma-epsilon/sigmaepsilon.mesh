@@ -19,6 +19,7 @@ Gallery
     examples/joint_cube.ipynb
     examples/lighting.ipynb
     examples/plot_surface_normals.ipynb
+    examples/section.ipynb
     examples/shape_functions_1d.ipynb
     examples/shape_functions_Q9.ipynb
     examples/shape_functions_T6.ipynb
