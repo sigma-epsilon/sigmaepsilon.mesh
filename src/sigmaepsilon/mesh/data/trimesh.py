@@ -103,16 +103,16 @@ class TriMesh(PolyData):
         """
         return is_planar(self.normals())
 
-    def extrude(self, *, h: float = None, N: int = None) -> PolyData:
+    def extrude(self, *, h: float, N: int) -> PolyData:
         """
         Exctrude mesh perpendicular to the plane of the triangulation.
         The target element type can be specified with the `celltype` argument.
 
         Parameters
         ----------
-        h: float, Optional
+        h: float
             Size perpendicular to the plane of the surface to be extruded.
-        N: int, Optional
+        N: int
             Number of subdivisions along the perpendicular direction.
 
         Returns

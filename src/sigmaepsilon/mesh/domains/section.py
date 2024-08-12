@@ -25,6 +25,7 @@ from ..cells import T3
 from ..data import PointData
 from ..space import CartesianFrame
 from ..utils import coords_to_3d
+from ..topoarray import TopologyArray
 
 __all__ = ["generate_mesh", "get_section", "LineSection"]
 
@@ -292,11 +293,11 @@ class LineSection(Wrapper):
         """
         return centralize(np.array(self.mesh["vertices"]))
 
-    def topology(self) -> np.ndarray:
+    def topology(self) -> TopologyArray:
         """
         Returns vertex indices of T6 triangles as a numpy array.
         """
-        return np.array(self.mesh["triangles"].tolist())
+        return TopologyArray(np.array(self.mesh["triangles"].tolist()))
 
     def trimesh(self, subdivide: bool = False, order: int = 1, **kwargs) -> TriMesh:
         """
@@ -325,22 +326,33 @@ class LineSection(Wrapper):
         >>> section = LineSection(get_section('CHS', d=1.0, t=0.1, n=64))
         >>> trimesh = section.trimesh()
         """
-        points, triangles = coords_to_3d(self.coords()), self.topology()
+        triangles = self.topology()
+        assert (
+            not triangles.is_jagged()
+        ), "Only homogeneous topologies are supported at the moment."
+        points, triangles = coords_to_3d(self.coords()), triangles.to_numpy()
         if order == 1:
             if subdivide:
                 path = np.array([[0, 5, 4], [5, 1, 3], [3, 2, 4], [5, 3, 4]], dtype=int)
                 points, triangles = T6_to_T3(points, triangles, path=path)
             else:
                 points, triangles = detach_mesh_bulk(points, triangles[:, :3])
-        else:
-            raise NotImplementedError
+        else:  # pragma: no cover
+            raise NotImplementedError("Higher order elements are not yet supported!")
 
         frame = kwargs.get("frame", CartesianFrame(dim=3))
         pd = PointData(coords=points, frame=frame)
         cd = T3(topo=triangles, frames=frame)
         return TriMesh(pd, cd)
 
-    def extrude(self, *, length=None, frame=None, N=None, **__) -> PolyData:
+    def extrude(
+        self,
+        *,
+        length: float,
+        frame: CartesianFrame,
+        N: int,
+        **__,
+    ) -> PolyData:
         """
         Creates a 3d tetragonal mesh from the section.
 
@@ -350,8 +362,8 @@ class LineSection(Wrapper):
             Length of the beam.
         N: int
             Number of subdivisions along the length of the beam.
-        frame: numpy.ndarray
-            A 3x3 matrix representing an orthonormal coordinate frame.
+        frame: CartesianFrame
+            An object instance representing an orthonormal coordinate frame.
 
         Returns
         -------
