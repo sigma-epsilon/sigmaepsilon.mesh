@@ -59,7 +59,7 @@ def generate_mesh(
     area = geometry.calculate_area()
     mesh_sizes_max = []
     if isinstance(l_max, float):
-        mesh_sizes_max.append(l_max ** 2 * np.sqrt(3) / 4)
+        mesh_sizes_max.append(l_max**2 * np.sqrt(3) / 4)
     if isinstance(a_max, float):
         mesh_sizes_max.append(a_max)
     if isinstance(n_max, int):
@@ -74,7 +74,11 @@ def generate_mesh(
 
 
 def get_section(
-    shape, *, mesh_params: dict = None, material: Material = None, **section_params
+    shape,
+    *,
+    mesh_params: dict | None = None,
+    material: Material | None = None,
+    **section_params,
 ) -> Section:
     """
     Returns a :class:`sectionproperties.analysis.section.Section` instance.
@@ -262,8 +266,9 @@ class LineSection(Wrapper):
                         wrap = get_section(
                             shape, mesh_params=mesh_params, material=material, **kwargs
                         )
-            except Exception:  # pragma: no cover
-                raise RuntimeError("Invalid input.")
+            except Exception as e:  # pragma: no cover
+                raise RuntimeError(f"Unable to create section: {e}")
+
         super().__init__(*args, wrap=wrap, **kwargs)
         self.props = None
 
