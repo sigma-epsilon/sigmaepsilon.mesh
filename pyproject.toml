@@ -64,6 +64,7 @@ fonttools = ">=4.43.0"
 ipython = ">=8.10.0"
 setuptools = ">=65.5.1"
 poetry-plugin-export = "^1.6.0"
+black = "^24.8.0"
 
 [tool.poetry.group.test.dependencies]
 pyvista = "^0.43.3"
