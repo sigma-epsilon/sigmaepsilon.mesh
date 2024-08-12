@@ -8,9 +8,7 @@ __cache = True
 @njit(nogil=True, cache=__cache)
 def monoms_TET10_single(x: ndarray) -> ndarray:
     r, s, t = x
-    res = np.array(
-        [1, r, s, t, r * s, r * t, s * t, r ** 2, s ** 2, t ** 2], dtype=x.dtype
-    )
+    res = np.array([1, r, s, t, r * s, r * t, s * t, r**2, s**2, t**2], dtype=x.dtype)
     return res
 
 

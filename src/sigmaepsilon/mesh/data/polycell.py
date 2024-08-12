@@ -690,7 +690,7 @@ class PolyCell(Generic[MeshDataLike, PointDataLike], ABC_PolyCell):
 
         if points is None:
             return ecoords
-        
+
         points, rng = self._get_points_and_range(points, rng)
 
         if NDIM == 1:

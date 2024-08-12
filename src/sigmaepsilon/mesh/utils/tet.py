@@ -106,10 +106,10 @@ def _glob_to_nat_tet_bulk_(points: ndarray, ecoords: ndarray) -> ndarray:
 
 
 @njit(nogil=True, cache=__cache)
-def pip_tet(point: ndarray, ecoords: ndarray, tol:float = 1e-12) -> ndarray:
+def pip_tet(point: ndarray, ecoords: ndarray, tol: float = 1e-12) -> ndarray:
     """
     Tells if a point is inside a tetrahedron or not.
-    
+
     Parameters
     ----------
     point: numpy.ndarray
@@ -118,12 +118,12 @@ def pip_tet(point: ndarray, ecoords: ndarray, tol:float = 1e-12) -> ndarray:
         2d NumPy array of the coordinates of the nodes of the tetrahedron.
     tol: float, Optional
         Tolerance to consider a point inside a cell. Default is 1e-12.
-    
+
     Returns
     -------
     bool
         True if the point is inside the tetrahedron, False otherwise.
-        
+
     Notes
     -----
     This function is numba-jittable in 'nopython' mode.
@@ -166,7 +166,7 @@ def pip_tet_bulk(
 ) -> ndarray:
     """
     Tells if points are inside tetrahedra or not.
-    
+
     Parameters
     ----------
     points: numpy.ndarray
@@ -204,13 +204,13 @@ def lcoords_tet(center: ndarray = None) -> ndarray:
     """
     Returns coordinates of the master element
     of a simplex in 3d.
-    
+
     Parameters
     ----------
     center: numpy.ndarray, Optional
         The coordinates of the center of the master
         element. Default is None.
-        
+
     Notes
     -----
     This function is numba-jittable in 'nopython' mode.

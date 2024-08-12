@@ -8,7 +8,7 @@ __cache = True
 @njit(nogil=True, cache=__cache)
 def monoms_T6(x: ndarray) -> ndarray:
     r, s = x
-    return np.array([1, r, s, r ** 2, s ** 2, r * s], dtype=x.dtype)
+    return np.array([1, r, s, r**2, s**2, r * s], dtype=x.dtype)
 
 
 @njit(nogil=True, cache=__cache)
@@ -16,12 +16,12 @@ def shp_T6(pcoord: ndarray) -> ndarray:
     r, s = pcoord[0:2]
     res = np.array(
         [
-            2.0 * r ** 2 + 4.0 * r * s - r / 3.0 + 2.0 * s ** 2 - s / 3.0 - 1 / 9,
-            2.0 * r ** 2 + r / 3.0 - 1 / 9,
-            2.0 * s ** 2 + s / 3.0 - 1 / 9,
-            -4.0 * r ** 2 - 4.0 * r * s - 4.0 * s / 3.0 + 4 / 9,
+            2.0 * r**2 + 4.0 * r * s - r / 3.0 + 2.0 * s**2 - s / 3.0 - 1 / 9,
+            2.0 * r**2 + r / 3.0 - 1 / 9,
+            2.0 * s**2 + s / 3.0 - 1 / 9,
+            -4.0 * r**2 - 4.0 * r * s - 4.0 * s / 3.0 + 4 / 9,
             4.0 * r * s + 4 * r / 3 + 4.0 * s / 3.0 + 4 / 9,
-            -4.0 * r * s - 4 * r / 3 - 4.0 * s ** 2 + 4 / 9,
+            -4.0 * r * s - 4 * r / 3 - 4.0 * s**2 + 4 / 9,
         ],
         dtype=pcoord.dtype,
     )

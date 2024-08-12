@@ -59,13 +59,13 @@ def generate_mesh(
     """
     area = geometry.calculate_area()
     mesh_sizes_max = []
-    
+
     if isinstance(l_max, Number):
         mesh_sizes_max.append(l_max**2 * np.sqrt(3) / 4)
-    
+
     if isinstance(a_max, Number):
         mesh_sizes_max.append(a_max)
-    
+
     if isinstance(n_max, int):
         mesh_sizes_max.append(area / n_max)
 
@@ -73,7 +73,9 @@ def generate_mesh(
     if len(mesh_sizes_max) > 0:
         mesh_size_max = min(mesh_sizes_max)
     else:
-        raise ValueError("Invalid input, the maximum mesh size can't be tedermined!")  # pragma: no cover
+        raise ValueError(
+            "Invalid input, the maximum mesh size can't be tedermined!"
+        )  # pragma: no cover
 
     geometry.create_mesh(mesh_sizes=[mesh_size_max])
     return geometry
@@ -242,7 +244,7 @@ class LineSection(Wrapper):
     -------
     .. plot::
         :include-source: True
-        
+
         Plot a section with Matplotlib using 3-noded triangles:
 
         import matplotlib.pyplot as plt
@@ -279,8 +281,8 @@ class LineSection(Wrapper):
                         )
             except Exception as e:  # pragma: no cover
                 raise RuntimeError(f"Unable to create section: {e}")
-        
-        super().__init__(*args, wrap=wrap, **kwargs)        
+
+        super().__init__(*args, wrap=wrap, **kwargs)
         self.props = None
 
     def coords(self) -> np.ndarray:

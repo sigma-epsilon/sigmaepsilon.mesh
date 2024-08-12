@@ -26,7 +26,7 @@ def circular_helix(
     """
     Returns the function :math:`f(t) = [a \cdot cos(t), a \cdot sin(t), b \cdot t]`,
     which describes a circular helix of radius a and slope a/b (or pitch 2πb).
-    
+
     Parameters
     ----------
     a: float, Optional
@@ -122,8 +122,8 @@ def cylinder(
     ----------
     shape: Tuple[Tuple[Number, Number] | Number, Number]
         The parameter is a 2-tuple that describes the dimensions of the
-        cylinder. The first element is either a number (radius), or a 2-tuple of 
-        numbers (inner and outer radii) describing the radius of the cylinder. 
+        cylinder. The first element is either a number (radius), or a 2-tuple of
+        numbers (inner and outer radii) describing the radius of the cylinder.
         The second element is the height of the cylinder.
     size: Union[tuple, float, int]
         Parameter controlling the resolution of the mesh. Default is None.
@@ -145,7 +145,7 @@ def cylinder(
         Default is ``False``.
     celltype
         Specifies the celltype to be used.
-        
+
     Example
     -------
     >>> from sigmaepsilon.mesh.recipes import cylinder

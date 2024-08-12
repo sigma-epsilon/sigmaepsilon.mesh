@@ -142,12 +142,12 @@ class CartesianFrame(Frame):
 
         >>> B = B.move(Vector([1, 0, 0], frame=B))
         >>> origo = B.relative_origo(A)  # [0.7071, 0.7071, 0.]
-        
+
         Of course, the point of origin of a frame with respect to itself
         must be a zero vector:
 
         >>> origo = B.relative_origo(B)  # [0., 0., 0.]
-        
+
         Providing with no arguments returns the distance of origin with
         respect to the root frame:
 

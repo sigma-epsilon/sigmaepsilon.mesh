@@ -23,11 +23,11 @@ def H8_in_TET4_bulk_knn(
     a boolean NumPy array with the same length as the number of H8 cells.
     If the i-th value is `True`, it means that the i-th H8 cell is inside
     at least one TET4 cell.
-    
+
     The function goes through all nodes of all H8 cells and check if it
     is inside any of the TET4 cells that make up the neighbourhood of the
     cell the point belongs to.
-    
+
     Parameters
     ----------
     ecoords_H8: numpy.ndarray

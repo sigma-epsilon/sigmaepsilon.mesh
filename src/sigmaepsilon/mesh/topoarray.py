@@ -61,7 +61,7 @@ class TopologyArray(JaggedArray):
 
     >>> TopologyArray(topo1, topo2, topo3).to_csr()
     4x4 CSR matrix of 13 values.
-    
+
     >>> ak_array = TopologyArray(topo1, topo2, topo3).to_ak()
 
     To get the unique indices in a mesh, you can simply use NumPy:

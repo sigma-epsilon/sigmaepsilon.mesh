@@ -91,7 +91,7 @@ class PointCloud(Vector):
 
     >>> coords = coords.centralize()
     >>> center = coords.center()  # array([0., 0., 0.])
-    
+
     Move the points in the global frame:
 
     >>> coords = coords.move(np.array([1., 0., 0.]))
@@ -111,7 +111,7 @@ class PointCloud(Vector):
 
     >>> coords = coords.rotate('Body', [0, 0, np.pi], 'XYZ')
     >>> center = coords.center()  # [1., 0., 0.]
-        
+
     >>> coords.x().min(), coords.x().max()
     (Array(-401.), Array(399.))
 

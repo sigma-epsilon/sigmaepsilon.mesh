@@ -28,7 +28,7 @@ def voxelize_cylinder(
 ) -> Tuple[ndarray, ndarray]:
     """
     Returns raw mesh data of a voxelized cylinder.
-    
+
     Parameters
     ----------
     radius: numpy.ndarray or Number or Iterable[Number]
@@ -41,7 +41,7 @@ def voxelize_cylinder(
         Size of the voxel grid.
     frame: CartesianFrame or None, Optional
         Cartesian frame of the voxel grid. Default is None.
-        
+
     Example
     -------
     The following example shows how to create a voxelized cylinder.
@@ -87,7 +87,7 @@ def voxelize_TET4_H8(
     The function is expected to behave well, if the input mesh is
     regular. If it contains extremely skew cells, the function may
     struggle to find the correct voxelization.
-    
+
     Parameters
     ----------
     coords_TET4: numpy.ndarray
@@ -104,11 +104,11 @@ def voxelize_TET4_H8(
         will use the number of TET4 cells as the `k` parameter.
     tol: float, Optional
         Tolerance to consider a point inside a cell. Default is 1e-12.
-        
+
     Example
     -------
     The following example shows how to voxelize a TET4 mesh.
-    
+
     >>> import numpy as np
     >>> from sigmaepsilon.mesh.voxelize import voxelize_TET4_H8
     >>> coords_TET4 = np.array([[0, 0, 0], [1, 0, 0], [0, 1, 0], [0, 0, 1]]).astype(float)

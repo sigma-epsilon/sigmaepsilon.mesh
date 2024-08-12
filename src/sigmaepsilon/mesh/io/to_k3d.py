@@ -9,7 +9,6 @@ if not (__hask3d__ and __hasmatplotlib__):  # pragma: no cover
             "You may also need to restart your kernel and reload the package."
         )
 
-
 else:
     from copy import copy
     from typing import Union, Iterable, Optional

@@ -1254,7 +1254,7 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
         nummrg: bool, Optional
             If True, merges node numbering. Default is False.
         """
-        s : PolyData = self.source()
+        s: PolyData = self.source()
         polydata = PolyData(s.pd, frame=s.frame)
         l0 = len(self.address)
 

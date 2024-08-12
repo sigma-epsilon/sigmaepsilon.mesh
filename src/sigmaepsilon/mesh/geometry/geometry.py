@@ -483,7 +483,7 @@ class PolyCellGeometry1d(PolyCellGeometry):
                 "Attribute 'number_of_nodes' of the cell must be set to a positive integer"
             )
         locvars = r = symbols("r", real=True)
-        monoms = [r ** i for i in range(cls.number_of_nodes)]
+        monoms = [r**i for i in range(cls.number_of_nodes)]
         return [locvars], monoms
 
     @classmethod

@@ -132,9 +132,9 @@ def transform_topology(
 
     if nD == 1:
         path = path.reshape(1, len(path))
-    
+
     assert nD <= 2, "Path must be 1 or 2 dimensional."
-    
+
     if data is None:
         return _transform_topology_(topo, path)
     else:
