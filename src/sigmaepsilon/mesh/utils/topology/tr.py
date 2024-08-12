@@ -129,7 +129,7 @@ def transform_topology(
     control over how you want to split the cells that make up the original mesh.
     """
     nD = len(path.shape)
-    
+
     if nD == 1:
         path = path.reshape(1, len(path))
     
