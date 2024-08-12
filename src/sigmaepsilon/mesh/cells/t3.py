@@ -26,13 +26,13 @@ class T3(PolyCell):
     -------
     >>> from sigmaepsilon.mesh import TriMesh, CartesianFrame, PointData, triangulate
     >>> from sigmaepsilon.mesh.cells import T3 as CellData
-    >>> A = CartesianFrame(dim=3)
-    >>> coords, topo = triangulate(size=(800, 600), shape=(10, 10))
-    >>> pd = PointData(coords=coords, frame=A)
+    >>> frame = CartesianFrame(dim=3)
+    >>> coords, topo, _ = triangulate(size=(800, 600), shape=(10, 10))
+    >>> pd = PointData(coords=coords, frame=frame)
     >>> cd = CellData(topo=topo)
     >>> trimesh = TriMesh(pd, cd)
-    >>> trimesh.area()
-    480000.0
+    >>> np.isclose(trimesh.area(), 480000.0)
+    True
     """
 
     label = "T3"

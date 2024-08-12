@@ -74,7 +74,7 @@ def generate_mesh(
 
 
 def get_section(
-    shape,
+    shape: str,
     *,
     mesh_params: dict | None = None,
     material: Material | None = None,
@@ -118,8 +118,8 @@ def get_section(
 
     Examples
     --------
-    >>> from sigmaepsilon.mesh.section import get_section
-    >>> mesh_params = dict(n_min=100, n_max=500)
+    >>> from sigmaepsilon.mesh.domains.section import get_section
+    >>> mesh_params = dict(n_max=500)
     >>> section = get_section('CHS', d=1.0, t=0.1, n=64, mesh_params=mesh_params)
     """
 
@@ -224,7 +224,7 @@ class LineSection(Wrapper):
 
     Examples
     --------
-    >>> from sigmaepsilon.mesh.section import LineSection, get_section
+    >>> from sigmaepsilon.mesh.domains.section import LineSection, get_section
     >>> section = LineSection(get_section('CHS', d=1.0, t=0.1, n=64))
 
     or simply provide the shape as the first argument and everything
@@ -232,15 +232,20 @@ class LineSection(Wrapper):
 
     >>> section = LineSection('CHS', d=1.0, t=0.1, n=64)
 
-    Plot a section with Matplotlib using 6-noded triangles:
+    Example
+    -------
+    .. plot::
+        :include-source: True
+        
+        Plot a section with Matplotlib using 3-noded triangles:
 
-    >>> import matplotlib.pyplot as plt
-    >>> from dewloosh.mpl import triplot
-    >>> section = LineSection('CHS', d=1.0, t=0.3, n=32,
-    >>>                       mesh_params=dict(n_max=20))
-    >>> triobj = section.trimesh(T6=True).to_triobj()
-    >>> fig, ax = plt.subplots(figsize=(4, 2))
-    >>> triplot(triobj, fig=fig, ax=ax, lw=0.1)
+        import matplotlib.pyplot as plt
+        from sigmaepsilon.mesh.plotting.mpl import triplot_mpl_mesh
+        section = LineSection('CHS', d=1.0, t=0.3, n=32,
+                              mesh_params=dict(n_max=20))
+        triobj = section.trimesh(order=1).to_triobj()
+        fig, ax = plt.subplots(figsize=(4, 2))
+        triplot_mpl_mesh(triobj, fig=fig, ax=ax, lw=0.1)
     """
 
     def __init__(
@@ -308,8 +313,8 @@ class LineSection(Wrapper):
 
         Examples
         --------
-        >>> from sigmaepsilon.mesh import BeamSection
-        >>> section = BeamSection(get_section('CHS', d=1.0, t=0.1, n=64))
+        >>> from sigmaepsilon.mesh.domains import LineSection
+        >>> section = LineSection(get_section('CHS', d=1.0, t=0.1, n=64))
         >>> trimesh = section.trimesh()
         """
         points, triangles = coords_to_3d(self.coords()), self.topology()

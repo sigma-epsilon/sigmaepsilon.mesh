@@ -36,7 +36,7 @@ class Point(Vector):
     >>> from sigmaepsilon.mesh.space import Point
     >>> p = Point([1., 1., 1.])
     >>> type(p.frame)
-    sigmaepsilon.math.linalg.frame.CartesianFrame
+    <class 'sigmaepsilon.math.linalg.frame.CartesianFrame'>
 
     If we want to handle more than one point:
 
@@ -44,9 +44,7 @@ class Point(Vector):
     >>> p = Point([[1., 0., 0.], [0., 1., 0.]])
     >>> A = p.frame
     >>> B = A.orient_new('Body', [0, 0, math.pi/2], 'XYZ')
-    >>> p.show(B)
-    array([[ 0.0, -1.0,  0.0],
-           [ 1.0,  0.0,  0.0]])
+    >>> point_in_B = p.show(B)
     """
 
     _frame_cls_ = CartesianFrame

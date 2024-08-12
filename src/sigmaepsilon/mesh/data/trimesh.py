@@ -50,24 +50,25 @@ class TriMesh(PolyData):
 
     >>> from sigmaepsilon.mesh import TriMesh, CartesianFrame, PointData, triangulate
     >>> from sigmaepsilon.mesh.cells import T3
-    >>> A = CartesianFrame(dim=3)
-    >>> coords, topo = triangulate(size=(800, 600), shape=(10, 10))
-    >>> pd = PointData(coords=coords, frame=A)
+    >>> import numpy as np
+    >>> frame = CartesianFrame(dim=3)
+    >>> coords, topo, _ = triangulate(size=(800, 600), shape=(10, 10))
+    >>> pd = PointData(coords=coords, frame=frame)
     >>> cd = T3(topo=topo)
     >>> trimesh = TriMesh(pd, cd)
-    >>> trimesh.area()
-    480000.0
+    >>> np.isclose(trimesh.area(), 480000.0)
+    True
 
     Extrude to create a tetrahedral mesh
 
     >>> tetmesh = trimesh.extrude(h=300, N=5)
-    >>> tetmesh.volume()
-    144000000.0
+    >>> np.isclose(tetmesh.volume(), 144000000.0)
+    True
 
     Calculate normals and tell if the triangles form
     a planar surface or not
 
-    >>> trimesh.normals()
+    >>> normals = trimesh.normals()
     >>> trimesh.is_planar()
     True
 

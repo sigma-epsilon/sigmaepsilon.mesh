@@ -49,7 +49,7 @@ class PointData(AkWrapper, ABC_AkWrapper):
     Example
     -------
     >>> from sigmaepsilon.mesh import CartesianFrame, PointData, triangulate
-    >>> A = CartesianFrame(dim=3)
+    >>> frame = CartesianFrame(dim=3)
     >>> coords = triangulate(size=(800, 600), shape=(10, 10))[0]
     >>> pd = PointData(coords=coords, frame=frame)
     >>> pd.activity = np.ones((len(pd)), dtype=bool)

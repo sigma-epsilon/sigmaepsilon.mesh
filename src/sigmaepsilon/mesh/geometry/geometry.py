@@ -85,8 +85,8 @@ class PolyCellGeometry(ABC):
         -------
         Define a custom 1d cell with 4 nodes:
 
-        >>> from sigmaepsilon.mesh.cells.geometry import PolyCellGeometry1d
-        >>> CustomClass = PolyCellGeometry1d.generate(number_of_nodes=4)
+        >>> from sigmaepsilon.mesh.geometry import PolyCellGeometry1d
+        >>> CustomClass = PolyCellGeometry1d.generate_class(number_of_nodes=4)
 
         This is equivalent to:
 
@@ -448,7 +448,7 @@ class PolyCellGeometry(ABC):
         We have provided four points and four data values. If we want an exact extrapolation,
         we use 4-noded quadrilaterals:
 
-        >>> from sigmaepsilon.mesh import Q4
+        >>> from sigmaepsilon.mesh.cells import Q4
         >>> approximator = Q4.Geometry.approximator()
         >>> target_data = approximator(source=source_location, values=source_data, target=target_location)
 
@@ -456,7 +456,7 @@ class PolyCellGeometry(ABC):
         with the same source locations, it is best to provide them when creating the approximator.
         This saves some time for repeated evaluations.
 
-        >>> from sigmaepsilon.mesh import Q4
+        >>> from sigmaepsilon.mesh.cells import Q4
         >>> approximator = Q4.Geometry.approximator(source_location)
         >>> target_data = approximator(values=source_data, target=target_location)
         """

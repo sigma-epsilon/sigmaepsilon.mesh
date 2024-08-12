@@ -39,8 +39,7 @@ def download_stand(*, read: bool = False) -> str | PolyData:
     Example
     --------
     >>> from sigmaepsilon.mesh.downloads import download_stand
-    >>> download_stand()
-    ...
+    >>> file_path = download_stand()
     """
     return _download("stand.vtk", read=read)
 
@@ -66,8 +65,7 @@ def download_bunny(*, tetra: bool = False, read: bool = False) -> str | PolyData
     Example
     --------
     >>> from sigmaepsilon.mesh.downloads import download_bunny
-    >>> download_bunny()
-    ...
+    >>> file_path = download_bunny()
     """
     filename = "bunny_T3.vtk" if not tetra else "bunny_TET4.vtk"
     return _download(filename, read=read)

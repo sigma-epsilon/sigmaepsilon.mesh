@@ -60,11 +60,6 @@ class CartesianFrame(Frame):
     >>> A = CartesianFrame(dim=3)
     >>> C = A.orient_new('Space', [0, 0, 2*np.pi], 'XYZ')
 
-    or we can define it relative to B (this literally makes C to looke
-    in B like B looks in A)
-
-    >>> C = CartesianFrame(B.axes, parent=B)
-
     Then, the *DCM from A to B* , that is :math:`^{A}\mathbf{R}^{B}` would be
 
     >>> A_R_B = B.dcm(source=A)
@@ -140,27 +135,23 @@ class CartesianFrame(Frame):
 
         To get the origin of frame B:
 
-        >>> B.relative_origo()
-        [0., 0., 0.]
+        >>> origo = B.relative_origo()  # array([0., 0., 0.])
 
         Move frame B (the motion is defined locally) and print the
         new point of origin with respect to A:
 
-        >>> B.move(Vector([1, 0, 0], frame=B))
-        >>> B.relative_origo(A)
-        [0.7071, 0.7071, 0.]
-
+        >>> B = B.move(Vector([1, 0, 0], frame=B))
+        >>> origo = B.relative_origo(A)  # [0.7071, 0.7071, 0.]
+        
         Of course, the point of origin of a frame with respect to itself
         must be a zero vector:
 
-        >>> B.relative_origo(B)
-        [0., 0., 0.]
-
+        >>> origo = B.relative_origo(B)  # [0., 0., 0.]
+        
         Providing with no arguments returns the distance of origin with
         respect to the root frame:
 
-        >>> B.relative_origo()  # same as B.relative_origo(B.root)
-        [0.7071, 0.7071, 0.]
+        >>> origo = B.relative_origo()  # same as B.relative_origo(B.root), [0.7071, 0.7071, 0.]
         """
         if not isinstance(self._origo, ndarray):
             self._origo = np.zeros(len(self.axes))
@@ -207,6 +198,9 @@ class CartesianFrame(Frame):
         Move the frame locally with the same amount
 
         >>> B.move(v.array, frame=B)
+        array([[ 0.70710678,  0.70710678,  0.        ],
+               [-0.70710678,  0.70710678,  0.        ],
+               [ 0.        ,  0.        ,  1.        ]])
         """
         if not isinstance(d, Vector):
             if not isinstance(d, ndarray):

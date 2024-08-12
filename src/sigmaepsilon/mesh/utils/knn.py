@@ -91,12 +91,11 @@ def k_nearest_neighbours(
 
     Examples
     --------
-    >>> from sigmaepsilon.mesh.grid import Grid
+    >>> from sigmaepsilon.mesh.grid import grid
     >>> from sigmaepsilon.mesh import KNN
     >>> size = 80, 60, 20
     >>> shape = 10, 8, 4
-    >>> grid = Grid(size=size, shape=shape, eshape='H8')
-    >>> X = grid.centers()
+    >>> X, _ = grid(size=size, shape=shape, eshape='H8')
     >>> i = KNN(X, X, k=3, max_distance=10.0)
     """
     tree_kwargs = {} if tree_kwargs is None else tree_kwargs
