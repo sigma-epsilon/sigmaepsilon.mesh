@@ -631,7 +631,7 @@ def dol_to_jagged_data(dol: DoL) -> Tuple[ndarray, ndarray]:
     return widths, data1d
 
 
-def detach(coords: CoordsLike, topo: TopoLike, inds: ndarray = None):
+def detach(coords: CoordsLike, topo: TopoLike, inds: ndarray | None = None):
     """
     Given a topology array and the coordinate array it refers to,
     the function returns the coordinate array of the points involved
@@ -879,6 +879,7 @@ def unique_topo_data(topo3d: TopoLike) -> Tuple[ndarray, ndarray]:
 
     >>> from sigmaepsilon.mesh.grid import grid
     >>> from sigmaepsilon.mesh.utils.topodata import edges_Q4
+    >>> import numpy as np
 
     >>> coords, topo = grid(size=(1, 1), shape=(10, 10), eshape='Q4')
 
@@ -888,16 +889,15 @@ def unique_topo_data(topo3d: TopoLike) -> Tuple[ndarray, ndarray]:
 
     To find the unique edges of the mesh:
 
+    >>> from sigmaepsilon.mesh.utils.topology import unique_topo_data
     >>> edges, edgeIDs = unique_topo_data(edges3d)
 
     Then, to reconstruct `edges3d`, do the following
 
     >>> edges3d_ = np.zeros_like(edges3d)
     >>> for i in range(edgeIDs.shape[0]):
-    >>>     for j in range(edgeIDs.shape[1]):
-    >>>         edges3d_[i, j, :] = edges[edgeIDs[i, j]]
-    >>> assert np.all(edges3d == edges3d_)
-    True
+    ...     for j in range(edgeIDs.shape[1]):
+    ...         edges3d_[i, j, :] = edges[edgeIDs[i, j]]
     """
     if isinstance(topo3d, ndarray):
         nE, nD, nN = topo3d.shape

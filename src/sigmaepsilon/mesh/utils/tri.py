@@ -127,7 +127,7 @@ def area_tri(ecoords: ndarray) -> ndarray:
     Parameters
     ----------
     ecoords: numpy.ndarray
-        Element coordinates, see the example.
+        Element coordinates.
 
     Notes
     -----

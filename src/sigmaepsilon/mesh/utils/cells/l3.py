@@ -7,4 +7,4 @@ __cache = True
 
 @njit(nogil=True, cache=__cache)
 def monoms_L3(r: float) -> ndarray:
-    return np.array([1, r, r ** 2], dtype=float)
+    return np.array([1, r, r**2], dtype=float)

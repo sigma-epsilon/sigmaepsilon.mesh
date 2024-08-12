@@ -125,7 +125,7 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
     >>> mesh['A']['Part1'] = PolyData(cd=H27(topo=topo[:10], frames=frame))
     >>> mesh['A']['Part2'] = PolyData(cd=H27(topo=topo[10:-10], frames=frame))
     >>> mesh['A']['Part3'] = PolyData(cd=H27(topo=topo[-10:], frames=frame))
-    >>> mesh.plot()
+    >>> mesh.plot()  # doctest: +SKIP
 
     Load a mesh from a PyVista object:
 
@@ -137,7 +137,7 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
     Read from a .vtk file:
 
     >>> from sigmaepsilon.mesh import PolyData
-    >>> from sigmaepsilon.core.downloads import download_stand
+    >>> from sigmaepsilon.mesh.downloads import download_stand
     >>> vtkpath = download_stand()
     >>> mesh = PolyData.read(vtkpath)
 
@@ -460,8 +460,8 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
         Download a .vtk file and read it:
 
         >>> from sigmaepsilon.mesh import PolyData
-        >>> from sigmaepsilon.mesh.examples import stand_vtk
-        >>> vtkpath = stand_vtk(read=False)
+        >>> from sigmaepsilon.mesh.downloads import download_stand
+        >>> vtkpath = download_stand(read=False)
         >>> mesh = PolyData.read(vtkpath)
         """
         return cls.from_pv(pv.read(*args, **kwargs))
@@ -508,7 +508,7 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
         point_fields: Optional[Union[Iterable[str], None]] = None,
         cell_fields: Optional[Union[Iterable[str], None]] = None,
         **kwargs,
-    ):
+    ) -> Any:
         """
         Returns the data contained within the mesh to pandas dataframes.
 
@@ -523,9 +523,9 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
 
         Example
         -------
-        >>> from sigmaepsilon.mesh.examples import stand_vtk
-        >>> mesh = stand_vtk(read=True)
-        >>> mesh.to_dataframe(point_fields=['x'])
+        >>> from sigmaepsilon.mesh.downloads import download_stand
+        >>> mesh = download_stand(read=True)
+        >>> _ = mesh.to_dataframe(point_fields=mesh.pd.fields)
         """
         ak_pd, ak_cd = self.to_ak(
             *args, point_fields=point_fields, cell_fields=cell_fields
@@ -540,7 +540,7 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
         point_fields: Optional[Union[Iterable[str], None]] = None,
         cell_fields: Optional[Union[Iterable[str], None]] = None,
         **kwargs,
-    ):
+    ) -> None:
         """
         Saves the data contained within the mesh to parquet files.
 
@@ -559,9 +559,9 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
 
         Example
         -------
-        >>> from sigmaepsilon.mesh.examples import stand_vtk
-        >>> mesh = stand_vtk(read=True)
-        >>> mesh.to_parquet('pd.parquet', 'cd.parquet', point_fields=['x'])
+        >>> from sigmaepsilon.mesh.downloads import download_stand
+        >>> mesh = download_stand(read=True)
+        >>> _ = mesh.to_parquet('pd.parquet', 'cd.parquet', point_fields=mesh.pd.fields)
         """
         ak_pd, ak_cd = self.to_ak(
             *args, point_fields=point_fields, cell_fields=cell_fields
@@ -591,9 +591,9 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
 
         Example
         -------
-        >>> from sigmaepsilon.mesh.examples import stand_vtk
-        >>> mesh = stand_vtk(read=True)
-        >>> mesh.to_ak(point_fields=['x'])
+        >>> from sigmaepsilon.mesh.downloads import download_stand
+        >>> mesh = download_stand(read=True)
+        >>> _ = mesh.to_ak(point_fields=mesh.pd.fields)
         """
         lp, lc = self.to_lists(
             *args, point_fields=point_fields, cell_fields=cell_fields
@@ -623,9 +623,9 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
 
         Example
         -------
-        >>> from sigmaepsilon.mesh.examples import stand_vtk
-        >>> mesh = stand_vtk(read=True)
-        >>> mesh.to_lists(point_fields=['x'])
+        >>> from sigmaepsilon.mesh.downloads import download_stand
+        >>> mesh = download_stand(read=True)
+        >>> _ = mesh.to_lists(point_fields=mesh.pd.fields)
         """
         # handle points
         blocks = self.pointblocks(inclusive=True, deep=True)
@@ -685,7 +685,7 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
 
         Example
         -------
-        >>> from sigmaepsilon.mesh.examples import download_stand
+        >>> from sigmaepsilon.mesh.downloads import download_stand
         >>> mesh = download_stand(read=True)
 
         To set configuration values related to plotting with `pyVista`,
@@ -697,7 +697,7 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
         Then, when it comes to plotting, you can specify your configuration
         with the `config_key` keyword argument:
 
-        >>> mesh.pvplot(config_key=('pyvista', 'plot'))
+        >>> mesh.pvplot(config_key=('pyvista', 'plot'))  # doctest: +SKIP
 
         This way, you can store several different configurations for
         different scenarios.
@@ -1116,9 +1116,9 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
 
         Example
         -------
-        >>> from sigmaepsilon.mesh.examples import download_stand
+        >>> from sigmaepsilon.mesh.downloads import download_stand
         >>> pd = download_stand(read=True)
-        >>> pd.bounds()
+        >>> bounds = pd.bounds()
         """
         c = self.coords(*args, **kwargs)
         return [minmax(c[:, 0]), minmax(c[:, 1]), minmax(c[:, 2])]
@@ -1254,29 +1254,29 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
         nummrg: bool, Optional
             If True, merges node numbering. Default is False.
         """
-        s = self.source()
-        pd = PolyData(s.pd, frame=s.frame)
+        s: PolyData = self.source()
+        polydata = PolyData(s.pd, frame=s.frame)
         l0 = len(self.address)
 
         if self.celldata is not None:
             db = deepcopy(self.cd.db)
-            cd = self.celltype(pointdata=pd, db=db)
-            pd.celldata = cd
-            pd.celltype = self.celltype
+            cd = self.celltype(container=polydata, db=db)
+            polydata.celldata = cd
+            polydata.celltype = self.celltype
 
         for cb in self.cellblocks(inclusive=False):
             addr = cb.address
             if len(addr) > l0:
                 db = deepcopy(cb.cd.db)
-                cd = cb.celltype(pointdata=pd, db=db)
+                cd = cb.celltype(container=polydata, db=db)
                 assert cd is not None
-                pd[addr[l0:]] = PolyData(None, cd)
-                assert pd[addr[l0:]].celldata is not None
+                polydata[addr[l0:]] = PolyData(None, cd)
+                assert polydata[addr[l0:]].celldata is not None
 
         if nummrg:
-            pd.nummrg()
+            polydata.nummrg()
 
-        return pd
+        return polydata
 
     def nummrg(self: PolyDataLike) -> PolyDataLike:
         """
@@ -1316,10 +1316,11 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
         --------
         Download the Stanford bunny and move it along global X:
 
-        >>> from sigmaepsilon.mesh.examples import download_bunny
+        >>> from sigmaepsilon.mesh.downloads import download_bunny
         >>> import numpy as np
         >>> bunny = download_bunny(tetra=False, read=True)
         >>> bunny.move([0.2, 0, 0])
+        PolyData({5: PolyData({})})
         """
         subject = self if inplace else self.deepcopy()
         if subject.is_source():
@@ -1351,10 +1352,11 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
         --------
         Download the Stanford bunny and rotate it about global Z with 90 degrees:
 
-        >>> from sigmaepsilon.mesh.examples import download_bunny
+        >>> from sigmaepsilon.mesh.downloads import download_bunny
         >>> import numpy as np
         >>> bunny = download_bunny(tetra=False, read=True)
         >>> bunny.rotate("Space", [0, 0, np.pi/2], "xyz")
+        PolyData({5: PolyData({})})
         """
         subject = self if inplace else self.deepcopy()
 
@@ -1391,10 +1393,11 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
         --------
         Download the Stanford bunny and spin it about global Z with 90 degrees:
 
-        >>> from sigmaepsilon.mesh.examples import download_bunny
+        >>> from sigmaepsilon.mesh.downloads import download_bunny
         >>> import numpy as np
         >>> bunny = download_bunny(tetra=False, read=True)
         >>> bunny.spin("Space", [0, 0, np.pi/2], "xyz")
+        PolyData({5: PolyData({})})
         """
         subject = self if inplace else self.deepcopy()
 
@@ -1472,7 +1475,7 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
             it as `True`. Default is `False`.
         """
         # FIXME This doesn't work with Awkward arrays.
-        #topo = self.topology(jagged=True).to_array()
+        # topo = self.topology(jagged=True).to_array()
         topo = self.topology(jagged=True).to_numpy()
 
         if isinstance(topo, ak.Array):
@@ -1639,12 +1642,11 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
 
         Examples
         --------
-        >>> from sigmaepsilon.mesh.grid import Grid
+        >>> from sigmaepsilon.mesh.grid import grid
         >>> from sigmaepsilon.mesh import KNN
         >>> size = 80, 60, 20
         >>> shape = 10, 8, 4
-        >>> grid = Grid(size=size, shape=shape, eshape='H8')
-        >>> X = grid.centers()
+        >>> X, _ = grid(size=size, shape=shape, eshape='H8')
         >>> i = KNN(X, X, k=3, max_distance=10.0)
 
         See Also

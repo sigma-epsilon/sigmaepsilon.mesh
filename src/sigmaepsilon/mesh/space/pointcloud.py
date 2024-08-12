@@ -85,41 +85,38 @@ class PointCloud(Vector):
     >>> coords, *_ = triangulate(size=(800, 600), shape=(10, 10))
     >>> coords = PointCloud(coords)
     >>> coords.center()
-        array([400., 300.,   0.])
+    array([400., 300.,   0.])
 
     Centralize and get center again:
 
-    >>> coords.centralize()
-    >>> coords.center()
-        array([0., 0., 0.])
+    >>> coords = coords.centralize()
+    >>> center = coords.center()  # array([0., 0., 0.])
 
     Move the points in the global frame:
 
-    >>> coords.move(np.array([1., 0., 0.]))
-    >>> coords.center()
-        array([1., 0., 0.])
+    >>> coords = coords.move(np.array([1., 0., 0.]))
+    >>> center = coords.center()  # array([1., 0., 0.])
 
     Rotate the points with 90 degrees around global Z.
     Before we do so, let check the boundaries:
 
     >>> coords.x().min(), coords.x().max()
-    (-400., 400.)
+    (Array(-399.), Array(401.))
 
     >>> coords.y().min(), coords.y().max()
-    (-300., 300.)
+    (Array(-300.), Array(300.))
 
     Now centralize wrt. the global frame, rotate and check
     the boundaries again:
 
-    >>> coords.rotate('Body', [0, 0, np.pi], 'XYZ')
-    >>> coords.center()
-        [1., 0., 0.]
+    >>> coords = coords.rotate('Body', [0, 0, np.pi], 'XYZ')
+    >>> center = coords.center()  # [1., 0., 0.]
 
     >>> coords.x().min(), coords.x().max()
-    (-300., 300.)
+    (Array(-401.), Array(399.))
 
     >>> coords.y().min(), coords.y().max()
-    (-400., 400.)
+    (Array(-300.), Array(300.))
 
     The object keeps track of indices after slicing, always
     referring to the top level array:
@@ -132,10 +129,10 @@ class PointCloud(Vector):
 
     >>> from numba import jit
     >>> @jit(nopython=True)
-    >>> def foo(arr): return arr.data, arr.inds
+    ... def foo(arr): return arr.data, arr.inds
     >>> c = np.array([[0, 0, 0], [0, 0, 1.], [0, 0, 0]])
     >>> COORD = PointCloud(c, inds=np.array([0, 1, 2, 3]))
-    >>> foo(COORD)
+    >>> data, inds = foo(COORD)
     """
 
     _frame_cls_ = CartesianFrame
@@ -423,16 +420,16 @@ class PointCloud(Vector):
         --------
         Collect the points of a simple triangulation and get the center:
 
-        >>> from sigmaepsilon.mesh.tri import triangulate
+        >>> from sigmaepsilon.mesh import triangulate
         >>> coords, *_ = triangulate(size=(800, 600), shape=(10, 10))
         >>> coords = PointCloud(coords)
         >>> coords.center()
-            array([400., 300.,   0.])
+        array([400., 300.,   0.])
 
         Move the points and get the center again:
 
-        d = np.array([0., 1., 0.])
-        >>> coords.move(d).move(d)
+        >>> d = np.array([0., 1., 0.])
+        >>> coords = coords.move(d).move(d)
         >>> coords.center()
         array([400., 302.,   0.])
         """
@@ -500,7 +497,7 @@ class PointCloud(Vector):
         >>> from sigmaepsilon.mesh import triangulate
         >>> coords, *_ = triangulate(size=(800, 600), shape=(10, 10))
         >>> points = PointCloud(coords)
-        >>> points.rotate('Space', [0, 0, np.pi/2], 'XYZ')
+        >>> rotated_pointcloud = points.rotate('Space', [0, 0, np.pi/2], 'XYZ')
         """
         if isinstance(args[0], FrameLike):
             self.orient(dcm=args[0].dcm())

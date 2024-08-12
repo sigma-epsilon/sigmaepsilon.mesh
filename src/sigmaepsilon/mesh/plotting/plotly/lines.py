@@ -14,7 +14,6 @@ if not __hasplotly__:  # pragma: no cover
             "You may also need to restart your kernel and reload the package."
         )
 
-
 else:
     import plotly.graph_objects as go
     from numpy import ndarray

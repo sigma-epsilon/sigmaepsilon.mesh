@@ -60,8 +60,9 @@ class TopologyArray(JaggedArray):
     can easily transform it to a CSR matrix, or an Awkward array:
 
     >>> TopologyArray(topo1, topo2, topo3).to_csr()
-    >>> TopologyArray(topo1, topo2, topo3).to_ak()
-    <Array [[0, 1, 2], [3, 4, ... [6, 7, 9, 10]] type='4 * var * int32'>
+    4x4 CSR matrix of 13 values.
+
+    >>> ak_array = TopologyArray(topo1, topo2, topo3).to_ak()
 
     To get the unique indices in a mesh, you can simply use NumPy:
 

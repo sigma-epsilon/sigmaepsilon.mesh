@@ -5,7 +5,7 @@ from numpy import ndarray
 
 import sigmaepsilon.mesh.domains.section
 from sigmaepsilon.mesh.domains.section import LineSection, get_section
-from sigmaepsilon.mesh import TriMesh, CartesianFrame, PolyData
+from sigmaepsilon.mesh import TriMesh, CartesianFrame, PolyData, TopologyArray
 
 
 def load_tests(loader, tests, ignore):  # pragma: no cover
@@ -68,7 +68,7 @@ class TestSection(unittest.TestCase):
         self.assertIsInstance(section.trimesh(), TriMesh)
         self.assertIsInstance(section.trimesh(subdivide=True), TriMesh)
         self.assertIsInstance(section.coords(), ndarray)
-        self.assertIsInstance(section.topology(), ndarray)
+        self.assertIsInstance(section.topology(), TopologyArray)
 
     def test_extrude(self):
         frame = CartesianFrame(dim=3)

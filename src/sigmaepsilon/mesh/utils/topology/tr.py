@@ -66,7 +66,7 @@ DataLike = Union[ndarray, Sequence[ndarray]]
 def transform_topology(
     topo: ndarray,
     path: ndarray,
-    data: ndarray = None,
+    data: ndarray | None = None,
     *_,
     MT: bool = True,
     max_workers: int = 4,
@@ -101,7 +101,7 @@ def transform_topology(
     >>> from sigmaepsilon.mesh.utils.topology import transform_topology
     >>> from sigmaepsilon.mesh.triang import triangulate
     >>> from sigmaepsilon.mesh.grid import grid
-    >>> coords, topo, _ = triangulate(size=(Lx, Ly), shape=(nx, ny))
+    >>> coords, topo, _ = triangulate(size=(1, 1), shape=(5, 10))
     >>> nE1 = topo.shape[0]
     >>> coords, topo = T3_to_T6(coords, topo)
     >>> coords, topo = T6_to_T3(coords, topo)
@@ -113,7 +113,7 @@ def transform_topology(
     the transformations. The same with calling `transform_topology` directly
     could be like this:
 
-    >>> coords, topo, _ = triangulate(size=(Lx, Ly), shape=(nx, ny))
+    >>> coords, topo, _ = triangulate(size=(1, 1), shape=(5, 10))
     >>> nE1 = topo.shape[0]
     >>> coords, topo = T3_to_T6(coords, topo)
     >>> path = np.array(
@@ -129,9 +129,12 @@ def transform_topology(
     control over how you want to split the cells that make up the original mesh.
     """
     nD = len(path.shape)
+
     if nD == 1:
         path = path.reshape(1, len(path))
+
     assert nD <= 2, "Path must be 1 or 2 dimensional."
+
     if data is None:
         return _transform_topology_(topo, path)
     else:

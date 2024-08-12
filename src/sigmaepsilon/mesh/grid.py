@@ -88,11 +88,11 @@ def grid(
     Create a mesh of 4-noded quadrilaterals
 
     >>> gridparams = {
-    >>>     'size' : (1200, 600),
-    >>>     'shape' : (30, 15),
-    >>>     'eshape' : (2, 2),
-    >>>     'start' : 0
-    >>> }
+    ...     'size' : (1200, 600),
+    ...     'shape' : (30, 15),
+    ...     'eshape' : (2, 2),
+    ...     'start' : 0
+    ... }
     >>> coordsQ4, topoQ4 = grid(**gridparams)
 
     The same mesh with 6-noded quadrialterals, 2 in x direction, 3 in y direction
@@ -218,11 +218,11 @@ def gridQ4(*args, **kwargs) -> Tuple[ndarray, ndarray]:
 
     >>> from sigmaepsilon.mesh.grid import gridQ4
     >>> gridparams = {
-    >>>     'size' : (1200, 600),
-    >>>     'shape' : (30, 15),
-    >>>     'origo' : (0, 0),
-    >>>     'start' : 0
-    >>> }
+    ...     'size' : (1200, 600),
+    ...     'shape' : (30, 15),
+    ...     'origo' : (0, 0),
+    ...     'start' : 0
+    ... }
     >>> coordsQ4, topoQ4 = gridQ4(**gridparams)
     """
     coords, topo = grid(*args, eshape=(2, 2), **kwargs)
@@ -514,9 +514,6 @@ def rgridMT(size, shape, eshape, shift, start=0):
 
 @njit(nogil=True, parallel=True, cache=__cache)
 def grid_2d_bins(xbins, ybins, eshape, shift, start=0):
-    # size
-    lX = xbins.max() - xbins.min()
-    lY = ybins.max() - ybins.min()
     # shape of cells
     nEX = len(xbins) - 1
     nEY = len(ybins) - 1

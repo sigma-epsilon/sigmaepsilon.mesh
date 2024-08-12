@@ -9,7 +9,6 @@ if not __hasvtk__:  # pragma: no cover
             "You may also need to restart your kernel and reload the package."
         )
 
-
 else:
     import vtk
     from typing import Union

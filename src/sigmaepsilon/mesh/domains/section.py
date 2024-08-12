@@ -1,4 +1,5 @@
 import numpy as np
+from numbers import Number
 
 from sectionproperties.pre.pre import DEFAULT_MATERIAL, Material
 from sectionproperties.pre.geometry import Geometry
@@ -24,6 +25,7 @@ from ..cells import T3
 from ..data import PointData
 from ..space import CartesianFrame
 from ..utils import coords_to_3d
+from ..topoarray import TopologyArray
 
 __all__ = ["generate_mesh", "get_section", "LineSection"]
 
@@ -58,23 +60,34 @@ def generate_mesh(
     """
     area = geometry.calculate_area()
     mesh_sizes_max = []
-    if isinstance(l_max, float):
-        mesh_sizes_max.append(l_max ** 2 * np.sqrt(3) / 4)
-    if isinstance(a_max, float):
+
+    if isinstance(l_max, Number):
+        mesh_sizes_max.append(l_max**2 * np.sqrt(3) / 4)
+
+    if isinstance(a_max, Number):
         mesh_sizes_max.append(a_max)
+
     if isinstance(n_max, int):
         mesh_sizes_max.append(area / n_max)
 
     mesh_size_max = None
     if len(mesh_sizes_max) > 0:
         mesh_size_max = min(mesh_sizes_max)
+    else:
+        raise ValueError(
+            "Invalid input, the maximum mesh size can't be tedermined!"
+        )  # pragma: no cover
 
     geometry.create_mesh(mesh_sizes=[mesh_size_max])
     return geometry
 
 
 def get_section(
-    shape, *, mesh_params: dict = None, material: Material = None, **section_params
+    shape: str,
+    *,
+    mesh_params: dict | None = None,
+    material: Material | None = None,
+    **section_params,
 ) -> Section:
     """
     Returns a :class:`sectionproperties.analysis.section.Section` instance.
@@ -114,8 +127,8 @@ def get_section(
 
     Examples
     --------
-    >>> from sigmaepsilon.mesh.section import get_section
-    >>> mesh_params = dict(n_min=100, n_max=500)
+    >>> from sigmaepsilon.mesh.domains.section import get_section
+    >>> mesh_params = dict(n_max=500)
     >>> section = get_section('CHS', d=1.0, t=0.1, n=64, mesh_params=mesh_params)
     """
 
@@ -220,7 +233,7 @@ class LineSection(Wrapper):
 
     Examples
     --------
-    >>> from sigmaepsilon.mesh.section import LineSection, get_section
+    >>> from sigmaepsilon.mesh.domains.section import LineSection, get_section
     >>> section = LineSection(get_section('CHS', d=1.0, t=0.1, n=64))
 
     or simply provide the shape as the first argument and everything
@@ -228,15 +241,20 @@ class LineSection(Wrapper):
 
     >>> section = LineSection('CHS', d=1.0, t=0.1, n=64)
 
-    Plot a section with Matplotlib using 6-noded triangles:
+    Example
+    -------
+    .. plot::
+        :include-source: True
 
-    >>> import matplotlib.pyplot as plt
-    >>> from dewloosh.mpl import triplot
-    >>> section = LineSection('CHS', d=1.0, t=0.3, n=32,
-    >>>                       mesh_params=dict(n_max=20))
-    >>> triobj = section.trimesh(T6=True).to_triobj()
-    >>> fig, ax = plt.subplots(figsize=(4, 2))
-    >>> triplot(triobj, fig=fig, ax=ax, lw=0.1)
+        Plot a section with Matplotlib using 3-noded triangles:
+
+        import matplotlib.pyplot as plt
+        from sigmaepsilon.mesh.plotting.mpl import triplot_mpl_mesh
+        section = LineSection('CHS', d=1.0, t=0.3, n=32,
+                              mesh_params=dict(n_max=20))
+        triobj = section.trimesh(order=1).to_triobj()
+        fig, ax = plt.subplots(figsize=(4, 2))
+        triplot_mpl_mesh(triobj, fig=fig, ax=ax, lw=0.1)
     """
 
     def __init__(
@@ -262,8 +280,9 @@ class LineSection(Wrapper):
                         wrap = get_section(
                             shape, mesh_params=mesh_params, material=material, **kwargs
                         )
-            except Exception:  # pragma: no cover
-                raise RuntimeError("Invalid input.")
+            except Exception as e:  # pragma: no cover
+                raise RuntimeError(f"Unable to create section: {e}")
+
         super().__init__(*args, wrap=wrap, **kwargs)
         self.props = None
 
@@ -274,11 +293,11 @@ class LineSection(Wrapper):
         """
         return centralize(np.array(self.mesh["vertices"]))
 
-    def topology(self) -> np.ndarray:
+    def topology(self) -> TopologyArray:
         """
         Returns vertex indices of T6 triangles as a numpy array.
         """
-        return np.array(self.mesh["triangles"].tolist())
+        return TopologyArray(np.array(self.mesh["triangles"].tolist()))
 
     def trimesh(self, subdivide: bool = False, order: int = 1, **kwargs) -> TriMesh:
         """
@@ -303,26 +322,37 @@ class LineSection(Wrapper):
 
         Examples
         --------
-        >>> from sigmaepsilon.mesh import BeamSection
-        >>> section = BeamSection(get_section('CHS', d=1.0, t=0.1, n=64))
+        >>> from sigmaepsilon.mesh.domains import LineSection
+        >>> section = LineSection(get_section('CHS', d=1.0, t=0.1, n=64))
         >>> trimesh = section.trimesh()
         """
-        points, triangles = coords_to_3d(self.coords()), self.topology()
+        triangles = self.topology()
+        assert (
+            not triangles.is_jagged()
+        ), "Only homogeneous topologies are supported at the moment."
+        points, triangles = coords_to_3d(self.coords()), triangles.to_numpy()
         if order == 1:
             if subdivide:
                 path = np.array([[0, 5, 4], [5, 1, 3], [3, 2, 4], [5, 3, 4]], dtype=int)
                 points, triangles = T6_to_T3(points, triangles, path=path)
             else:
                 points, triangles = detach_mesh_bulk(points, triangles[:, :3])
-        else:
-            raise NotImplementedError
+        else:  # pragma: no cover
+            raise NotImplementedError("Higher order elements are not yet supported!")
 
         frame = kwargs.get("frame", CartesianFrame(dim=3))
         pd = PointData(coords=points, frame=frame)
         cd = T3(topo=triangles, frames=frame)
         return TriMesh(pd, cd)
 
-    def extrude(self, *, length=None, frame=None, N=None, **__) -> PolyData:
+    def extrude(
+        self,
+        *,
+        length: float,
+        frame: CartesianFrame,
+        N: int,
+        **__,
+    ) -> PolyData:
         """
         Creates a 3d tetragonal mesh from the section.
 
@@ -332,8 +362,8 @@ class LineSection(Wrapper):
             Length of the beam.
         N: int
             Number of subdivisions along the length of the beam.
-        frame: numpy.ndarray
-            A 3x3 matrix representing an orthonormal coordinate frame.
+        frame: CartesianFrame
+            An object instance representing an orthonormal coordinate frame.
 
         Returns
         -------

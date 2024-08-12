@@ -27,7 +27,7 @@ class T6(PolyCell):
     >>> from sigmaepsilon.mesh.cells import T6 as CellData
     >>> from sigmaepsilon.mesh.utils.topology.tr import T3_to_T6
     >>> A = CartesianFrame(dim=3)
-    >>> coords, topo = triangulate(size=(800, 600), shape=(10, 10))
+    >>> coords, topo, _ = triangulate(size=(800, 600), shape=(10, 10))
     >>> coords, topo = T3_to_T6(coords, topo)
     >>> pd = PointData(coords=coords, frame=A)
     >>> cd = CellData(topo=topo)
@@ -63,7 +63,7 @@ class T6(PolyCell):
                 A list of monomials.
             """
             locvars = r, s = symbols("r s", real=True)
-            monoms = [1, r, s, r ** 2, s ** 2, r * s]
+            monoms = [1, r, s, r**2, s**2, r * s]
             return locvars, monoms
 
         @classmethod

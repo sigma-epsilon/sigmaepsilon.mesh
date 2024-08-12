@@ -26,6 +26,17 @@ def circular_helix(
     """
     Returns the function :math:`f(t) = [a \cdot cos(t), a \cdot sin(t), b \cdot t]`,
     which describes a circular helix of radius a and slope a/b (or pitch 2πb).
+
+    Parameters
+    ----------
+    a: float, Optional
+        Radius of the helix. Default is None.
+    b: float, Optional
+        Slope of the helix. Default is None.
+    slope: float, Optional
+        Slope of the helix. Default is None.
+    pitch: float, Optional
+        Pitch of the helix. Default is None.
     """
     if pitch is not None:
         b = b if b is not None else pitch / 2 / np.pi
@@ -97,24 +108,25 @@ def circular_disk(
 
 
 def cylinder(
-    shape,
-    size: Union[tuple, float, int] = None,
+    shape: Tuple[Tuple[Number, Number] | Number, Number],
+    size: Union[Tuple, float, int],
     *,
-    regular: bool = True,
     voxelize: bool = False,
     celltype: Optional[Union[PolyCellProtocol, None]] = None,
     frame: Optional[Union[CartesianFrame, None]] = None,
-    **kwargs,
 ) -> PolyData:
     """
     Returns the coordinates and the topology of cylinder as numpy arrays.
 
     Parameters
     ----------
-    shape: tuple or int, Optional
-        A 2-tuple or a float, describing the shape of the cylinder.
-    size: Union[tuple, float, int], Optional
-        Parameter controlling the density of the mesh. Default is None.
+    shape: Tuple[Tuple[Number, Number] | Number, Number]
+        The parameter is a 2-tuple that describes the dimensions of the
+        cylinder. The first element is either a number (radius), or a 2-tuple of
+        numbers (inner and outer radii) describing the radius of the cylinder.
+        The second element is the height of the cylinder.
+    size: Union[tuple, float, int]
+        Parameter controlling the resolution of the mesh. Default is None.
 
         If `voxelize` is ``False``, ``size`` must be a tuple of three
         integers, describing the number of angular, radial, and vertical
@@ -126,11 +138,6 @@ def cylinder(
         If `voxelize` is ``True`` and ``size`` is an ``int``,
         the parameter controls the size of the individual voxels
         according to :math:`edge \, length = (r_{ext} - r_{int})/shape`.
-    regular: bool, Optional
-        If ``True`` and ``voxelize`` is False, the mesh us a result of an extrusion
-        applied to a trianglarion, and as a consequence it returns a more or
-        less regular mesh. Otherwise the cylinder is created from a surface
-        trangulation using the ``tetgen`` package. Default is ``True``.
     voxelize: bool, Optional
         If ``True``, the cylinder gets voxelized to a collection of H8 cells.
         In this case the size of a voxel can be controlled by specifying a
@@ -138,6 +145,19 @@ def cylinder(
         Default is ``False``.
     celltype
         Specifies the celltype to be used.
+
+    Example
+    -------
+    >>> from sigmaepsilon.mesh.recipes import cylinder
+    >>> n_angles = 30  # number of subdivions along the angular direction
+    >>> n_radii = 15  # number of subdivisions along the radial direction
+    >>> min_radius = 10 # minimum radius of the cylinder
+    >>> max_radius = 25 # maximum radius of the cylinder
+    >>> n_z = 20 # number of subdivisions along the z direction
+    >>> h = 50 # height of the cylinder
+    >>> shape = (min_radius, max_radius), h
+    >>> size = n_radii, n_angles, n_z
+    >>> mesh = cylinder(shape, size, voxelize=False)
 
     Returns
     -------
@@ -151,10 +171,9 @@ def cylinder(
         size = [size]
 
     if voxelize:
-        regular = True
         etype = "H8"
 
-    radius, angle, h = shape
+    radius, h = shape
 
     if isinstance(radius, int):
         radius = np.array([0, radius])
@@ -170,35 +189,14 @@ def cylinder(
             size_ = size[0]
         coords, topo = voxelize_cylinder(radius=radius, height=h, size=size_)
     else:
-        if regular:
-            if etype == "TET4":
-                min_radius, max_radius = radius
-                n_radii, n_angles, n_z = size
-                mesh = circular_disk(n_angles, n_radii, min_radius, max_radius)
-                points, triangles = mesh.coords(), mesh.topology().to_numpy()
-                coords, topo = extrude_T3_TET4(points, triangles, h, n_z)
-            else:
-                raise NotImplementedError("Celltype not supported!")
-        else:
-            import tetgen
-            import pyvista as pv
-
-            (rmin, rmax), angle, h = shape
+        if etype == "TET4":
+            min_radius, max_radius = radius
             n_radii, n_angles, n_z = size
-            cyl = pv.CylinderStructured(
-                center=(0.0, 0.0, h / 2),
-                direction=(0.0, 0.0, 1.0),
-                radius=np.linspace(rmin, rmax, n_radii),
-                height=h,
-                theta_resolution=n_angles,
-                z_resolution=n_z,
-            )
-            cyl_surf = cyl.extract_surface().triangulate()
-            tet = tetgen.TetGen(cyl_surf)
-            tet.tetrahedralize(order=1, mindihedral=10, minratio=1.1, quality=True)
-            grid = tet.grid
-            coords = np.array(grid.points).astype(float)
-            topo = grid.cells_dict[10].astype(int)
+            mesh = circular_disk(n_angles, n_radii, min_radius, max_radius)
+            points, triangles = mesh.coords(), mesh.topology().to_numpy()
+            coords, topo = extrude_T3_TET4(points, triangles, h, n_z)
+        else:
+            raise NotImplementedError("Celltype not supported!")
 
     frame = CartesianFrame(dim=3) if frame is None else frame
     pd = PointData(coords=coords, frame=frame)
@@ -261,8 +259,8 @@ def ribbed_plate(
     -------
     >>> from sigmaepsilon.mesh.recipes import ribbed_plate
     >>> mesh = ribbed_plate(lx=5.0, ly=5.0, t=1.0,
-    >>>                     wx=1.0, hx=2.0, ex=0.05,
-    >>>                     wy=1.0, hy=2.0, ey=-0.05)
+    ...                     wx=1.0, hx=2.0, ex=0.05,
+    ...                     wy=1.0, hy=2.0, ey=-0.05)
 
     Returns
     -------

@@ -55,7 +55,7 @@ from ..utils.tet import (
     _pip_tet_bulk_,
     _glob_to_nat_tet_bulk_,
     _glob_to_nat_tet_bulk_knn_,
-    __pip_tet_bulk__,
+    _pip_tet_bulk_nat_,
 )
 from ..utils.cells.utils import (
     _find_first_hits_,
@@ -690,7 +690,7 @@ class PolyCell(Generic[MeshDataLike, PointDataLike], ABC_PolyCell):
 
         if points is None:
             return ecoords
-        
+
         points, rng = self._get_points_and_range(points, rng)
 
         if NDIM == 1:
@@ -746,7 +746,7 @@ class PolyCell(Generic[MeshDataLike, PointDataLike], ABC_PolyCell):
         """
         return self.points_of_cells(*args, **kwargs)
 
-    def topology(self) -> Union[TopologyArray, None]:
+    def topology(self) -> TopologyArray | None:
         """
         Returns the numerical representation of the topology of
         the cells as either a :class:`~sigmaepsilon.mesh.topoarray.TopologyArray`
@@ -956,10 +956,10 @@ class PolyCell(Generic[MeshDataLike, PointDataLike], ABC_PolyCell):
                 nat_tet = _glob_to_nat_tet_bulk_knn_(
                     x, ecoords_tet, neighbours_tet
                 )  # (nP, kTET, 4)
-                pips_tet = __pip_tet_bulk__(nat_tet, tol)  # (nP, kTET)
+                pips_tet = _pip_tet_bulk_nat_(nat_tet, tol)  # (nP, kTET)
             else:
                 nat_tet = _glob_to_nat_tet_bulk_(x, ecoords_tet)  # (nP, nTET, 4)
-                pips_tet = __pip_tet_bulk__(nat_tet, tol)  # (nP, nTET)
+                pips_tet = _pip_tet_bulk_nat_(nat_tet, tol)  # (nP, nTET)
 
             # locate the points that are inside any of the cells
             pip = np.squeeze(np.any(pips_tet, axis=1))  # (nP)

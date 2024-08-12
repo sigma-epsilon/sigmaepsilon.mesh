@@ -30,11 +30,11 @@ def _get_shape_function_evaluator(cls: Any) -> Callable:
 def _approximator(
     cls: Any,
     *,
-    x_source: Iterable = None,
-    shp_source_inverse: Iterable = None,
+    x_source: Iterable | None = None,
+    shp_source_inverse: Iterable | None = None,
     values_source: Iterable = None,
-    x_target: Iterable = None,
-    axis: int = None,
+    x_target: Iterable | None = None,
+    axis: int | None = None,
 ) -> Union[float, ndarray]:
     """
     Returns interpolated values from a set of known points and values.
@@ -129,9 +129,9 @@ class LagrangianCellApproximator:
 
     The data to feed the approximator:
 
-    >>> source_coordinates = H8.master_coordinates() / 2
+    >>> source_coordinates = H8.Geometry.master_coordinates() / 2
     >>> source_values = [1, 2, 3, 4, 5, 6, 7, 8]
-    >>> target_coordinates = H8.master_coordinates() * 2
+    >>> target_coordinates = H8.Geometry.master_coordinates() * 2
 
     The desired data at the target locations:
 

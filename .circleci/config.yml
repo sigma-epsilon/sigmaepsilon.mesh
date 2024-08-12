@@ -6,10 +6,10 @@ orbs:
 executors:
   my-executor:
     docker:
-      - image: cimg/python:3.10
+      - image: cimg/python:3.12
 
 jobs:
-  run_tests_3_10:
+  run_tests:
     executor: my-executor
     steps:
       - checkout
@@ -102,13 +102,13 @@ jobs:
 workflows:
   test_and_deploy:
     jobs:
-      - run_tests_3_10
+      - run_tests
 
       - deploy_to_test_pypi:
           context:
             - TestPyPI deploy
           requires:
-            - run_tests_3_10
+            - run_tests
           filters:
             branches:
               only:
@@ -118,7 +118,7 @@ workflows:
           context:
             - PyPI deploy
           requires:
-            - run_tests_3_10
+            - run_tests
           filters:
             branches:
               only:

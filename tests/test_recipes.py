@@ -50,11 +50,10 @@ class TestRecipes(unittest.TestCase):
         max_radius = 25
         n_z = 20
         h = 50
-        angle = 1
 
         vol = np.pi * (max_radius ** 2 - min_radius ** 2) * h
 
-        shape = (min_radius, max_radius), angle, h
+        shape = (min_radius, max_radius), h
         size = n_radii, n_angles, n_z
 
         cyl = cylinder(shape, size, voxelize=True)

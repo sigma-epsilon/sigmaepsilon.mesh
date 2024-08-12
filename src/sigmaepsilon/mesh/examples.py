@@ -16,9 +16,8 @@ def compound_mesh() -> PolyData:
     min_radius = 5
     max_radius = 25
     h = 50
-    angle = 1
 
-    shape = (min_radius, max_radius), angle, h
+    shape = (min_radius, max_radius), h
     frame = CartesianFrame(dim=3)
     cyl = cylinder(shape, size=5.0, voxelize=True, frame=frame)
 

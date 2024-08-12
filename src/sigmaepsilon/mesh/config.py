@@ -40,11 +40,3 @@ try:
     __hask3d__ = True
 except Exception:  # pragma: no cover
     __hask3d__ = False
-
-
-try:
-    import tetgen
-
-    __has_tetgen__ = True
-except Exception:  # pragma: no cover
-    __has_tetgen__ = False
