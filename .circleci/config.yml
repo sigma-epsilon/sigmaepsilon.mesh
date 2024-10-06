@@ -2,6 +2,7 @@ version: 2.1
 
 orbs:
   python: circleci/python@2.1.1
+  codecov: codecov/codecov@4.2.0
 
 executors:
   my-executor:
@@ -30,18 +31,11 @@ jobs:
             poetry install --with test
       - run:
           name: Run tests and generate coverage report
-          command: |
-            chmod +x ./run_tests_with_coverage.sh
-            ./run_tests_with_coverage.sh
-      - run:
-          name: Upload coverage reports to Codecov
-          command: |
-            curl -Os https://uploader.codecov.io/latest/linux/codecov
-            chmod +x codecov
-            ./codecov -t ${CODECOV_TOKEN}
+          command: poetry run pytest --cov-report=xml --cov-config=.coveragerc --cov=sigmaepsilon.mesh
       - store_artifacts:
           name: Store coverage report as artifact
-          path: htmlcov
+          path: coverage.xml
+      - codecov/upload
       - store_test_results:
           name: Store test results
           path: test-results
