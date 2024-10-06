@@ -32,10 +32,10 @@ __all__ = [
 ]
 
 
-PolyDataLike = TypeVar("PolyDataLike", bound="PolyDataProtocol")
-PointDataLike = TypeVar("PointDataLike", bound="PointDataProtocol")
-CellDataLike = TypeVar("CellDataLike", bound="CellDataProtocol")
-PolyCellLike = TypeVar("PolyCellLike", bound="PolyCellProtocol")
+PolyDataLike = TypeVar("PolyDataLike", bound="PolyDataProtocol", covariant=True)
+PointDataLike = TypeVar("PointDataLike", bound="PointDataProtocol", covariant=True)
+CellDataLike = TypeVar("CellDataLike", bound="CellDataProtocol", covariant=True)
+PolyCellLike = TypeVar("PolyCellLike", bound="PolyCellProtocol", covariant=True)
 
 
 @runtime_checkable
