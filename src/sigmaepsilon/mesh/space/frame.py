@@ -198,9 +198,10 @@ class CartesianFrame(Frame):
         Move the frame locally with the same amount
 
         >>> B.move(v.array, frame=B)
-        array([[ 0.70710678,  0.70710678,  0.        ],
+        Array([[ 0.70710678,  0.70710678,  0.        ],
                [-0.70710678,  0.70710678,  0.        ],
                [ 0.        ,  0.        ,  1.        ]])
+               
         """
         if not isinstance(d, Vector):
             if not isinstance(d, ndarray):
