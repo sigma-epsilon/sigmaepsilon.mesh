@@ -31,10 +31,12 @@ jobs:
             poetry install --with test
       - run:
           name: Run tests and generate coverage report
-          command: poetry run pytest --cov-report=xml --cov-config=.coveragerc --cov=sigmaepsilon.mesh
+          command: |
+            chmod +x ./run_tests_with_coverage.sh
+            ./run_tests_with_coverage.sh 
       - store_artifacts:
           name: Store coverage report as artifact
-          path: coverage.xml
+          path: htmlcov/
       - codecov/upload
       - store_test_results:
           name: Store test results
