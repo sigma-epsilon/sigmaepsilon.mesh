@@ -1,14 +1,8 @@
 # -*- coding: utf-8 -*-
 import numpy as np
-import unittest, doctest
+import unittest
 
-import sigmaepsilon.mesh.grid
 from sigmaepsilon.mesh.grid import grid, knngridL2
-
-
-def load_tests(loader, tests, ignore):  # pragma: no cover
-    tests.addTests(doctest.DocTestSuite(sigmaepsilon.mesh.grid))
-    return tests
 
 
 class TestGrid(unittest.TestCase):

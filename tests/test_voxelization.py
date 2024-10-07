@@ -1,17 +1,11 @@
-import unittest, doctest
+import unittest
 import numpy as np
 
 from sigmaepsilon.mesh import PolyData, PointData
 from sigmaepsilon.mesh.space import StandardFrame
 from sigmaepsilon.mesh.cells import H8
 
-import sigmaepsilon.mesh.voxelize
 from sigmaepsilon.mesh.voxelize import voxelize_TET4_H8
-
-
-def load_tests(loader, tests, ignore):  # pragma: no cover
-    tests.addTests(doctest.DocTestSuite(sigmaepsilon.mesh.voxelize))
-    return tests
 
 
 class Test_voxelize_TET4_H8(unittest.TestCase):

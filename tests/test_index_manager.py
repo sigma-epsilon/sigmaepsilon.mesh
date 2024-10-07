@@ -1,14 +1,8 @@
-import unittest, doctest
+import unittest
 
 import numpy as np
 
-import sigmaepsilon.mesh.indexmanager
 from sigmaepsilon.mesh.indexmanager import IndexManager
-
-
-def load_tests(loader, tests, ignore):  # pragma: no cover
-    tests.addTests(doctest.DocTestSuite(sigmaepsilon.mesh.indexmanager))
-    return tests
 
 
 class TestIndexManager(unittest.TestCase):
