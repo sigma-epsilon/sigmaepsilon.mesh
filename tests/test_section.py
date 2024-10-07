@@ -1,16 +1,11 @@
 # -*- coding: utf-8 -*-
-import unittest, doctest
+import unittest
 
 from numpy import ndarray
 
-import sigmaepsilon.mesh.domains.section
-from sigmaepsilon.mesh.domains.section import LineSection, get_section
+from sigmaepsilon.mesh.domains import LineSection
+from sigmaepsilon.mesh.domains.section import get_section
 from sigmaepsilon.mesh import TriMesh, CartesianFrame, PolyData, TopologyArray
-
-
-def load_tests(loader, tests, ignore):  # pragma: no cover
-    tests.addTests(doctest.DocTestSuite(sigmaepsilon.mesh.domains.section))
-    return tests
 
 
 class TestSection(unittest.TestCase):

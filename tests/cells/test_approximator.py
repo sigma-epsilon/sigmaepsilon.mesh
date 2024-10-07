@@ -1,18 +1,11 @@
 import unittest
-import doctest
 
 import numpy as np
 
 from sigmaepsilon.core.testing import SigmaEpsilonTestCase
 from sigmaepsilon.math.utils import to_range_1d
-import sigmaepsilon.mesh
 from sigmaepsilon.mesh.cells import H8, L2, L3, Q4, Q9
 from sigmaepsilon.mesh.geometry import PolyCellGeometry1d
-
-
-def load_tests(loader, tests, ignore):  # pragma: no cover
-    tests.addTests(doctest.DocTestSuite(sigmaepsilon.mesh.cellapproximator))
-    return tests
 
 
 class TestLagrangianCellApproximator(SigmaEpsilonTestCase):

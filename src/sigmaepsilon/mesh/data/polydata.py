@@ -3,17 +3,19 @@ from typing import (
     Iterator,
     Union,
     Hashable,
-    Collection,
     Iterable,
     Tuple,
     Any,
     Generic,
     Optional,
     Callable,
+    Generator,
 )
+from types import NoneType
 from collections import defaultdict
 import functools
 import warnings
+import importlib
 
 from numpy import ndarray
 import numpy as np
@@ -67,26 +69,12 @@ from ..utils.topology import (
 from ..helpers import importers, exporters, plotters
 from ..config import __hasvtk__, __haspyvista__, __hask3d__, __hasmatplotlib__
 
-if __hasvtk__:
-    import vtk
-
-if __hask3d__:
-    import k3d
-
-if __haspyvista__:
-    import pyvista as pv
-
-    pyVistaLike = Union[pv.PolyData, pv.PointGrid, pv.UnstructuredGrid]
-else:  # pragma: no cover
-    pyVistaLike = Any
-
-
 VectorLike = Union[Vector, ndarray]
 
 __all__ = ["PolyData"]
 
 
-class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
+class PolyData(DeepDict[Hashable, PDP | Any], Generic[PointDataLike, PolyCellLike]):
     """
     A class to handle complex polygonal meshes.
 
@@ -321,7 +309,7 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
         return self._pointdata
 
     @pointdata.setter
-    def pointdata(self, pd: Optional[PointData]) -> None:
+    def pointdata(self, pd: PointData | NoneType) -> NoneType:
         """
         Returns the attached pointdata.
         """
@@ -346,7 +334,7 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
         return self._celldata
 
     @celldata.setter
-    def celldata(self, cd: Optional[PolyCell]) -> None:
+    def celldata(self, cd: PolyCell | NoneType) -> NoneType:
         """
         Returns the attached celldata.
         """
@@ -363,9 +351,7 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
         """
         return self.celldata
 
-    def lock(
-        self: PolyDataLike, create_mappers: Optional[bool] = False
-    ) -> PolyDataLike:
+    def lock(self: PolyDataLike, create_mappers: bool = False) -> PolyDataLike:
         """
         Locks the layout. If a `PolyData` instance is locked,
         missing keys are handled the same way as they would've been handled
@@ -403,7 +389,7 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
         self._bid2b = None  # maps block indices to block addresses
         return self
 
-    def blocks_of_cells(self, i: Optional[Union[int, Iterable, None]] = None) -> dict:
+    def blocks_of_cells(self, i: int | Iterable | NoneType = None) -> dict:
         """
         Returns a dictionary that maps cell indices to blocks.
         """
@@ -464,6 +450,9 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
         >>> vtkpath = download_stand(read=False)
         >>> mesh = PolyData.read(vtkpath)
         """
+        if not __haspyvista__:
+            raise ImportError("PyVista is not available.")
+        pv = importlib.import_module("pyvista")
         return cls.from_pv(pv.read(*args, **kwargs))
 
     @classmethod
@@ -727,7 +716,7 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
         """Sets the parent."""
         self._parent = value
 
-    def is_source(self, key: Optional[Union[str, None]] = None) -> bool:
+    def is_source(self, key: str | NoneType = None) -> bool:
         """
         Returns `True`, if the object is a valid source of data
         specified by `key`.
@@ -742,7 +731,7 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
         return self.pointdata is not None and key in self.pointdata.fields
 
     def source(
-        self, key: Optional[Union[str, None]] = None
+        self, key: str | NoneType = None
     ) -> Union[PDP[PointDataLike, PolyCellLike], None]:
         """
         Returns the closest (going upwards in the hierarchy) block that holds
@@ -770,7 +759,7 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
         blocktype: Any = None,
         deep: bool = True,
         **__,
-    ) -> Collection[PolyDataLike]:
+    ) -> Generator[PolyDataLike, None, None]:
         """
         Returns an iterable over nested blocks.
 
@@ -788,7 +777,7 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
 
         Yields
         ------
-        Any
+        PolyDataLike
             A PolyData instance. The actual type depends on the 'blocktype'
             parameter.
         """
@@ -797,7 +786,7 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
 
     def pointblocks(
         self, *args, **kwargs
-    ) -> Iterable[PDP[PointDataLike, PolyCellLike]]:
+    ) -> Generator[PDP[PointDataLike, PolyCellLike], None, None]:
         """
         Returns an iterable over blocks with PointData. All arguments
         are forwarded to :func:`blocks`.
@@ -814,7 +803,9 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
         """
         return filter(lambda i: i.pd is not None, self.blocks(*args, **kwargs))
 
-    def cellblocks(self, *args, **kwargs) -> Iterable[PDP[PointDataLike, PolyCellLike]]:
+    def cellblocks(
+        self, *args, **kwargs
+    ) -> Generator[PDP[PointDataLike, PolyCellLike], None, None]:
         """
         Returns an iterable over blocks with CellData. All arguments
         are forwarded to :func:`blocks`.
@@ -890,9 +881,9 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
 
     def rewire(
         self: PolyDataLike,
-        deep: Optional[bool] = True,
-        imap: Optional[Union[ndarray, None]] = None,
-        invert: Optional[bool] = False,
+        deep: bool = True,
+        imap: ndarray | NoneType = None,
+        invert: bool = False,
     ) -> PolyDataLike:
         """
         Rewires topology according to the index mapping of the source object.
@@ -940,9 +931,9 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
 
     def to_standard_form(
         self: PolyDataLike,
-        inplace: Optional[bool] = True,
-        default_point_fields: Optional[Union[dict, None]] = None,
-        default_cell_fields: Optional[Union[dict, None]] = None,
+        inplace: bool = True,
+        default_point_fields: dict | NoneType = None,
+        default_cell_fields: dict | NoneType = None,
     ) -> PolyDataLike:
         """
         Transforms the problem to standard form, which means
@@ -1031,7 +1022,7 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
         return self
 
     def points(
-        self, *, return_inds: Optional[bool] = False, from_cells: Optional[bool] = False
+        self, *, return_inds: bool = False, from_cells: bool = False
     ) -> PointCloud:
         """
         Returns the points as a :class:`~sigmaepsilon.mesh.space.pointcloud.PointCloud` instance.
@@ -1084,8 +1075,8 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
     def coords(
         self,
         *args,
-        return_inds: Optional[bool] = False,
-        from_cells: Optional[bool] = False,
+        return_inds: bool = False,
+        from_cells: bool = False,
         **kwargs,
     ) -> ndarray:
         """
@@ -1132,7 +1123,7 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
         m = map(lambda b: b.cd.Geometry.number_of_spatial_dimensions, blocks)
         return np.all(np.array(list(m)) == 2)
 
-    def surface_normals(self, *args, **kwargs) -> np.ndarray:
+    def surface_normals(self, *args, **kwargs) -> ndarray:
         """
         Retuns the surface normals as a 2d numpy array.
 
@@ -1145,7 +1136,7 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
         """
         return self.surface(*args, **kwargs).cd.normals()
 
-    def surface_centers(self, *args, **kwargs) -> np.ndarray:
+    def surface_centers(self, *args, **kwargs) -> ndarray:
         """
         Retuns the surface centers as a 3d numpy array.
 
@@ -1169,7 +1160,7 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
         return True
 
     def surface(
-        self: PolyDataLike, mesh_class: Optional[Union[PolyDataLike, None]] = None
+        self: PolyDataLike, mesh_class: PolyDataLike | NoneType = None
     ) -> PolyDataLike:
         """
         Returns the surface of the mesh as another `PolyData` instance.
@@ -1212,9 +1203,7 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
 
         return mesh_class(pd, cd)
 
-    def topology(
-        self, *args, return_inds: Optional[bool] = False, **kwargs
-    ) -> TopologyArray:
+    def topology(self, *args, return_inds: bool = False, **kwargs) -> TopologyArray:
         """
         Returns the topology.
 
@@ -1245,7 +1234,7 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
         m = map(lambda b: b.cd.id, blocks)
         return np.concatenate(list(m))
 
-    def detach(self: PolyDataLike, nummrg: Optional[bool] = False) -> PolyDataLike:
+    def detach(self: PolyDataLike, nummrg: bool = False) -> PolyDataLike:
         """
         Returns a detached version of the mesh.
 
@@ -1295,8 +1284,8 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
     def move(
         self: PolyDataLike,
         v: VectorLike,
-        frame: Optional[Union[FrameLike, None]] = None,
-        inplace: Optional[bool] = True,
+        frame: FrameLike | NoneType = None,
+        inplace: bool = True,
     ) -> PolyDataLike:
         """
         Moves and returns the object or a deep copy of it.
@@ -1332,7 +1321,7 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
         return subject
 
     def rotate(
-        self: PolyDataLike, *args, inplace: Optional[bool] = True, **kwargs
+        self: PolyDataLike, *args, inplace: bool = True, **kwargs
     ) -> PolyDataLike:
         """
         Rotates and returns the object. Positional and keyword arguments
@@ -1357,6 +1346,7 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
         >>> bunny = download_bunny(tetra=False, read=True)
         >>> bunny.rotate("Space", [0, 0, np.pi/2], "xyz")
         PolyData({5: PolyData({})})
+
         """
         subject = self if inplace else self.deepcopy()
 
@@ -1372,9 +1362,7 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
 
         return subject
 
-    def spin(
-        self: PolyDataLike, *args, inplace: Optional[bool] = True, **kwargs
-    ) -> PolyDataLike:
+    def spin(self: PolyDataLike, *args, inplace: bool = True, **kwargs) -> PolyDataLike:
         """
         Like rotate, but rotation happens around centroidal axes. Positional and keyword
         arguments not listed here are forwarded to :class:`sigmaepsilon.math.linalg.frame.ReferenceFrame`
@@ -1398,6 +1386,7 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
         >>> bunny = download_bunny(tetra=False, read=True)
         >>> bunny.spin("Space", [0, 0, np.pi/2], "xyz")
         PolyData({5: PolyData({})})
+
         """
         subject = self if inplace else self.deepcopy()
 
@@ -1486,9 +1475,7 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
 
         return nodal_adjacency(topo, *args, **kwargs)
 
-    def nodal_adjacency_matrix(
-        self, assume_regular: Optional[bool] = False
-    ) -> spmatrix:
+    def nodal_adjacency_matrix(self, assume_regular: bool = False) -> spmatrix:
         """
         Returns the nodal adjecency information as a SciPy CSR matrix.
 
@@ -1536,7 +1523,7 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
         """Returns the coordiantes of the cells in explicit format."""
         return cells_coords(self.source().coords(), self.topology().to_numpy())
 
-    def center(self, target: Optional[Union[FrameLike, None]] = None) -> ndarray:
+    def center(self, target: FrameLike | NoneType = None) -> ndarray:
         """
         Returns the center of the pointcloud of the mesh.
 
@@ -1557,7 +1544,7 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
             dtype=centers.dtype,
         )
 
-    def centers(self, target: Optional[Union[FrameLike, None]] = None) -> ndarray:
+    def centers(self, target: FrameLike | NoneType = None) -> ndarray:
         """
         Returns the centers of the cells.
 
@@ -1590,9 +1577,9 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
 
     def centralize(
         self: PolyDataLike,
-        target: Optional[Union[FrameLike, None]] = None,
-        inplace: Optional[bool] = True,
-        axes: Optional[Union[Iterable[int], None]] = None,
+        target: FrameLike | NoneType = None,
+        inplace: bool = True,
+        axes: Iterable[int] | NoneType = None,
     ) -> PolyDataLike:
         """
         Moves all the meshes that belong to the same source such that the current object's
@@ -1631,7 +1618,7 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
         return subject
 
     def k_nearest_cell_neighbours(
-        self, k, *args, knn_options: Optional[Union[dict, None]] = None, **kwargs
+        self, k, *args, knn_options: dict | NoneType = None, **kwargs
     ):
         """
         Returns the k closest neighbours of the cells of the mesh, based
@@ -1701,8 +1688,8 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
         return index_of_furthest_point(self.centers(), np.array(target, dtype=float))
 
     def nodal_distribution_factors(
-        self, weights: Optional[Union[str, ndarray]] = "volume"
-    ) -> Union[ndarray, csr_matrix]:
+        self, weights: str | ndarray = "volume"
+    ) -> ndarray | csr_matrix:
         """
         Retruns nodal distribution factors for all nodes of all cells
         as a 2d array. The returned array has the same shape as the
@@ -1766,7 +1753,7 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
         blocks = self.cellblocks(inclusive=True)
         return all(list(map(lambda b: key in b.celldata.db.fields, blocks)))
 
-    def _detach_block_data_(self, data: Union[str, ndarray] = None) -> Iterator:
+    def _detach_block_data_(self, data: str | ndarray | NoneType = None) -> Iterator:
         blocks = self.cellblocks(inclusive=True, deep=True)
         for block in blocks:
             source = block.source()
@@ -1806,7 +1793,7 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
                 else:
                     yield block, c, t, None
 
-    def _has_plot_scalars_(self, scalars: Union[str, ndarray]):
+    def _has_plot_scalars_(self, scalars: str | ndarray | NoneType) -> list:
         """
         Returns a boolean value for every cell block in the mesh. A value
         for a block is True, if data is provided for plotting. If 'scalars'
@@ -1841,10 +1828,11 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
                 return {}
 
     if __hasvtk__:
+        import vtk
 
         def to_vtk(
-            self, deepcopy: Optional[bool] = False, multiblock: Optional[bool] = False
-        ) -> Union[vtk.vtkUnstructuredGrid, vtk.vtkMultiBlockDataSet]:
+            self, deepcopy: bool = False, multiblock: bool = False
+        ) -> vtk.vtkUnstructuredGrid | vtk.vtkMultiBlockDataSet:
             """
             Returns the mesh as a `VTK` object.
 
@@ -1864,13 +1852,15 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
             return exporter(self, deepcopy=deepcopy, multiblock=multiblock)
 
     if __hasvtk__ and __haspyvista__:
+        import vtk
+        import pyvista as pv
 
         def to_pv(
             self,
-            deepcopy: Optional[bool] = False,
-            multiblock: Optional[bool] = False,
-            scalars: Optional[Union[str, ndarray, None]] = None,
-        ) -> Union[pv.UnstructuredGrid, pv.MultiBlock]:
+            deepcopy: bool = False,
+            multiblock: bool = False,
+            scalars: str | ndarray | NoneType = None,
+        ) -> pv.UnstructuredGrid | pv.MultiBlock:
             """
             Returns the mesh as a `PyVista` object, optionally set up with data.
 
@@ -1894,6 +1884,7 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
             )
 
     if __hask3d__:
+        import k3d
 
         def to_k3d(self, *args, **kwargs) -> k3d.Plot:
             """
@@ -1939,8 +1930,9 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
             return plotter(self, *args, **kwargs)
 
     if __haspyvista__:
+        import pyvista as pv
 
-        def pvplot(self, *args, **kwargs) -> Union[None, pv.Plotter, np.ndarray]:
+        def pvplot(self, *args, **kwargs) -> NoneType | pv.Plotter | ndarray:
             """
             Convenience function for plotting the mesh using PyVista. All arguments are
             forwarded to :func:~`sigmaepsilon.mesh.plotting.pvplot.pvplot`, refer the
@@ -1968,9 +1960,9 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
     def plot(
         self,
         *,
-        notebook: Optional[bool] = False,
-        backend: Optional[str] = "pyvista",
-        config_key: Optional[Union[str, None]] = None,
+        notebook: bool = False,
+        backend: str = "pyvista",
+        config_key: str | NoneType = None,
         **kwargs,
     ) -> Any:
         """
@@ -2002,7 +1994,9 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
         elif backend == "pyvista":
             return self.pvplot(notebook=notebook, config_key=config_key, **kwargs)
 
-    def __join_parent__(self, parent: DeepDict, key: Hashable = None) -> None:
+    def __join_parent__(
+        self, parent: DeepDict, key: Hashable | NoneType = None
+    ) -> NoneType:
         super().__join_parent__(parent, key)
         if self.celldata is not None:
             GIDs = self.root.cim.generate_np(len(self.celldata.db))
@@ -2011,7 +2005,7 @@ class PolyData(DeepDict, Generic[PointDataLike, PolyCellLike]):
                 self.celldata.pd = self.source().pd
             self.celldata.container = self
 
-    def __leave_parent__(self) -> None:
+    def __leave_parent__(self) -> NoneType:
         if self.celldata is not None:
             self.root.cim.recycle(self.celldata.db.id)
             dbkey = self.celldata.db._dbkey_id_

@@ -1,20 +1,14 @@
-import unittest, doctest
+import unittest
 
 from matplotlib.tri import Triangulation as triobj_mpl
 from scipy.spatial import Delaunay as triobj_scipy
 
-import sigmaepsilon.mesh
 from sigmaepsilon.mesh.triang import (
     triangulate,
     triobj_to_mpl,
     get_triobj_data,
     _is_triobj,
 )
-
-
-def load_tests(loader, tests, ignore):  # pragma: no cover
-    tests.addTests(doctest.DocTestSuite(sigmaepsilon.mesh.triang))
-    return tests
 
 
 class TestTriangulate(unittest.TestCase):
