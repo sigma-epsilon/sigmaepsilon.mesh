@@ -8,8 +8,6 @@ def is_module_available(module_name):
 __hasvtk__ = is_module_available("vtk")
 __haspyvista__ = is_module_available("pyvista")
 __hasmatplotlib__ = is_module_available("matplotlib")
-__hasplotly__ = is_module_available("plotly.express") and is_module_available(
-    "plotly.graph_objects"
-)
+__hasplotly__ = is_module_available("plotly")
 __hasnx__ = is_module_available("networkx")
 __hask3d__ = is_module_available("k3d")
