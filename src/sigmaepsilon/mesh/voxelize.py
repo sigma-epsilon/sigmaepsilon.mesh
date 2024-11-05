@@ -45,12 +45,14 @@ def voxelize_cylinder(
     Example
     -------
     The following example shows how to create a voxelized cylinder.
+    
     >>> import numpy as np
     >>> from sigmaepsilon.mesh.voxelize import voxelize_cylinder
     >>> radius = 1
     >>> height = 2
     >>> size = 0.1
     >>> coords, topo = voxelize_cylinder(radius, height, size)
+    
     """
     if isinstance(radius, int):
         radius = np.array([0, radius])
