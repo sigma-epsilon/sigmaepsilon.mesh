@@ -12,7 +12,6 @@ if not __haspyvista__:  # pragma: no cover
 else:
     from typing import Union, Iterable, Tuple
     from types import NoneType
-    from copy import copy
 
     import pyvista as pv
     from pyvista import themes
@@ -39,6 +38,10 @@ else:
         edge_color: str | NoneType = None,
         return_img: bool = False,
         show_scalar_bar: Union[bool, NoneType] = None,
+        opacity: float | NoneType = None,
+        style: str | NoneType = None,
+        add_legend: bool = False,
+        legend_params: dict | NoneType = None,
         **kwargs,
     ) -> Union[None, pv.Plotter, ndarray]:
         """
@@ -96,6 +99,19 @@ else:
             Whether to show the scalar bar or not. A `None` value means that the option
             is governed by the configurations of the blocks. If a boolean is provided here,
             it overrides the configurations of the blocks. Default is None.
+        opacity: float, Optional
+            The opacity of the mesh. Default is None.
+            .. versionadded:: 3.1.0
+        style: str, Optional
+            Visualization style of the mesh. Default is None.
+            .. versionadded:: 3.1.0
+        add_legend: bool, Optional
+            If True, a legend is added to the plot. Default is False.
+            .. versionadded:: 3.1.0
+        legend_params: dict, Optional
+            Parameters for the legend to be forwarded to the function
+            :func:`pyvista.Plotter.add_legend()`. Default is None.
+            .. versionadded:: 3.1.0
         **kwargs
             Extra keyword arguments passed to `pyvista.Plotter`, if the plotter
             has to be created.
@@ -141,11 +157,14 @@ else:
                     theme.background = "white"
                 elif theme == "document":
                     theme = themes.DocumentTheme()
+                else:
+                    raise ValueError(f"Unknown theme: {theme}")
 
         if theme is None:
             theme = pv.global_theme
 
-        theme.show_edges = show_edges
+        if show_edges is not None:
+            theme.show_edges = show_edges
 
         if lighting is not None:
             theme.lighting = lighting
@@ -174,7 +193,6 @@ else:
         if camera_position is not None:
             plotter.camera_position = camera_position
 
-        pvparams = dict()
         blocks: Iterable[PolyData] = obj.cellblocks(inclusive=True, deep=True)
 
         blocks_have_data = obj._has_plot_scalars_(scalars)
@@ -183,23 +201,40 @@ else:
             config_key = obj.__class__._pv_config_key_
 
         for block, poly, has_data in zip(blocks, polys, blocks_have_data):
-            NDIM = block.cd.Geometry.number_of_spatial_dimensions
-            params = copy(pvparams)
+            num_dim = block.cd.Geometry.number_of_spatial_dimensions
+            params = dict()
             config = block._get_config_(config_key)
+
             if has_data:
                 config.pop("color", None)
+
             params.update(config)
 
             if cmap is not None:
                 params["cmap"] = cmap
 
-            if NDIM > 1:
+            if (
+                (num_dim > 1)
+                and (show_edges is not None)
+                and ("show_edges" not in params)
+            ):
                 params["show_edges"] = show_edges
+
+            if isinstance(opacity, float) and ("opacity" not in params):
+                params["opacity"] = opacity
+
+            if "style" not in params:
+                params["style"] = style
 
             if isinstance(show_scalar_bar, bool):
                 params["show_scalar_bar"] = show_scalar_bar
 
             plotter.add_mesh(poly, **params)
+
+        if add_legend:
+            if legend_params is None:
+                legend_params = dict()
+            plotter.add_legend(**legend_params)
 
         if return_plotter:
             return plotter
