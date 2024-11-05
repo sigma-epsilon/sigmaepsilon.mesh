@@ -614,25 +614,6 @@ def tri_glob_to_loc(
     return res, centers, tr
 
 
-@njit(nogil=True, cache=__cache)
-def _tri_normal_single(tri: ndarray[float], normalize: bool = False) -> ndarray[float]:
-    """
-    Computes the normal of a triangle.
-
-    Parameters
-    ----------
-    tri: numpy.ndarray
-        2d NumPy array of the coordinates of the triangle.
-
-    """
-    edge1 = tri[1] - tri[0]
-    edge2 = tri[2] - tri[0]
-    normal = np.cross(edge1, edge2)
-    if normalize:
-        normal /= np.linalg.norm(normal)
-    return normal
-
-
 if __name__ == "__main__":
     from sigmaepsilon.mesh.triang import triangulate
     from sigmaepsilon.mesh.utils.space import frames_of_surfaces, is_planar_surface
