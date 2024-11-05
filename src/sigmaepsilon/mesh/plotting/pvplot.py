@@ -11,6 +11,7 @@ if not __haspyvista__:  # pragma: no cover
 
 else:
     from typing import Union, Iterable, Tuple
+    from types import NoneType
     from copy import copy
 
     import pyvista as pv
@@ -26,18 +27,18 @@ else:
         jupyter_backend: str = "pythreejs",
         show_edges: bool = True,
         notebook: bool = False,
-        theme: str = None,
-        scalars: Union[str, ndarray] = None,
-        window_size: Tuple = None,
+        theme: str | NoneType = None,
+        scalars: Union[str, ndarray, NoneType] = None,
+        window_size: Tuple | NoneType = None,
         return_plotter: bool = False,
-        config_key: Tuple = None,
-        plotter: pv.Plotter = None,
-        cmap: Union[str, Iterable] = None,
-        camera_position: Tuple = None,
+        config_key: Tuple | NoneType = None,
+        plotter: pv.Plotter | NoneType = None,
+        cmap: Union[str, Iterable, NoneType] = None,
+        camera_position: Tuple | NoneType = None,
         lighting: bool = False,
-        edge_color: str = None,
+        edge_color: str | NoneType = None,
         return_img: bool = False,
-        show_scalar_bar: Union[bool, None] = None,
+        show_scalar_bar: Union[bool, NoneType] = None,
         **kwargs,
     ) -> Union[None, pv.Plotter, ndarray]:
         """
@@ -96,7 +97,7 @@ else:
             is governed by the configurations of the blocks. If a boolean is provided here,
             it overrides the configurations of the blocks. Default is None.
         **kwargs
-            Extra keyword arguments passed to `pyvista.Plotter`, it the plotter
+            Extra keyword arguments passed to `pyvista.Plotter`, if the plotter
             has to be created.
 
         Returns
@@ -117,6 +118,7 @@ else:
             img=pvplot(mesh, notebook=False, return_img=True)
             plt.imshow(img)
             plt.axis('off')
+
         """
         if not isinstance(obj, PolyData):  # pragma: no cover
             raise TypeError(f"Expected PolyData, got {type(obj)}.")
