@@ -6,7 +6,10 @@ from sigmaepsilon.math.knn import k_nearest_neighbours
 from sigmaepsilon.math.utils import atleast2d
 
 from .tri import center_tri_bulk_3d
+from .tet import TET4_face_normals, TET4_edge_vectors
 
+
+__all__ = ["T3_in_T3", "TET4_in_TET4"]
 
 __cache = True
 
@@ -69,52 +72,84 @@ def _T3_in_T3_single(
     axis[:] = normal_B
     if _sat_single(coordsA, topoA, coordsB, topoB, axis):
         return False
-    
+
     # edge normal 1 of triangle A
     axis[:] = np.cross(normal_A, edgesA[0, :])
     if _sat_single(coordsA, topoA, coordsB, topoB, axis):
         return False
-    
+
     # edge normal 2 of triangle A
     axis[:] = np.cross(normal_A, edgesA[1, :])
     if _sat_single(coordsA, topoA, coordsB, topoB, axis):
         return False
-    
+
     # edge normal 3 of triangle A
     edgesA[2, :] = coordsA[topoA[2]] - coordsA[topoA[1]]
     axis[:] = np.cross(normal_A, edgesA[2, :])
     if _sat_single(coordsA, topoA, coordsB, topoB, axis):
         return False
-    
+
     # edge normal 1 of triangle B
     axis[:] = np.cross(normal_B, edgesB[0, :])
     if _sat_single(coordsA, topoA, coordsB, topoB, axis):
         return False
-    
+
     # edge normal 2 of triangle B
     axis[:] = np.cross(normal_B, edgesB[1, :])
     if _sat_single(coordsA, topoA, coordsB, topoB, axis):
         return False
-    
+
     # edge normal 3 of triangle B
     edgesB[2, :] = coordsB[topoB[2]] - coordsB[topoB[1]]
     axis[:] = np.cross(normal_B, edgesB[2, :])
     if _sat_single(coordsA, topoA, coordsB, topoB, axis):
         return False
-    
+
     normal_A /= np.linalg.norm(normal_A)
     normal_B /= np.linalg.norm(normal_B)
     parallels = np.dot(normal_A, normal_B) > 0.999999
     if parallels:
         return True
-    
+
     # edge cross edge
     for i in range(3):
         for j in range(3):
             axis[:] = np.cross(edgesA[i, :], edgesB[j, :])
             if _sat_single(coordsA, topoA, coordsB, topoB, axis):
                 return False
-        
+
+    return True
+
+
+@njit(nogil=True, cache=__cache)
+def _TET4_in_TET4_single(
+    coordsA: ndarray[float],
+    topoA: ndarray[int],
+    coordsB: ndarray[float],
+    topoB: ndarray[int],
+) -> ndarray[bool]:
+    axes = np.zeros((4, 3), dtype=np.float64)
+
+    # check for face normals of A
+    axes[:, :] = TET4_face_normals(coordsA, topoA)
+    for i in range(4):
+        if _sat_single(coordsA, topoA, coordsB, topoB, axes[i]):
+            return False
+
+    # check for face normals of B
+    axes[:, :] = TET4_face_normals(coordsB, topoB)
+    for i in range(4):
+        if _sat_single(coordsA, topoA, coordsB, topoB, axes[i]):
+            return False
+
+    edgesA = TET4_edge_vectors(coordsA, topoA)
+    edgesB = TET4_edge_vectors(coordsB, topoB)
+    for i in range(6):
+        for j in range(6):
+            axis = np.cross(edgesA[i], edgesB[j])
+            if _sat_single(coordsA, topoA, coordsB, topoB, axis):
+                return False
+
     return True
 
 
@@ -140,6 +175,28 @@ def _T3_in_T3_bulk(
     return out
 
 
+@njit(nogil=True, parallel=True, cache=__cache)
+def _TET4_in_TET4_bulk(
+    coordsA: ndarray[float],
+    topoA: ndarray[int],
+    coordsB: ndarray[float],
+    topoB: ndarray[int],
+    neighbours: ndarray[int],
+) -> ndarray[bool]:
+    """Performs the separating axis theorem for all triangles in A and B."""
+    n_cell_A = topoA.shape[0]
+    n_neighbours = neighbours.shape[1]
+    out = np.zeros((n_cell_A), dtype=np.bool_)
+    for iA in prange(n_cell_A):
+        for iN in range(n_neighbours):
+            iB = neighbours[iA, iN]
+            intersecting = _TET4_in_TET4_single(coordsA, topoA[iA], coordsB, topoB[iB])
+            if intersecting:
+                out[iA] = True
+                break
+    return out
+
+
 def T3_in_T3(
     coordsA: ndarray[float],
     trianglesA: ndarray[int],
@@ -149,13 +206,13 @@ def T3_in_T3(
 ) -> ndarray[bool]:
     """
     Calculates whether two sets of triangles are intersecting.
-    
+
     The function returns a boolean array of length N, where N is the
     number of triangles in A. The i-th element of the array is True if
     the i-th triangle in A intersects any of the triangles in B. To narrow
     down the search, the function uses the k nearest neighbours of the
     centers of the triangles in B.
-    
+
     Parameters
     ----------
     coordsA : ndarray
@@ -168,7 +225,7 @@ def T3_in_T3(
         The topology of the mesh B.
     k : int, optional
         The number of nearest neighbours to consider. Default is 10.
-        
+
     Example
     -------
     >>> import numpy as np
@@ -179,7 +236,7 @@ def T3_in_T3(
     >>> trianglesB = np.array([[0, 1, 2]])
     >>> intersecting = T3_in_T3(coordsA, trianglesA, coordsB, trianglesB)
     >>> assert intersecting[0]
-        
+
     """
     coordsA = np.asarray(coordsA, dtype=np.float64)
     coordsB = np.asarray(coordsB, dtype=np.float64)
@@ -191,4 +248,58 @@ def T3_in_T3(
     neighbours = k_nearest_neighbours(centersB, centersA, k=k)
     neighbours = atleast2d(neighbours, back=True)
     out = _T3_in_T3_bulk(coordsA, trianglesA, coordsB, trianglesB, neighbours)
+    return out
+
+
+def TET4_in_TET4(
+    coordsA: ndarray[float],
+    topologyA: ndarray[int],
+    coordsB: ndarray[float],
+    topologyB: ndarray[int],
+    k: int = 10,
+) -> ndarray[bool]:
+    """
+    Calculates whether two sets of tetrahedra are intersecting.
+
+    The function returns a boolean array of length N, where N is the
+    number of tetrahedra in A. The i-th element of the array is True if
+    the i-th tetrahedra in A intersects any of the tetrahedra in B. To narrow
+    down the search, the function uses the k nearest neighbours of the
+    centers of the tetrahedra in B.
+
+    Parameters
+    ----------
+    coordsA : ndarray
+        The coordinates of the nodes of the mesh A.
+    topologyA : ndarray
+        The topology of the mesh A.
+    coordsB : ndarray
+        The coordinates of the nodes of the mesh B.
+    topologyB : ndarray
+        The topology of the mesh B.
+    k : int, optional
+        The number of nearest neighbours to consider. Default is 10.
+
+    Example
+    -------
+    >>> import numpy as np
+    >>> from sigmaepsilon.mesh.utils.topology.logical import TET4_in_TET4
+    >>> coordsA = np.array([[0, 0, 0], [1, 0, 0], [0, 1, 0], [0, 0, 1]])
+    >>> tetraA = np.array([[0, 1, 2, 3]])
+    >>> coordsB = np.array([[0, 0, 0], [1, 0, 0], [0, 1, 0], [0, 0, 1]])
+    >>> tetraB = np.array([[0, 1, 2, 3]])
+    >>> intersecting = TET4_in_TET4(coordsA, tetraA, coordsB, tetraB)
+    >>> assert intersecting[0]
+
+    """
+    coordsA = np.asarray(coordsA, dtype=np.float64)
+    coordsB = np.asarray(coordsB, dtype=np.float64)
+    topologyA = atleast2d(topologyA, front=True)
+    topologyB = atleast2d(topologyB, front=True)
+    centersA = center_tri_bulk_3d(coordsA, topologyA)
+    centersB = center_tri_bulk_3d(coordsB, topologyB)
+    k = min(k, len(centersB))
+    neighbours = k_nearest_neighbours(centersB, centersA, k=k)
+    neighbours = atleast2d(neighbours, back=True)
+    out = _TET4_in_TET4_bulk(coordsA, topologyA, coordsB, topologyB, neighbours)
     return out
