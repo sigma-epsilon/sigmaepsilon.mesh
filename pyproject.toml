@@ -78,6 +78,7 @@ networkx = ">=3.0"
 pillow = ">=10.2.0"
 fonttools = ">=4.43.0"
 testbook = "^0.4.2"
+plotly = "^5.24.1"
 
 [tool.poetry.group.docs.dependencies]
 ipython = "^8.21.0"
