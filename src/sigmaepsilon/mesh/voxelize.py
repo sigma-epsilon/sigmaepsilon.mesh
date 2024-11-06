@@ -1,23 +1,19 @@
 # -*- coding: utf-8 -*-
 from typing import Tuple, Optional, Union, Iterable
+from types import NoneType
 from numbers import Number
 
 import numpy as np
 from numpy import ndarray
-
-from sigmaepsilon.math.utils import atleast2d
 
 from .data import PolyData, PointData
 from .space import CartesianFrame
 from .cells import H8
 from .grid import grid
 from .utils.topology import detach_mesh_bulk
-from .utils import cell_centers_bulk, cells_coords
-from .utils.knn import k_nearest_neighbours
-from .utils.cic import H8_in_TET4_bulk_knn
+from .utils.topology.cic import H8_in_TET4, H8_in_T3
 
-
-__all__ = ["voxelize_cylinder", "voxelize_TET4_H8"]
+__all__ = ["voxelize_cylinder", "voxelize_TET4_H8", "voxelize_T3_H8"]
 
 
 def voxelize_cylinder(
@@ -45,14 +41,14 @@ def voxelize_cylinder(
     Example
     -------
     The following example shows how to create a voxelized cylinder.
-    
+
     >>> import numpy as np
     >>> from sigmaepsilon.mesh.voxelize import voxelize_cylinder
     >>> radius = 1
     >>> height = 2
     >>> size = 0.1
     >>> coords, topo = voxelize_cylinder(radius, height, size)
-    
+
     """
     if isinstance(radius, int):
         radius = np.array([0, radius])
@@ -78,10 +74,9 @@ def voxelize_cylinder(
 def voxelize_TET4_H8(
     coords_TET4: ndarray,
     topo_TET4: ndarray,
-    shape: tuple | None = None,
-    resolution: float | None = None,
-    k_max: int = 4,
-    tol: float = 1e-12,
+    shape: tuple | NoneType = None,
+    resolution: float | NoneType = None,
+    k_max: int = 10,
 ) -> Tuple[ndarray, ndarray]:
     """
     Returns a voxelized version of a tetrahadral mesh.
@@ -101,11 +96,9 @@ def voxelize_TET4_H8(
     resolution: float, Optional
         Resolution of the voxel grid. Default is None.
     k_max: int, Optional
-        Maximum number of nearest neighbours to consider. Default is 4.
+        Maximum number of nearest neighbours to consider. Default is 10.
         If the number of TET4 cells is less than `k_max`, the function
         will use the number of TET4 cells as the `k` parameter.
-    tol: float, Optional
-        Tolerance to consider a point inside a cell. Default is 1e-12.
 
     Example
     -------
@@ -117,6 +110,7 @@ def voxelize_TET4_H8(
     >>> topo_TET4 = np.array([[0, 1, 2, 3]])
     >>> shape = (10, 10, 10)
     >>> coords_H8, topo_H8 = voxelize_TET4_H8(coords_TET4, topo_TET4, shape=shape)
+
     """
     size_x = np.max(coords_TET4[:, 0]) - np.min(coords_TET4[:, 0])
     size_y = np.max(coords_TET4[:, 1]) - np.min(coords_TET4[:, 1])
@@ -135,12 +129,67 @@ def voxelize_TET4_H8(
         shape = (n_x, n_y, n_z)
 
     coords_H8, topo_H8 = grid(size=size, shape=shape, eshape="H8", shift=shift)
-    centers_H8 = cell_centers_bulk(coords_H8, topo_H8)
-    centers_TET4 = cell_centers_bulk(coords_TET4, topo_TET4)
-    k = min(k_max, len(centers_TET4))
-    neighbours = k_nearest_neighbours(centers_TET4, centers_H8, k=k)
-    neighbours = atleast2d(neighbours, back=True)
-    cell_coords_TET4 = cells_coords(coords_TET4, topo_TET4)
-    cell_coords_H8 = cells_coords(coords_H8, topo_H8)
-    H8_bool = H8_in_TET4_bulk_knn(cell_coords_H8, cell_coords_TET4, neighbours, tol=tol)
+    H8_bool = H8_in_TET4(coords_H8, topo_H8, coords_TET4, topo_TET4, k=k_max)
+    return coords_H8, topo_H8[H8_bool]
+
+
+def voxelize_T3_H8(
+    coords_T3: ndarray,
+    topo_T3: ndarray,
+    shape: tuple | NoneType = None,
+    resolution: float | NoneType = None,
+    k_max: int = 10,
+) -> Tuple[ndarray, ndarray]:
+    """
+    Returns a voxelized version of a triangular mesh.
+
+    The function is expected to behave well, if the input mesh is
+    regular. If it contains extremely skew cells, the function may
+    struggle to find the correct voxelization.
+
+    Parameters
+    ----------
+    coords_T3: numpy.ndarray
+        2d NumPy array of the coordinates of the nodes of the T3 cells.
+    topo_T3: numpy.ndarray
+        2d NumPy array of the topology of the T3 cells.
+    shape: tuple, Optional
+        Tuple of the shape of the voxel grid. Default is None.
+    resolution: float, Optional
+        Resolution of the voxel grid. Default is None.
+    k_max: int, Optional
+        Maximum number of nearest neighbours to consider. Default is 10.
+        If the number of T3 cells is less than `k_max`, the function
+        will use the number of T3 cells as the `k` parameter.
+
+    Example
+    -------
+    The following example shows how to voxelize a T3 mesh.
+
+    >>> import numpy as np
+    >>> from sigmaepsilon.mesh.voxelize import voxelize_T3_H8
+    >>> coords_T3 = np.array([[0, 0, 1], [1, 0, 0], [0, 1, 0]]).astype(float)
+    >>> topo_T3 = np.array([[0, 1, 2]])
+    >>> shape = (10, 10, 10)
+    >>> coords_H8, topo_H8 = voxelize_T3_H8(coords_T3, topo_T3, shape=shape)
+
+    """
+    size_x = np.max(coords_T3[:, 0]) - np.min(coords_T3[:, 0])
+    size_y = np.max(coords_T3[:, 1]) - np.min(coords_T3[:, 1])
+    size_z = np.max(coords_T3[:, 2]) - np.min(coords_T3[:, 2])
+    size = (size_x, size_y, size_z)
+
+    shift_x = np.min(coords_T3[:, 0])
+    shift_y = np.min(coords_T3[:, 1])
+    shift_z = np.min(coords_T3[:, 2])
+    shift = (shift_x, shift_y, shift_z)
+
+    if shape is None and resolution is not None:
+        n_x = int(np.ceil(size_x / resolution))
+        n_y = int(np.ceil(size_y / resolution))
+        n_z = int(np.ceil(size_z / resolution))
+        shape = (n_x, n_y, n_z)
+
+    coords_H8, topo_H8 = grid(size=size, shape=shape, eshape="H8", shift=shift)
+    H8_bool = H8_in_T3(coords_H8, topo_H8, coords_T3, topo_T3, k=k_max)
     return coords_H8, topo_H8[H8_bool]
