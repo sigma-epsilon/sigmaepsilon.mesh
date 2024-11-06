@@ -146,6 +146,8 @@ def voxelize_T3_H8(
     The function is expected to behave well, if the input mesh is
     regular. If it contains extremely skew cells, the function may
     struggle to find the correct voxelization.
+    
+    .. versionadded:: 3.1.0
 
     Parameters
     ----------
