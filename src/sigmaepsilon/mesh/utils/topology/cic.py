@@ -327,6 +327,19 @@ def T3_in_T3(
     coordsB = np.asarray(coordsB, dtype=float)
     trianglesA = atleast2d(trianglesA, front=True)
     trianglesB = atleast2d(trianglesB, front=True)
+
+    if not coordsA.shape[1] == 3:
+        raise ValueError("Coordinates of A must have 3 dimensions.")
+
+    if not coordsB.shape[1] == 3:
+        raise ValueError("Coordinates of B must have 3 dimensions.")
+
+    if not trianglesA.shape[1] == 3:
+        raise ValueError("Topology of A must have 3 nodes.")
+
+    if not trianglesB.shape[1] == 3:
+        raise ValueError("Topology of B must have 3 nodes.")
+
     centersA = center_tri_bulk_3d(coordsA, trianglesA)
     centersB = center_tri_bulk_3d(coordsB, trianglesB)
     k = min(k, len(centersB))
@@ -383,6 +396,19 @@ def TET4_in_TET4(
     coordsB = np.asarray(coordsB, dtype=float)
     topologyA = atleast2d(topologyA, front=True)
     topologyB = atleast2d(topologyB, front=True)
+
+    if not coordsA.shape[1] == 3:
+        raise ValueError("Coordinates of A must have 3 dimensions.")
+
+    if not coordsB.shape[1] == 3:
+        raise ValueError("Coordinates of B must have 3 dimensions.")
+
+    if not topologyA.shape[1] == 4:
+        raise ValueError("Topology of A must have 4 nodes.")
+
+    if not topologyB.shape[1] == 4:
+        raise ValueError("Topology of B must have 4 nodes.")
+
     centersA = center_tri_bulk_3d(coordsA, topologyA)
     centersB = center_tri_bulk_3d(coordsB, topologyB)
     k = min(k, len(centersB))
@@ -441,6 +467,19 @@ def H8_in_TET4(
     coords_TET4 = np.asarray(coords_TET4, dtype=float)
     topology_H8 = atleast2d(topology_H8, front=True)
     topology_TET4 = atleast2d(topology_TET4, front=True)
+
+    if not coords_H8.shape[1] == 3:
+        raise ValueError("Coordinates of H8 cells must have 3 dimensions.")
+
+    if not coords_TET4.shape[1] == 3:
+        raise ValueError("Coordinates of TET4 cells must have 3 dimensions.")
+
+    if not topology_H8.shape[1] == 8:
+        raise ValueError("Topology of H8 cells must have 8 nodes.")
+
+    if not topology_TET4.shape[1] == 4:
+        raise ValueError("Topology of TET4 cells must have 4 nodes.")
+
     _coords_TET4, _topology_TET4 = H8_to_TET4(coords_H8, topology_H8)
     _out = TET4_in_TET4(_coords_TET4, _topology_TET4, coords_TET4, topology_TET4, k=k)
     out = np.any(_out.reshape((len(topology_H8), 5)), axis=1)
@@ -496,6 +535,19 @@ def TET4_in_H8(
     coords_TET4 = np.asarray(coords_TET4, dtype=float)
     topology_H8 = atleast2d(topology_H8, front=True)
     topology_TET4 = atleast2d(topology_TET4, front=True)
+
+    if not coords_H8.shape[1] == 3:
+        raise ValueError("Coordinates of H8 cells must have 3 dimensions.")
+
+    if not coords_TET4.shape[1] == 3:
+        raise ValueError("Coordinates of TET4 cells must have 3 dimensions.")
+
+    if not topology_H8.shape[1] == 8:
+        raise ValueError("Topology of H8 cells must have 8 nodes.")
+
+    if not topology_TET4.shape[1] == 4:
+        raise ValueError("Topology of TET4 cells must have 4 nodes.")
+
     _coords_TET4, _topology_TET4 = H8_to_TET4(coords_H8, topology_H8)
     out = TET4_in_TET4(coords_TET4, topology_TET4, _coords_TET4, _topology_TET4, k=k)
     return out
@@ -536,6 +588,19 @@ def TET4_in_T3(
     coords_T3 = np.asarray(coords_T3, dtype=float)
     topology_TET4 = atleast2d(topology_TET4, front=True)
     topology_T3 = atleast2d(topology_T3, front=True)
+
+    if not coords_T3.shape[1] == 3:
+        raise ValueError("Coordinates of T3 cells must have 3 dimensions.")
+
+    if not coords_TET4.shape[1] == 3:
+        raise ValueError("Coordinates of TET4 cells must have 3 dimensions.")
+
+    if not topology_TET4.shape[1] == 4:
+        raise ValueError("Topology of TET4 cells must have 4 nodes.")
+
+    if not topology_T3.shape[1] == 3:
+        raise ValueError("Topology of T3 cells must have 3 nodes.")
+
     centers_TET4 = center_tri_bulk_3d(coords_TET4, topology_TET4)
     centers_T3 = center_tri_bulk_3d(coords_T3, topology_T3)
     k = min(k, len(centers_T3))
@@ -582,6 +647,19 @@ def H8_in_T3(
     coords_T3 = np.asarray(coords_T3, dtype=float)
     topology_H8 = atleast2d(topology_H8, front=True)
     topology_T3 = atleast2d(topology_T3, front=True)
+
+    if not coords_T3.shape[1] == 3:
+        raise ValueError("Coordinates of T3 cells must have 3 dimensions.")
+
+    if not coords_H8.shape[1] == 3:
+        raise ValueError("Coordinates of H8 cells must have 3 dimensions.")
+
+    if not topology_H8.shape[1] == 8:
+        raise ValueError("Topology of H8 cells must have 8 nodes.")
+
+    if not topology_T3.shape[1] == 3:
+        raise ValueError("Topology of T3 cells must have 3 nodes.")
+
     _coords_TET4, _topology_TET4 = H8_to_TET4(coords_H8, topology_H8)
     _out = TET4_in_T3(_coords_TET4, _topology_TET4, coords_T3, topology_T3, k=k)
     out = np.any(_out.reshape((len(topology_H8), 5)), axis=1)
