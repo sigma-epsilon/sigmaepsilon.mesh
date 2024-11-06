@@ -69,6 +69,20 @@ class TestCellInCell(unittest.TestCase):
         self.assertFalse(T3_in_T3(coords, topoA, coords, topoB)[0])
         self.assertFalse(T3_in_T3(coords, topoB, coords, topoA)[0])
 
+    def test_T3_in_T3_ValueError(self):
+        topo_OK = np.arange(3)
+        topo_FAIL = np.arange(4)
+        coords_OK = np.ones((3, 3))
+        coords_FAIL = np.ones((3, 2))
+        with self.assertRaises(ValueError):
+            T3_in_T3(coords_FAIL, topo_OK, coords_OK, topo_OK)
+        with self.assertRaises(ValueError):
+            T3_in_T3(coords_OK, topo_OK, coords_FAIL, topo_OK)
+        with self.assertRaises(ValueError):
+            T3_in_T3(coords_OK, topo_OK, coords_OK, topo_FAIL)
+        with self.assertRaises(ValueError):
+            T3_in_T3(coords_OK, topo_FAIL, coords_OK, topo_OK)
+
     def test_TET4_in_TET4(self):
         size = 80, 60, 40
         shape = 2, 2, 2
@@ -104,6 +118,20 @@ class TestCellInCell(unittest.TestCase):
 
         self.assertTrue(np.isclose(volume_ratio, 8.0, atol=1e-3))
 
+    def test_TET4_in_TET4_ValueError(self):
+        topo_OK = np.arange(4)
+        topo_FAIL = np.arange(5)
+        coords_OK = np.ones((3, 3))
+        coords_FAIL = np.ones((3, 2))
+        with self.assertRaises(ValueError):
+            TET4_in_TET4(coords_FAIL, topo_OK, coords_OK, topo_OK)
+        with self.assertRaises(ValueError):
+            TET4_in_TET4(coords_OK, topo_OK, coords_FAIL, topo_OK)
+        with self.assertRaises(ValueError):
+            TET4_in_TET4(coords_OK, topo_OK, coords_OK, topo_FAIL)
+        with self.assertRaises(ValueError):
+            TET4_in_TET4(coords_OK, topo_FAIL, coords_OK, topo_OK)
+
     def test_H8_in_TET4(self):
         coords_H8 = np.array(
             [
@@ -122,6 +150,22 @@ class TestCellInCell(unittest.TestCase):
         result = H8_in_TET4(coords_H8, topo_H8, coords_TET4, topo_TET4)
         self.assertTrue(np.all(result))
 
+    def test_H8_in_TET4_ValueError(self):
+        topo_H8_OK = np.arange(8)
+        topo_H8_FAIL = np.arange(6)
+        topo_TET4_OK = np.arange(4)
+        topo_TET4_FAIL = np.arange(8)
+        coords_OK = np.ones((3, 3))
+        coords_FAIL = np.ones((3, 2))
+        with self.assertRaises(ValueError):
+            H8_in_TET4(coords_FAIL, topo_H8_OK, coords_OK, topo_TET4_OK)
+        with self.assertRaises(ValueError):
+            H8_in_TET4(coords_OK, topo_H8_OK, coords_FAIL, topo_TET4_OK)
+        with self.assertRaises(ValueError):
+            H8_in_TET4(coords_OK, topo_H8_OK, coords_OK, topo_TET4_FAIL)
+        with self.assertRaises(ValueError):
+            H8_in_TET4(coords_OK, topo_H8_FAIL, coords_OK, topo_TET4_OK)
+
     def test_TET4_in_H8(self):
         coords_H8 = np.array(
             [
@@ -139,6 +183,22 @@ class TestCellInCell(unittest.TestCase):
         coords_TET4, topo_TET4 = H8_to_TET4(coords_H8, topo_H8)
         result = TET4_in_H8(coords_TET4, topo_TET4, coords_H8, topo_H8)
         self.assertTrue(np.all(result))
+
+    def test_TET4_in_H8_ValueError(self):
+        topo_H8_OK = np.arange(8)
+        topo_H8_FAIL = np.arange(6)
+        topo_TET4_OK = np.arange(4)
+        topo_TET4_FAIL = np.arange(8)
+        coords_OK = np.ones((3, 3))
+        coords_FAIL = np.ones((3, 2))
+        with self.assertRaises(ValueError):
+            TET4_in_H8(coords_FAIL, topo_TET4_OK, coords_OK, topo_H8_OK)
+        with self.assertRaises(ValueError):
+            TET4_in_H8(coords_OK, topo_TET4_OK, coords_FAIL, topo_H8_OK)
+        with self.assertRaises(ValueError):
+            TET4_in_H8(coords_OK, topo_TET4_OK, coords_OK, topo_H8_FAIL)
+        with self.assertRaises(ValueError):
+            TET4_in_H8(coords_OK, topo_TET4_FAIL, coords_OK, topo_H8_OK)
 
     def test_TET4_in_T3(self):
         coords_H8 = np.array(
@@ -174,6 +234,22 @@ class TestCellInCell(unittest.TestCase):
         result = TET4_in_T3(coords_TET4, topo_TET4, coords_H8, topo_T3)
         self.assertTrue(np.all(result))
 
+    def test_TET4_in_T3_ValueError(self):
+        topo_T3_OK = np.arange(3)
+        topo_T3_FAIL = np.arange(6)
+        topo_TET4_OK = np.arange(4)
+        topo_TET4_FAIL = np.arange(8)
+        coords_OK = np.ones((3, 3))
+        coords_FAIL = np.ones((3, 2))
+        with self.assertRaises(ValueError):
+            TET4_in_T3(coords_FAIL, topo_TET4_OK, coords_OK, topo_T3_OK)
+        with self.assertRaises(ValueError):
+            TET4_in_T3(coords_OK, topo_TET4_OK, coords_FAIL, topo_T3_OK)
+        with self.assertRaises(ValueError):
+            TET4_in_T3(coords_OK, topo_TET4_OK, coords_OK, topo_T3_FAIL)
+        with self.assertRaises(ValueError):
+            TET4_in_T3(coords_OK, topo_TET4_FAIL, coords_OK, topo_T3_OK)
+
     def test_H8_in_T3(self):
         coords_H8 = np.array(
             [
@@ -206,6 +282,22 @@ class TestCellInCell(unittest.TestCase):
         ).astype(int)
         result = H8_in_T3(coords_H8, topo_H8, coords_H8, topo_T3)
         self.assertTrue(np.all(result))
+
+    def test_H8_in_T3_ValueError(self):
+        topo_T3_OK = np.arange(3)
+        topo_T3_FAIL = np.arange(6)
+        topo_H8_OK = np.arange(8)
+        topo_H8_FAIL = np.arange(2)
+        coords_OK = np.ones((3, 3))
+        coords_FAIL = np.ones((3, 2))
+        with self.assertRaises(ValueError):
+            H8_in_T3(coords_FAIL, topo_H8_OK, coords_OK, topo_T3_OK)
+        with self.assertRaises(ValueError):
+            H8_in_T3(coords_OK, topo_H8_OK, coords_FAIL, topo_T3_OK)
+        with self.assertRaises(ValueError):
+            H8_in_T3(coords_OK, topo_H8_OK, coords_OK, topo_T3_FAIL)
+        with self.assertRaises(ValueError):
+            H8_in_T3(coords_OK, topo_H8_FAIL, coords_OK, topo_T3_OK)
 
 
 if __name__ == "__main__":
