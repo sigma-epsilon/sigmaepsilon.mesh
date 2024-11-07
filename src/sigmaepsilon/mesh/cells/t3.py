@@ -20,7 +20,7 @@ from ..utils.tri import area_tri_bulk
 
 class T3(PolyCell):
     """
-    A class to handle 3-noded triangles.
+    Class for 3-noded triangles.
 
     Example
     -------
@@ -33,6 +33,7 @@ class T3(PolyCell):
     >>> trimesh = TriMesh(pd, cd)
     >>> np.isclose(trimesh.area(), 480000.0)
     True
+    
     """
 
     label = "T3"

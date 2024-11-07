@@ -12,7 +12,7 @@ __all__ = ["L3"]
 
 class L3(PolyCell):
     """
-    3-Node line element.
+    Class for 3-node line segments.
     """
 
     class Geometry(PolyCellGeometry1d):

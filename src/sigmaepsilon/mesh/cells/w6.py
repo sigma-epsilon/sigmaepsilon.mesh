@@ -12,7 +12,7 @@ from ..utils.cells.w6 import monoms_W6
 
 class W6(PolyCell):
     """
-    Polyhedra class for 6-noded trilinear wedges.
+    Class for 6-noded trilinear wedges.
     """
 
     label = "W6"

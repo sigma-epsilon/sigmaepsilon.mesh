@@ -19,7 +19,7 @@ from ..utils.topology import T6_to_T3, T3_to_T6
 
 class T6(PolyCell):
     """
-    A class to handle 6-noded triangles.
+    Class for 6-noded triangles.
 
     Example
     -------
@@ -34,6 +34,7 @@ class T6(PolyCell):
     >>> trimesh = TriMesh(pd, cd)
     >>> trimesh.area()
     480000.0
+    
     """
 
     label = "T6"

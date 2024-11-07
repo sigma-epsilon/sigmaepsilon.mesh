@@ -16,7 +16,7 @@ __all__ = ["L2"]
 
 class L2(PolyCell):
     """
-    2-Node line element.
+    Class for 2-node line segments.
     """
 
     class Geometry(PolyCellGeometry1d):

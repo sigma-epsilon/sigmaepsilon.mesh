@@ -1,5 +1,3 @@
-from typing import Tuple, List
-
 import numpy as np
 from numpy import ndarray
 from sympy import symbols
@@ -14,7 +12,7 @@ from .w6 import W6
 
 class W18(PolyCell):
     """
-    Polyhedra class for 18-noded biquadratic wedges.
+    Class for 18-noded biquadratic wedges.
     """
 
     label = "W18"
@@ -29,7 +27,7 @@ class W18(PolyCell):
         }
 
         @classmethod
-        def polybase(cls) -> Tuple[List]:
+        def polybase(cls) -> tuple[list, list]:
             """
             Retruns the polynomial base of the master element.
 
@@ -64,7 +62,8 @@ class W18(PolyCell):
             return locvars, monoms
 
         @classmethod
-        def master_coordinates(cls) -> ndarray:
+        def master_coordinates(cls) -> ndarray[float]:
+            """Returns local coordinates of the master cell as a NumPy array."""
             return np.array(
                 [
                     [-1 / 3, -1 / 3, -1.0],
@@ -89,11 +88,14 @@ class W18(PolyCell):
             )
 
         @classmethod
-        def master_center(cls) -> ndarray:
+        def master_center(cls) -> ndarray[float]:
+            """Returns the coordinates of the center of the master cell as a NumPy array."""
             return np.array([[0.0, 0.0, 0.0]], dtype=float)
 
         @classmethod
-        def tetmap(cls) -> ndarray:
+        def tetmap(cls) -> ndarray[int]:
+            """Returns a mapping in the form of a NumPy array to convert a
+            single cell to 4-node tetrahedra."""
             w18_to_w6 = np.array(
                 [
                     [15, 13, 16, 9, 4, 10],

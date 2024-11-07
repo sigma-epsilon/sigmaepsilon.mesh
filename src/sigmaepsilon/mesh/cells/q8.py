@@ -18,7 +18,7 @@ from ..utils.topology import Q8_to_T3, trimap_Q8
 
 class Q8(PolyCell):
     """
-    Polygon class for 8-noded quadratic quadrilaterals.
+    Class for 8-noded quadratic quadrilaterals.
     """
 
     label = "Q8"
