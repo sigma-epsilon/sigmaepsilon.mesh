@@ -1,14 +1,8 @@
-import numpy as np
-from contextlib import suppress
-
 from .polydata import PolyData
-from ..cells import L2, L3
-
 from ..config import __hasplotly__
 
 if __hasplotly__:
-    with suppress(ImportError):
-        from sigmaepsilon.plotting.plotly import plot_lines_3d
+    from ..plotting.plotly import plot_lines_plotly
 
 
 __all__ = ["LineData"]
@@ -33,7 +27,7 @@ class LineData(PolyData):
         coords = self.coords()
         topo = self.topology()
         kwargs.update(dict(scalars=scalars, fig=fig))
-        return plot_lines_3d(coords, topo, **kwargs)
+        return plot_lines_plotly(coords, topo, **kwargs)
 
     def plot(self, *args, scalars=None, backend="plotly", scalar_labels=None, **kwargs):
         """
@@ -60,7 +54,7 @@ class LineData(PolyData):
                     *args, scalars=scalars, scalar_labels=None, **kwargs
                 )
             else:
-                msg = "You need to install `dewloosh.plotly` for this plot."
+                msg = "You need to install `plotly` for this."
                 raise ImportError(msg)
         else:
             msg = "No implementation for backend '{}'".format(backend)
