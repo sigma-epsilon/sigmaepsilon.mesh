@@ -317,16 +317,16 @@ def TET4_edge_vectors(
 
     """
     edges = np.zeros((6, 3), dtype=np.float64)
-    
+
     edges[0, :] = coords[topo[1]] - coords[topo[0]]
     edges[1, :] = coords[topo[3]] - coords[topo[0]]
     edges[2, :] = coords[topo[2]] - coords[topo[0]]
     edges[3, :] = coords[topo[2]] - coords[topo[1]]
     edges[4, :] = coords[topo[2]] - coords[topo[3]]
     edges[5, :] = coords[topo[3]] - coords[topo[1]]
-    
+
     if normalize:
         for i in range(6):
             edges[i] /= np.linalg.norm(edges[i])
-    
+
     return edges

@@ -201,7 +201,7 @@ class CartesianFrame(Frame):
         Array([[ 0.70710678,  0.70710678,  0.        ],
                [-0.70710678,  0.70710678,  0.        ],
                [ 0.        ,  0.        ,  1.        ]])
-               
+
         """
         if not isinstance(d, Vector):
             if not isinstance(d, ndarray):
