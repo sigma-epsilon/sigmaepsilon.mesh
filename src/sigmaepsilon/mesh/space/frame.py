@@ -1,5 +1,5 @@
 import numpy as np
-from typing import Union, Iterable, Optional
+from typing import Union, Iterable
 from copy import deepcopy as dcopy
 
 import numpy as np
@@ -60,7 +60,7 @@ class CartesianFrame(Frame):
     >>> A = CartesianFrame(dim=3)
     >>> C = A.orient_new('Space', [0, 0, 2*np.pi], 'XYZ')
 
-    Then, the *DCM from A to B* , that is :math:`^{A}\mathbf{R}^{B}` would be
+    Then, the *DCM from A to B* , that is :math:`^{A}\\mathbf{R}^{B}` would be
 
     >>> A_R_B = B.dcm(source=A)
 
