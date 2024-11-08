@@ -44,14 +44,14 @@ class TestPointCloud(SigmaEpsilonTestCase):
         coords.sort_indices()
         d = np.array([0.0, 1.0, 0.0])
         coords.move(d).move(d)
-        
+
     def test_frames(self):
         frame = CartesianFrame(dim=3)
         coords, *_ = triangulate(size=(800, 600), shape=(3, 3))
         inds = np.arange(len(coords))
         points = PointCloud(coords, inds=inds)
         points.frame = frame
-        
+
         self.assertFailsProperly(TypeError, setattr, points, "frame", "_")
 
 

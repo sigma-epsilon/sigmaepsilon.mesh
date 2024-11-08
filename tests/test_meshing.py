@@ -37,7 +37,7 @@ class TestMeshing(unittest.TestCase):
         points, triangles = detach_mesh_bulk(points, triangles)
         coords, topo = extrude_T3_TET4(points, triangles, h, zres)
 
-        vol_exact = np.pi * (max_radius ** 2 - min_radius ** 2) * h
+        vol_exact = np.pi * (max_radius**2 - min_radius**2) * h
 
         A = StandardFrame(dim=3)
         pd = PointData(coords=coords, frame=A)
@@ -67,7 +67,7 @@ class TestMeshing(unittest.TestCase):
         points, triangles = detach_mesh_bulk(points, triangles)
         coords, topo = extrude_T3_W6(points, triangles, h, zres)
 
-        vol_exact = np.pi * (max_radius ** 2 - min_radius ** 2) * h
+        vol_exact = np.pi * (max_radius**2 - min_radius**2) * h
 
         A = StandardFrame(dim=3)
         pd = PointData(coords=coords, frame=A)
