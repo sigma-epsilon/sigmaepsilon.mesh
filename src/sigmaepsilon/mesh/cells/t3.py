@@ -33,7 +33,7 @@ class T3(PolyCell):
     >>> trimesh = TriMesh(pd, cd)
     >>> np.isclose(trimesh.area(), 480000.0)
     True
-    
+
     """
 
     label = "T3"

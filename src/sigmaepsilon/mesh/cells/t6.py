@@ -34,7 +34,7 @@ class T6(PolyCell):
     >>> trimesh = TriMesh(pd, cd)
     >>> trimesh.area()
     480000.0
-    
+
     """
 
     label = "T6"
