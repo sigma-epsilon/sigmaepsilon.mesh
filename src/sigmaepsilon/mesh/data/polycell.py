@@ -1134,8 +1134,8 @@ class PolyCell(Generic[MeshDataLike, PointDataLike], ABC_PolyCell):
             return getattr(self.db, attr)
         except Exception:
             raise AttributeError(
-                "'{}' object has no attribute \
-                called {}".format(
+                "'{}' object has no attribute " 
+                "called {}".format(
                     self.__class__.__name__, attr
                 )
             )
