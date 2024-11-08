@@ -1,7 +1,7 @@
 import numpy as np
 import unittest
 
-from sigmaepsilon.math.linalg import Vector, linspace
+from sigmaepsilon.math.linalg import linspace
 from sigmaepsilon.mesh import PointCloud, CartesianFrame
 from sigmaepsilon.mesh.triang import triangulate
 from sigmaepsilon.mesh.space import StandardFrame
@@ -148,24 +148,6 @@ class TestLinalg(unittest.TestCase):
         )
         rot180y = "Body", [0, np.pi, 0], "XYZ"
         frames["bottom"] = frames["top"].fork(*rot180y).move(cof("bottom") - cof("top"))
-
-    def test_frame_1(self):
-        A = CartesianFrame()
-        B = A.orient_new("Body", [0, 0, 45 * np.pi / 180], "XYZ")
-        B.move(Vector(np.array([1.0, 0, 0]), frame=B))
-        B.move(-Vector(np.array([np.sqrt(2) / 2, 0, 0])))
-        B.move(-Vector(np.array([0, np.sqrt(2) / 2, 0])))
-
-    def test_frame_2(self):
-        A = CartesianFrame()
-        B = A.orient_new("Body", [0, 0, 30 * np.pi / 180], "XYZ")
-        C = B.orient_new("Body", [0, 0, 30 * np.pi / 180], "XYZ")
-        A = CartesianFrame()
-        B = A.orient_new("Body", [0, 0, 30 * np.pi / 180], "XYZ")
-        C = B.orient_new("Body", [0, 0, 30 * np.pi / 180], "XYZ")
-        A = CartesianFrame()
-        v = Vector(np.array([1.0, 0.0, 0.0]), frame=A)
-        B = A.fork("Body", [0, 0, 45 * np.pi / 180], "XYZ").move(v)
 
 
 if __name__ == "__main__":

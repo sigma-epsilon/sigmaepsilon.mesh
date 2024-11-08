@@ -43,7 +43,7 @@ class TestMplTriplot(SigmaEpsilonTestCase):
         refiner = mpltri.UniformTriRefiner(triobj)
         triplot_mpl_data(triobj, data=data, cmap="bwr", refiner=refiner, nlevels=10)
 
-    def circular_disk(self):
+    def test_circular_disk(self):
         n_angles = 60
         n_radii = 30
         min_radius = 5

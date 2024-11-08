@@ -18,9 +18,9 @@ class TestTri(unittest.TestCase):
                 mesh = TriMesh(pd, cd)
                 assert np.isclose(mesh.area(), Lx * Ly)
                 return True
-            except AssertionError:
+            except AssertionError:  # pragma: no cover
                 return False
-            except Exception as e:
+            except Exception as e:  # pragma: no cover
                 raise e
 
         assert test_area_T3(1.0, 1.0, 2, 2)
@@ -36,9 +36,9 @@ class TestTri(unittest.TestCase):
                 mesh = TriMesh(pd, cd)
                 assert np.isclose(mesh.area(), Lx * Ly)
                 return True
-            except AssertionError:
+            except AssertionError:  # pragma: no cover
                 return False
-            except Exception as e:
+            except Exception as e:  # pragma: no cover
                 raise e
 
         assert test_area_T6(1.0, 1.0, 2, 2)
@@ -50,9 +50,9 @@ class TestTri(unittest.TestCase):
                 a = np.pi * (max_radius**2 - min_radius**2)
                 assert np.isclose(mesh.area(), a, atol=0, rtol=a / 1000)
                 return True
-            except AssertionError:
+            except AssertionError:  # pragma: no cover
                 return False
-            except Exception as e:
+            except Exception as e:  # pragma: no cover
                 raise e
 
         assert test_area_circular_disk_T3(1.0, 10.0, 120, 80)
@@ -64,9 +64,9 @@ class TestTri(unittest.TestCase):
                 a = np.pi * (max_radius**2 - min_radius**2)
                 assert np.isclose(mesh.area(), a, atol=0, rtol=a / 1000)
                 return True
-            except AssertionError:
+            except AssertionError:  # pragma: no cover
                 return False
-            except Exception as e:
+            except Exception as e:  # pragma: no cover
                 raise e
 
         assert test_area_circular_disk_T6(1.0, 10.0, 120, 80)
