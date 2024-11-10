@@ -963,7 +963,7 @@ class PolyCell(Generic[MeshDataLike, PointDataLike], ABC_PolyCell):
 
             # locate the points that are inside any of the cells
             pip = np.squeeze(np.any(pips_tet, axis=1))  # (nP)
-            i_source = np.nonzero(np.atleast_1d(pip)) # (nP_)
+            i_source = np.nonzero(np.atleast_1d(pip))  # (nP_)
             if lazy:
                 points_to_tets, points_to_neighbours = _find_first_hits_knn_(
                     pips_tet[i_source], neighbours_tet[i_source]
@@ -1134,10 +1134,8 @@ class PolyCell(Generic[MeshDataLike, PointDataLike], ABC_PolyCell):
             return getattr(self.db, attr)
         except Exception:
             raise AttributeError(
-                "'{}' object has no attribute \
-                called {}".format(
-                    self.__class__.__name__, attr
-                )
+                "'{}' object has no attribute "
+                "called {}".format(self.__class__.__name__, attr)
             )
 
     def __getitem__(self, index: str) -> Any:

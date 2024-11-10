@@ -19,7 +19,7 @@ from ..utils.topology import Q4_to_T3
 
 class Q4(PolyCell):
     """
-    Polygon class for 4-noded bilinear quadrilaterals.
+    Class for 4-noded bilinear quadrilaterals.
     """
 
     label = "Q4"

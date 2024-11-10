@@ -20,7 +20,7 @@ from ..utils.utils import cells_coords
 
 class TET4(PolyCell):
     """
-    4-node isoparametric hexahedron.
+    Class for 4-node tetrahedra.
     """
 
     label = "TET4"

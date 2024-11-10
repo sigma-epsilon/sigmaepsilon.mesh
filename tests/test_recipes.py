@@ -8,14 +8,14 @@ from sigmaepsilon.mesh.recipes import (
     perforated_cube,
     cylinder,
     circular_helix,
-    sphere
+    sphere,
 )
 
 
 class TestRecipes(unittest.TestCase):
     def test_circular_disk(self):
         mesh = circular_disk(120, 60, 5, 25)
-        area = np.pi * (25 ** 2 - 5 ** 2)
+        area = np.pi * (25**2 - 5**2)
         self.assertTrue(np.isclose(mesh.area(), area, rtol=1e-3, atol=1e-3))
 
     def test_ribbed_plate(self):
@@ -51,7 +51,7 @@ class TestRecipes(unittest.TestCase):
         n_z = 20
         h = 50
 
-        vol = np.pi * (max_radius ** 2 - min_radius ** 2) * h
+        vol = np.pi * (max_radius**2 - min_radius**2) * h
 
         shape = (min_radius, max_radius), h
         size = n_radii, n_angles, n_z
@@ -61,14 +61,14 @@ class TestRecipes(unittest.TestCase):
 
         cyl = cylinder(shape, size, voxelize=False)
         self.assertTrue(np.isclose(cyl.volume(), vol, rtol=1e-2, atol=1e-2))
-        
+
     def test_circular_helix(self):
         fnc = circular_helix(1, 5)
         fnc(1)
-        
+
         fnc = circular_helix(slope=1, pitch=5)
         fnc(1)
-        
+
     def test_sphere(self):
         sphere(1.0, 10, 10)
         sphere(1.0, 10)

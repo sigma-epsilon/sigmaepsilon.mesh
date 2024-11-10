@@ -1,8 +1,6 @@
-from typing import Tuple, List
-
 import numpy as np
 from numpy import ndarray
-from sympy import symbols
+from sympy import symbols, Symbol
 
 from ..geometry import PolyCellGeometry2d
 from ..data.polycell import PolyCell
@@ -18,7 +16,7 @@ from ..utils.topology import Q8_to_T3, trimap_Q8
 
 class Q8(PolyCell):
     """
-    Polygon class for 8-noded quadratic quadrilaterals.
+    Class for 8-noded quadratic quadrilaterals.
     """
 
     label = "Q8"
@@ -36,7 +34,7 @@ class Q8(PolyCell):
         }
 
         @classmethod
-        def polybase(cls) -> Tuple[List]:
+        def polybase(cls) -> tuple[list[Symbol], list[int | Symbol]]:
             """
             Retruns the polynomial base of the master element.
 
@@ -61,7 +59,7 @@ class Q8(PolyCell):
             return locvars, monoms
 
         @classmethod
-        def master_coordinates(cls) -> ndarray:
+        def master_coordinates(cls) -> ndarray[float]:
             """
             Returns local coordinates of the cell.
 
@@ -83,7 +81,7 @@ class Q8(PolyCell):
             )
 
         @classmethod
-        def master_center(cls) -> ndarray:
+        def master_center(cls) -> ndarray[float]:
             """
             Returns the local coordinates of the center of the cell.
 
@@ -94,8 +92,8 @@ class Q8(PolyCell):
             return np.array([0.0, 0.0])
 
         @classmethod
-        def trimap(cls) -> ndarray:
+        def trimap(cls) -> ndarray[int]:
             return trimap_Q8()
 
-    def to_triangles(self) -> ndarray:
+    def to_triangles(self) -> ndarray[int]:
         return Q8_to_T3(None, self.topology().to_numpy())[1]

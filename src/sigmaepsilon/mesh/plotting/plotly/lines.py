@@ -98,6 +98,7 @@ else:
             coords, topo = H8_to_L2(coords, topo)
             data = np.random.rand(len(coords), 2)
             plot_lines_plotly(coords, topo, scalars=data, scalar_labels=["X", "Y"])
+
         """
         n2 = topo[:, [0, -1]].max() + 1
         _scalars = scalars[:n2] if scalars is not None else None

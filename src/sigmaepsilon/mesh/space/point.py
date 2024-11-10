@@ -1,5 +1,4 @@
 from typing import Union, Iterable
-import warnings
 
 import numpy as np
 
@@ -8,9 +7,6 @@ from sigmaepsilon.math.linalg import Vector, FrameLike, CartesianFrame, Referenc
 
 class Point(Vector):
     """
-    .. deprecated:: 2.3.0
-       Use :class:`~sigmaepsilon.mesh.space.pointcloud.PointCloud` instead.
-
     A class a to handle a single point in Euclidean space.
 
     It inherits :class:`Vector <sigmaepsilon.math.linalg.vector.Vector>`,
@@ -45,6 +41,7 @@ class Point(Vector):
     >>> A = p.frame
     >>> B = A.orient_new('Body', [0, 0, math.pi/2], 'XYZ')
     >>> point_in_B = p.show(B)
+
     """
 
     _frame_cls_ = CartesianFrame
@@ -57,13 +54,6 @@ class Point(Vector):
         gid: int = None,
         **kwargs,
     ):
-        warnings.warn(
-            "The Point class is deprecated and will be removed in a future version. "
-            "Use a PointCloud instead.",
-            DeprecationWarning,
-            stacklevel=2,
-        )
-
         if frame is None:
             if len(args) > 0:
                 if isinstance(args[0], np.ndarray):
@@ -73,7 +63,7 @@ class Point(Vector):
                         arg = np.array(args[0])
                         frame = self._frame_cls_(dim=arg.shape[-1])
                     except Exception:
-                        frame = None
+                        raise Exception("Invalid input parameters!")
         else:
             if not isinstance(frame, self._frame_cls_):
                 if isinstance(frame, FrameLike):
@@ -83,7 +73,7 @@ class Point(Vector):
                 elif isinstance(frame, Iterable):
                     frame = self._frame_cls_(np.array(frame, dtype=float))
 
-        if not isinstance(frame, self._frame_cls_):
+        if not isinstance(frame, self._frame_cls_):  # pragma: no cover
             raise ValueError("Invalid frame!")
 
         super().__init__(*args, frame=frame, **kwargs)

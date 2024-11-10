@@ -106,6 +106,7 @@ def shape_function_matrix_tri_loc(
 
 @njit(nogil=True, cache=__cache)
 def center_tri_2d(ecoords: ndarray) -> ndarray:
+    """Calculates the center of a single triangle in 2d space."""
     return np.array(
         [np.mean(ecoords[:, 0]), np.mean(ecoords[:, 1])], dtype=ecoords.dtype
     )
@@ -113,10 +114,22 @@ def center_tri_2d(ecoords: ndarray) -> ndarray:
 
 @njit(nogil=True, cache=__cache)
 def center_tri_3d(ecoords: ndarray) -> ndarray:
+    """Calculates the center of a single triangle in 3d space."""
     return np.array(
         [np.mean(ecoords[:, 0]), np.mean(ecoords[:, 1]), np.mean(ecoords[:, 2])],
         dtype=ecoords.dtype,
     )
+
+
+@njit(nogil=True, parallel=True, cache=__cache)
+def center_tri_bulk_3d(
+    points: ndarray[float], triangles: ndarray[int]
+) -> ndarray[float]:
+    """Calculates centers of triangles in 3d space."""
+    out = np.zeros((len(triangles), 3), dtype=points.dtype)
+    for i in prange(len(triangles)):
+        out[i] = center_tri_3d(points[triangles[i]])
+    return out
 
 
 @njit(nogil=True, cache=__cache)

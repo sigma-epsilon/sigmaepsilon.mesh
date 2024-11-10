@@ -10,7 +10,9 @@ from sigmaepsilon.mesh.helpers import vtk_to_celltype
 
 
 class TestPolyCell1d(SigmaEpsilonTestCase):
-    def _test_polycell_1d_single_evaluation(self, CellData: PolyCell[PolyData, PointData]):
+    def _test_polycell_1d_single_evaluation(
+        self, CellData: PolyCell[PolyData, PointData]
+    ):
         """
         Tests the cells for a single point of evaluation.
         """

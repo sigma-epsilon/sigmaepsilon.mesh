@@ -25,7 +25,7 @@ class TestMeshAnalysis(unittest.TestCase):
         pd.nodal_adjacency(frmt="nx")
         pd.nodal_adjacency(frmt="jagged")
         pd.nodal_adjacency_matrix()
-        
+
     def test_neighbourhood_matrix(self):
         d, h, a = 6.0, 15.0, 15.0
         cyl = pv.CylinderStructured(

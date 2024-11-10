@@ -115,7 +115,7 @@ class TestPointDataMagicFunctions(SigmaEpsilonTestCase):
         random_data = [66.0]
         pd["random_data"] = random_data
         random_data = np.array(random_data)
-        
+
         self.assertTrue(np.allclose(getattr(pd, "x"), x))
         self.assertTrue(np.allclose(getattr(pd, "random_data").to_numpy(), random_data))
         self.assertTrue(np.allclose(pd.random_data.to_numpy(), random_data))
@@ -128,7 +128,7 @@ class TestPointDataExports(SigmaEpsilonTestCase):
         pd["random_data"] = [[0.0], [0.0, 0.0]]
         pd["random_data_2"] = [[0.0], [0.0]]
         self.pd = pd
-        
+
     def test_to_numpy(self):
         self.assertIsInstance(self.pd.to_numpy("random_data_2"), np.ndarray)
 
@@ -137,46 +137,46 @@ class TestPointDataExports(SigmaEpsilonTestCase):
         self.assertIsInstance(arr, Array)
         arr = self.pd.to_ak(fields=["random_data"])
         self.assertIsInstance(arr, Array)
-        
+
         arr = self.pd.to_ak(asarray=True)
         self.assertIsInstance(arr, Array)
         arr = self.pd.to_ak(asarray=True, fields=["random_data"])
         self.assertIsInstance(arr, Array)
-    
+
     def test_to_akarray(self):
         arr = self.pd.to_akarray()
         self.assertIsInstance(arr, Array)
         arr[0]["random_data"]
-        
+
         arr = self.pd.to_akarray(fields=["random_data"])
         self.assertIsInstance(arr, Array)
-        
+
     def test_to_akrecord(self):
         arr = self.pd.to_akrecord()
         self.assertIsInstance(arr, Array)
         arr[0]["random_data"]
-        
+
         arr = self.pd.to_akrecord(fields=["random_data"])
         self.assertIsInstance(arr, Array)
-        
+
     def test_to_dict(self):
         d = self.pd.to_dict()
         self.assertIsInstance(d, dict)
         self.assertIn("random_data", d)
         self.assertEqual(len(d), len(self.pd.db.fields))
-        
+
         d = self.pd.to_dict(fields=["random_data"])
         self.assertIsInstance(d, dict)
         self.assertIn("random_data", d)
         self.assertEqual(len(d), 1)
-        
+
     def test_to_list(self):
         res = self.pd.to_list()
         self.assertIsInstance(res, list)
         self.assertEqual(len(res), len(self.pd))
         self.assertIsInstance(res[0], dict)
         self.assertIn("random_data", res[0])
-        
+
         res = self.pd.to_list(fields=["random_data"])
         self.assertIsInstance(res, list)
         self.assertEqual(len(res), len(self.pd))

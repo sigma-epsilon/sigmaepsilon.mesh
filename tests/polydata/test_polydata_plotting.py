@@ -125,9 +125,9 @@ class TestPolyDataPlot(unittest.TestCase):
             self.tH8.shape[0]
         )
         ncTET4 = mesh["surfaces", "Q4"].coords(from_cells=True).shape[0]
-        mesh["surfaces", "Q4"].config[
-            "pyvista", "plot", "scalars"
-        ] = 2 * np.random.rand(ncTET4)
+        mesh["surfaces", "Q4"].config["pyvista", "plot", "scalars"] = (
+            2 * np.random.rand(ncTET4)
+        )
         mesh["surfaces", "Q4"].config["pyvista", "plot", "opacity"] = 1.0
         mesh.pvplot(
             notebook=False,

@@ -1,4 +1,5 @@
-from typing import Iterable, Union, Optional, Any
+from typing import Iterable, Union, Any
+from types import NoneType
 
 import numpy as np
 from numpy import ndarray
@@ -25,8 +26,8 @@ class AkWrapper(Wrapper):
     def __init__(
         self,
         *args,
-        wrap: Optional[Union[Any, None]] = None,
-        fields: Optional[Union[Iterable[str], None]],
+        wrap: Any = None,
+        fields: Iterable[str] | NoneType = None,
         **kwargs,
     ):
         fields = {} if fields is None else fields
@@ -59,9 +60,7 @@ class AkWrapper(Wrapper):
         """
         return self._wrapped[key].to_numpy()
 
-    def to_dataframe(
-        self, *args, fields: Optional[Union[Iterable[str], None]] = None, **kwargs
-    ):
+    def to_dataframe(self, *args, fields: Iterable[str] | NoneType = None, **kwargs):
         """
         Returns the data of the database as a DataFrame.
 
@@ -85,7 +84,7 @@ class AkWrapper(Wrapper):
         self,
         path: str,
         *args,
-        fields: Optional[Union[Iterable[str], None]] = None,
+        fields: Iterable[str] | NoneType = None,
         **kwargs,
     ) -> None:
         """
@@ -123,8 +122,8 @@ class AkWrapper(Wrapper):
     def to_ak(
         self,
         *args,
-        fields: Optional[Union[Iterable[str], None]] = None,
-        asarray: Optional[bool] = False,
+        fields: Iterable[str] | NoneType = None,
+        asarray: bool = False,
     ) -> Union[akArray, akRecord]:
         """
         Returns the database with a specified set of fields as either
@@ -147,9 +146,7 @@ class AkWrapper(Wrapper):
         else:
             return self.to_akrecord(*args, fields=fields)
 
-    def to_akarray(
-        self, *args, fields: Optional[Union[Iterable[str], None]] = None
-    ) -> akArray:
+    def to_akarray(self, *args, fields: Iterable[str] | NoneType = None) -> akArray:
         """
         Returns the data of the mesh as an Awkward array.
 
@@ -163,9 +160,7 @@ class AkWrapper(Wrapper):
         ldb = self.to_list(*args, fields=fields)
         return ak.from_iter(ldb)
 
-    def to_akrecord(
-        self, *args, fields: Optional[Union[Iterable[str], None]] = None
-    ) -> akRecord:
+    def to_akrecord(self, *args, fields: Iterable[str] | NoneType = None) -> akRecord:
         """
         Returns the data of the mesh as an Awkward record.
 
@@ -179,9 +174,7 @@ class AkWrapper(Wrapper):
         d = self.to_dict(*args, fields=fields)
         return ak.zip(d, depth_limit=1)
 
-    def to_dict(
-        self, *args, fields: Optional[Union[Iterable[str], None]] = None
-    ) -> dict:
+    def to_dict(self, *args, fields: Iterable[str] | NoneType = None) -> dict:
         """
         Returns data of the object as a dictionary. Unless fields
         are specified, all fields are returned.
@@ -215,9 +208,7 @@ class AkWrapper(Wrapper):
 
         return res
 
-    def to_list(
-        self, *args, fields: Optional[Union[Iterable[str], None]] = None
-    ) -> list:
+    def to_list(self, *args, fields: Iterable[str] | NoneType = None) -> list:
         """
         Returns data of the object as lists. Unless fields are
         specified, all fields are returned.

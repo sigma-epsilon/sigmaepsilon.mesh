@@ -18,7 +18,7 @@ from ..utils.topology import Q4_to_T3, Q9_to_Q4
 
 class Q9(PolyCell):
     """
-    Polygon class for 9-noded biquadratic quadrilaterals.
+    Class for 9-noded biquadratic quadrilaterals.
     """
 
     label = "Q9"
