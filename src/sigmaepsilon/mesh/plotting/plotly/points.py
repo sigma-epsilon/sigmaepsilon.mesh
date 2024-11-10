@@ -59,6 +59,7 @@ else:
             data = np.random.rand(len(points))
             scalar_labels=["random data"]
             scatter_points_plotly(points, scalars=data, scalar_labels=scalar_labels)
+            
         """
         x = coords[:, 0]
         y = coords[:, 1]
