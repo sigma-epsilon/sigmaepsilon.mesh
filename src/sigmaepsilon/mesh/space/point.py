@@ -41,7 +41,7 @@ class Point(Vector):
     >>> A = p.frame
     >>> B = A.orient_new('Body', [0, 0, math.pi/2], 'XYZ')
     >>> point_in_B = p.show(B)
-    
+
     """
 
     _frame_cls_ = CartesianFrame

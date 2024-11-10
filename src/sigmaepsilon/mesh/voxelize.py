@@ -298,7 +298,7 @@ def voxelize_T3_H8(
         shape = (n_x, n_y, n_z)
 
     shape = (max(1, shape[0]), max(1, shape[1]), max(1, shape[2]))
-    
+
     coords_H8, topo_H8 = grid(size=size, shape=shape, eshape="H8", shift=shift)
     H8_bool = H8_in_T3(coords_H8, topo_H8, coords_T3, topo_T3, k=k_max)
     return coords_H8, topo_H8[H8_bool]
