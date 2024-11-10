@@ -39,33 +39,33 @@ class TestPolyCell2d(SigmaEpsilonTestCase):
         self.assertTrue(np.isclose(self.cd.area(), 100.0))
         self.assertTrue(np.isclose(self.cd.measure(), 100.0))
         self.assertTrue(np.allclose(self.cd.areas(), self.cd.measures()))
-        
+
     def test_volume(self):
         self.assertTrue(np.isclose(self.cd.volume(), 100.0))
-        
+
     def test_thickness(self):
         self.assertTrue(np.allclose(self.cd.thickness(), np.ones((len(self.cd)))))
-        
+
     def test_to_triangles(self):
         tri = self.cd.to_triangles()
         self.assertIsInstance(tri, np.ndarray)
         self.assertEqual(tri.shape[1], 3)
-        
+
     def test_to_simplices(self):
         tri = self.cd.to_simplices()
         self.assertIsInstance(tri, np.ndarray)
         self.assertEqual(tri.shape[1], 3)
-        
+
     def test_points_of_cells(self):
         poc = self.cd.points_of_cells()
         self.assertIsInstance(poc, np.ndarray)
         self.assertEqual(poc.shape[0], len(self.cd))
         self.assertEqual(poc.shape[1], len(self.cd.nodes[-1]))
-        
+
         points = np.array(self.cd.__class__.Geometry.master_coordinates())
         poc = self.cd.points_of_cells(points=points)
         poc = self.cd.points_of_cells(points=points, cells=[0, 1])
-        
+
     def test_pip(self):
         res = self.cd.pip([0.0, 0.0, 0.0], lazy=False)
         self.assertTrue(res)

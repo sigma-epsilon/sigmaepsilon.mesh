@@ -1,5 +1,6 @@
 import numpy as np
-from typing import Union, Iterable, Optional
+from typing import Union, Iterable
+from types import NoneType
 from copy import deepcopy as dcopy
 
 import numpy as np
@@ -16,7 +17,7 @@ VectorLike = Union[Vector, ndarray]
 
 class CartesianFrame(Frame):
     """
-    A field-specific reference frame to be used in problems related to
+    A domain-specific reference frame to be used in problems related to
     Euclidean geometry.
 
     It builds on top of :class:`~sigmaepsilon.math.linalg.meta.FrameLike` from
@@ -60,34 +61,45 @@ class CartesianFrame(Frame):
     >>> A = CartesianFrame(dim=3)
     >>> C = A.orient_new('Space', [0, 0, 2*np.pi], 'XYZ')
 
-    Then, the *DCM from A to B* , that is :math:`^{A}\mathbf{R}^{B}` would be
+    Then, the *DCM from A to B* , that is :math:`^{A}\\mathbf{R}^{B}` would be
 
     >>> A_R_B = B.dcm(source=A)
 
     or equivalently
 
     >>> A_R_B = A.dcm(target=A)
+
     """
 
     def __init__(
-        self, axes: ndarray = None, *args, dim: int = 3, origo: ndarray = None, **kwargs
+        self,
+        axes: ndarray | NoneType = None,
+        *args,
+        dim: int = 3,
+        origo: ndarray | NoneType = None,
+        **kwargs
     ):
         axes = np.eye(dim) if axes is None else axes
         super().__init__(axes, *args, **kwargs)
         if origo is not None:
-            if not isinstance(origo, ndarray) and isinstance(origo, Iterable):
-                origo = np.array(origo, dtype=float)
+            try:
+                if not isinstance(origo, ndarray) and isinstance(origo, Iterable):
+                    origo = np.array(origo, dtype=float)
+            except Exception:
+                raise Exception(
+                    "Falied to turn 'origo' into a NumPy array! Check the input!"
+                )
 
             if isinstance(origo, ndarray):
                 if not len(origo.shape) == 1:
                     raise ValueError("'origo' must be a 1d iterable!")
-            else:
+            else:  # pragma: no cover
                 raise TypeError("'origo' must be a NumPy array or an iterable!")
 
         self._origo = origo
 
     @property
-    def origo(self):
+    def origo(self) -> ndarray[float]:
         if not isinstance(self._origo, ndarray):
             self._origo = np.zeros(len(self.axes))
         return self._origo
@@ -105,7 +117,7 @@ class CartesianFrame(Frame):
         else:
             raise ValueError("Mismatch in data dimensinons!")
 
-    def relative_origo(self, target: FrameLike = None) -> ndarray:
+    def relative_origo(self, target: FrameLike | NoneType = None) -> ndarray:
         """
         Returns the origo of the current frame in ambient space
         or with respect to another frame.
@@ -169,7 +181,9 @@ class CartesianFrame(Frame):
     def rotate(self, *args, **kwargs) -> "CartesianFrame":
         return super().rotate(*args, **kwargs)
 
-    def move(self, d: VectorLike, frame: FrameLike = None) -> "CartesianFrame":
+    def move(
+        self, d: VectorLike, frame: FrameLike | NoneType = None
+    ) -> "CartesianFrame":
         """
         Moves the frame by shifting its origo.
 
@@ -201,7 +215,7 @@ class CartesianFrame(Frame):
         Array([[ 0.70710678,  0.70710678,  0.        ],
                [-0.70710678,  0.70710678,  0.        ],
                [ 0.        ,  0.        ,  1.        ]])
-               
+
         """
         if not isinstance(d, Vector):
             if not isinstance(d, ndarray):
@@ -218,7 +232,7 @@ class CartesianFrame(Frame):
         """
         return self.orient_new(*args, **kwargs)
 
-    def copy(self, deep: bool = False, name: str = None) -> "CartesianFrame":
+    def copy(self, deep: bool = False, name: str | NoneType = None) -> "CartesianFrame":
         """
         Returns a shallow or deep copy of this object, depending of the
         argument `deepcopy` (default is False).
@@ -235,7 +249,7 @@ class CartesianFrame(Frame):
         else:
             return self.__class__(self.axes, origo=self.origo, name=name)
 
-    def deepcopy(self, name: str = None) -> "CartesianFrame":
+    def deepcopy(self, name: str | NoneType = None) -> "CartesianFrame":
         """
         Returns a deep copy of the instance.
 

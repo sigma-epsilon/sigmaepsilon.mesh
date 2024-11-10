@@ -1,9 +1,7 @@
 # -*- coding: utf-8 -*-
-from typing import Tuple, List
-
 import numpy as np
 from numpy import ndarray
-from sympy import symbols
+from sympy import symbols, Symbol
 
 from ..geometry import PolyCellGeometry2d
 from ..data.polycell import PolyCell
@@ -20,7 +18,7 @@ from ..utils.tri import area_tri_bulk
 
 class T3(PolyCell):
     """
-    A class to handle 3-noded triangles.
+    Class for 3-noded triangles.
 
     Example
     -------
@@ -33,6 +31,7 @@ class T3(PolyCell):
     >>> trimesh = TriMesh(pd, cd)
     >>> np.isclose(trimesh.area(), 480000.0)
     True
+
     """
 
     label = "T3"
@@ -50,7 +49,7 @@ class T3(PolyCell):
         }
 
         @classmethod
-        def trimap(cls) -> ndarray:
+        def trimap(cls) -> ndarray[int]:
             """
             Returns a mapping used to transform the topology to triangles.
             This is only implemented here for standardization.
@@ -58,7 +57,7 @@ class T3(PolyCell):
             return np.array([[0, 1, 2]], dtype=int)
 
         @classmethod
-        def polybase(cls) -> Tuple[List]:
+        def polybase(cls) -> tuple[list[Symbol], list[int, Symbol]]:
             """
             Retruns the polynomial base of the master element.
 
@@ -74,7 +73,7 @@ class T3(PolyCell):
             return locvars, monoms
 
         @classmethod
-        def master_coordinates(cls) -> ndarray:
+        def master_coordinates(cls) -> ndarray[float]:
             """
             Returns local coordinates of the master cell relative to the origo
             of the master cell.
@@ -86,7 +85,7 @@ class T3(PolyCell):
             return np.array([[-1 / 3, -1 / 3], [2 / 3, -1 / 3], [-1 / 3, 2 / 3]])
 
         @classmethod
-        def master_center(cls) -> ndarray:
+        def master_center(cls) -> ndarray[float]:
             """
             Returns the center of the master cell relative to the origo
             of the master cell.
@@ -97,15 +96,15 @@ class T3(PolyCell):
             """
             return np.array([[0.0, 0.0]], dtype=float)
 
-    def to_triangles(self) -> ndarray:
+    def to_triangles(self) -> ndarray[int]:
         """
-        Returns the topology as triangles.
+        Returns the topology as triangles in the form of a 2d integer NumPy array.
         """
         return self.topology().to_numpy()
 
-    def areas(self, *_, **__) -> ndarray:
+    def areas(self, *_, **__) -> ndarray[float]:
         """
-        Returns the areas of the cells as an 1d NumPy array.
+        Returns the areas of the cells as a 1d NumPy array.
         """
         coords = self.container.source().coords()
         topo = self.topology().to_numpy()
@@ -115,7 +114,7 @@ class T3(PolyCell):
     @classmethod
     def from_TriMesh(
         cls, *args, coords: ndarray = None, topo: ndarray = None, **__
-    ) -> Tuple[ndarray, ndarray]:
+    ) -> tuple[ndarray[float], ndarray[int]]:
         from sigmaepsilon.mesh.data.trimesh import TriMesh
 
         if len(args) > 0 and isinstance(args[0], TriMesh):

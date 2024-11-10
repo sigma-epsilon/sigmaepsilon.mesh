@@ -4,7 +4,14 @@ The user guide provides in-depth information on the key concepts of the library 
 useful background information and explanation.
 
 .. toctree::
+    :maxdepth: 1
+    :caption: Getting Started
+
+    installation
+
+.. toctree::
     :maxdepth: 2
+    :caption: Contents
     
     notebooks/points_and_pointclouds
     notebooks/mesh_composition

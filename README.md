@@ -6,9 +6,9 @@
 [![codecov](https://codecov.io/gh/sigma-epsilon/sigmaepsilon.mesh/graph/badge.svg?token=7JKJ3HHSX3)](https://codecov.io/gh/sigma-epsilon/sigmaepsilon.mesh)
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/f25dd5fe8d8a484ba27c082923461d72)](https://app.codacy.com/gh/sigma-epsilon/sigmaepsilon.mesh/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
 [![Documentation Status](https://readthedocs.org/projects/sigmaepsilonmesh/badge/?version=latest)](https://sigmaepsilonmesh.readthedocs.io/en/latest/?badge=latest)
-[![License](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![PyPI](https://badge.fury.io/py/sigmaepsilon.mesh.svg)](https://pypi.org/project/sigmaepsilon.mesh)
-[![Python](https://img.shields.io/badge/python-3.10|3.11|3.12-blue)](https://www.python.org)
+![[License]](https://badgen.net/pypi/license/sigmaepsilon.mesh)
+![[PyPI - Version]](https://badgen.net/pypi/v/sigmaepsilon.mesh)
+![[Python]](https://badgen.net/pypi/python/sigmaepsilon.mesh)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 [![Requirements Status](https://dependency-dash.repo-helper.uk/github/sigma-epsilon/sigmaepsilon.mesh/badge.svg)](https://dependency-dash.repo-helper.uk/github/sigma-epsilon/sigmaepsilon.mesh)
 
@@ -28,6 +28,7 @@ Here and there we also use [NetworkX](https://networkx.org/documentation/stable/
 * Simplified and preconfigured plotting facility using PyVista, K3D, Plotly and Matplotlib.
 * Grid generation in 1, 2 and 3 dimensions for arbitrarily structured Lagrangian cells.
 * A mechanism for all sorts of geometrical and topological transformations.
+* Voxelization for tetrahedral and triangular meshes.
 * A customizable nodal distribution mechanism to effortlessly pass around data between points and cells.
 * Generation of *Pseudo Peripheral Nodes*, *Rooted Level Structures* and *Adjancency Matrices* for arbitrary polygonal meshes.
 * Symbolic shape function generation for arbitrarily structured Lagrangian cells in 1, 2 and 3 dimensions with an extendible interpolation and extrapolation mechanism.
@@ -39,60 +40,18 @@ Here and there we also use [NetworkX](https://networkx.org/documentation/stable/
 * Many of the other packages in the SigmaEpsilon ecosystem.
 * [PyAxisVM](https://github.com/AxisVM/pyaxisvm) - The official Python package of [AxisVM](https://axisvm.eu/), a popular structural analysis and design software.
 
+## Related blog posts and articles
+
+* [Best Python packages in 2024 for civil and structural engineers. Part I — Visualization.](https://medium.com/structural-and-civil-engineering/best-python-packages-in-2024-for-civil-and-structural-engineers-0d719cc61b7f?sk=0432097e3e4f1c206d7869ce3a170be1) (on Medium)
+* [Here is how to make digital elevation maps in Python in a matter of minutes using TouchTerrain and SigmaEpsilon.Mesh with a few lines of code.](https://medium.com/structural-and-civil-engineering/here-is-how-to-make-digital-elevation-maps-in-python-in-a-matter-of-minutes-using-touchterrain-e0b98b66e754?sk=fc9c9f63f35cfe2c93e78fbb3b132133) (on Medium)
+
 ## Documentation
 
 The [documentation](https://sigmaepsilonmesh.readthedocs.io/en/latest/) is built with [Sphinx](https://www.sphinx-doc.org/en/master/) using the [PyData Sphinx Theme](https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html) and hosted on [ReadTheDocs](https://readthedocs.org/). Check it out for the user guide, an ever growing set of examples, and API Reference.
 
 ## Installation
 
-If you are a developer, skip this section and follow the instructions [in this section](#instructions-for-developers). If you are not, follow the instructions listed in this section and forget that you ever saw this paragraph.
-
-`sigmaepsilon.mesh` can be installed from `PyPI` using `pip` on Python >= 3.10:
-
-```console
->>> pip install sigmaepsilon.mesh
-```
-
-or chechkout with the following command using GitHub CLI
-
-```console
-gh repo clone sigma-epsilon/sigmaepsilon.mesh
-```
-
-and install from source by typing
-
-```console
->>> pip install .
-```
-
-If you want to run the tests, you can install the package along with the necessary optional dependencies like this
-
-```console
->>> pip install ".[test,dev]"
-```
-
-This would install the library with optional dependencies required for testing and development.
-
-### Development mode
-
-If you want to install the library in development mode, use this command:
-
-```console
->>> pip install "-e .[test,dev]"
-```
-
-### Checking your installation
-
-If everything went well, you should be able to import `sigmaepsilon.mesh` from the Python prompt:
-
-```console
-$ python
-Python 3.10.11 (tags/v3.10.11:7d4cc5a, Apr  5 2023, 00:38:17) [MSC v.1929 64 bit (AMD64)] on win32
-Type "help", "copyright", "credits" or "license" for more information.
->>> import sigmaepsilon.mesh
->>> sigmaepsilon.mesh.__version__
-'2.3.3'
-```
+For installation instructions, please refer to the [documentation](https://sigmaepsilonmesh.readthedocs.io/en/latest/).
 
 ## Changes and versioning
 

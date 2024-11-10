@@ -14,7 +14,7 @@ from ..utils.numint import Gauss_Legendre_Tet_4
 
 class TET10(PolyCell):
     """
-    10-node isoparametric hexahedron.
+    Class for 10-node tetrahedra.
     """
 
     label = "TET10"

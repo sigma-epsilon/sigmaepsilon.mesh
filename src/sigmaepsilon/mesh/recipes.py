@@ -24,7 +24,7 @@ def circular_helix(
     pitch: Optional[Union[Number, None]] = None,
 ) -> Callable[[Number], Tuple[float, float, float]]:
     """
-    Returns the function :math:`f(t) = [a \cdot cos(t), a \cdot sin(t), b \cdot t]`,
+    Returns the function :math:`f(t) = [a \\cdot cos(t), a \\cdot sin(t), b \\cdot t]`,
     which describes a circular helix of radius a and slope a/b (or pitch 2πb).
 
     Parameters
@@ -46,7 +46,7 @@ def circular_helix(
 
     def inner(t: Number) -> Tuple[float, float, float]:
         """
-        Evaluates :math:`f(t) = [a \cdot cos(t), a \cdot sin(t), b \cdot t]`.
+        Evaluates :math:`f(t) = [a \\cdot cos(t), a \\cdot sin(t), b \\cdot t]`.
         """
         return a * np.cos(t), a * np.sin(t), b * t
 
@@ -137,7 +137,7 @@ def cylinder(
 
         If `voxelize` is ``True`` and ``size`` is an ``int``,
         the parameter controls the size of the individual voxels
-        according to :math:`edge \, length = (r_{ext} - r_{int})/shape`.
+        according to :math:`edge \\, length = (r_{ext} - r_{int})/shape`.
     voxelize: bool, Optional
         If ``True``, the cylinder gets voxelized to a collection of H8 cells.
         In this case the size of a voxel can be controlled by specifying a

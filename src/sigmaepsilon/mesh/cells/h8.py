@@ -18,19 +18,14 @@ from ..utils.numint import Gauss_Legendre_Hex_Grid
 
 class H8(PolyCell):
     """
-    8-node hexahedron.
+    Class for 8-node hexahedra.
 
     ::
+        top      bottom
+        7--6      3--2
+        |  |      |  |
+        4--5      0--1
 
-        top
-        7--6
-        |  |
-        4--5
-
-        bottom
-        3--2
-        |  |
-        0--1
     """
 
     label = "H8"

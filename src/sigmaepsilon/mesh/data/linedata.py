@@ -1,14 +1,8 @@
-import numpy as np
-from contextlib import suppress
-
 from .polydata import PolyData
-from ..cells import L2, L3
-
 from ..config import __hasplotly__
 
 if __hasplotly__:
-    with suppress(ImportError):
-        from sigmaepsilon.plotting.plotly import plot_lines_3d
+    from ..plotting.plotly import plot_lines_plotly
 
 
 __all__ = ["LineData"]
@@ -31,36 +25,29 @@ class LineData(PolyData):
         Returns the figure object.
         """
         coords = self.coords()
-        topo = self.topology()
+        topo = self.topology().to_numpy()
         kwargs.update(dict(scalars=scalars, fig=fig))
-        return plot_lines_3d(coords, topo, **kwargs)
+        return plot_lines_plotly(coords, topo, **kwargs)
 
-    def plot(self, *args, scalars=None, backend="plotly", scalar_labels=None, **kwargs):
+    def plot(self, *args, backend: str = "plotly", **kwargs):
         """
         Plots the mesh with or without data, using multiple possible backends.
 
         Parameters
         ----------
-        scalars: numpy.ndarray, Optional
-            Stacked nodal information as an 1d or 2d NumPy array. Default is None.
         backend: str, Optional
             The backend to use. Possible options are `plotly` and `vtk`
             (`vtk` is being managed through `PyVista`) at the moment.
             Default is 'plotly'.
-        scalar_labels: Iterable, Optional
-            Labels for the datasets provided with 'scalars'. Default is None.
+
         """
-        if backend == "vtk":
-            return self.pvplot(
-                *args, scalars=scalars, scalar_labels=scalar_labels, **kwargs
-            )
-        elif backend == "plotly":
+        if backend.lower() in ["vtk", "pyvista"]:
+            return self.pvplot(*args, **kwargs)
+        elif backend.lower() == "plotly":
             if __hasplotly__:
-                return self.__plot_plotly__(
-                    *args, scalars=scalars, scalar_labels=None, **kwargs
-                )
+                return self.__plot_plotly__(*args, **kwargs)
             else:
-                msg = "You need to install `dewloosh.plotly` for this plot."
+                msg = "You need to install `plotly` for this."
                 raise ImportError(msg)
         else:
             msg = "No implementation for backend '{}'".format(backend)

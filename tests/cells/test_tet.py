@@ -37,7 +37,7 @@ class TestTet(unittest.TestCase):
             try:
                 mesh2d = circular_disk(n_angles, n_radii, min_radius, max_radius)
                 mesh3d = mesh2d.extrude(h=height, N=n_z)
-                a = np.pi * (max_radius ** 2 - min_radius ** 2) * height
+                a = np.pi * (max_radius**2 - min_radius**2) * height
                 assert np.isclose(mesh3d.volume(), a, atol=0, rtol=a / 1000)
                 return True
             except AssertionError:
@@ -64,7 +64,7 @@ class TestTet(unittest.TestCase):
         shpf(pcoords)
         shpmf(pcoords)
         dshpf(pcoords)
-        
+
     def test_tet_surface(self):
         Lx, Ly, Lz, nx, ny, nz = 1.0, 1.0, 1.0, 2, 2, 2
         A = CartesianFrame(dim=3)
@@ -73,10 +73,10 @@ class TestTet(unittest.TestCase):
         cd = T3(topo=topo)
         mesh2d = TriMesh(pd, cd)
         mesh3d = mesh2d.extrude(h=Lz, N=nz)
-        
+
         surface: TriMesh = mesh3d.surface(mesh_class=TriMesh)
         normals = surface.normals()
-        
+
         self.assertEqual(len(normals), len(surface.topology()))
         self.assertTrue(surface.is_2d_mesh())
 

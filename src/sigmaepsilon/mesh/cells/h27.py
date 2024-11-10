@@ -18,7 +18,7 @@ from ..utils.numint import Gauss_Legendre_Hex_Grid
 
 class H27(PolyCell):
     """
-    27-node isoparametric triquadratic hexahedron.
+    Class for 27-node triquadratic hexahedra.
 
     ::
 

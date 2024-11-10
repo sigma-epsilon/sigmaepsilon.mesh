@@ -26,22 +26,10 @@ class TriMesh(PolyData):
     All positional and keyword arguments not listed here are forwarded to
     :class:`~sigmaepsilon.mesh.data.polydata.PolyData`.
 
-    Besides the arguments `coords` and `topo`, this class accepts these
-    using aliases `points` and `triangles`.
-
-    Parameters
-    ----------
-    points: numpy.ndarray, Optional
-        2d numpy array of floats, describing a pointcloud. Default is None.
-    triangles: numpy.ndarray, Optional
-        2d numpy array of integers, describing the topology of a polygonal mesh.
-        Default is None.
-
     Notes
     -----
     See the PolyData class for the rest of the possible arguments to the
-    creator of this class. Note that, `points` and `triangles` are aliases
-    to `coords` and `topo`, but the original terminology is still available.
+    creator of this class.
 
     Examples
     --------

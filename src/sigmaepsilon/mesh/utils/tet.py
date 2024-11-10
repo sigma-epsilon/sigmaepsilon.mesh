@@ -255,3 +255,78 @@ def nat_to_loc_tet(
     if lcoords is None:
         lcoords = lcoords_tet(center)
     return acoord.T @ lcoords
+
+
+@njit(nogil=True, cache=__cache)
+def TET4_face_normals(
+    coords: ndarray[float], topo: ndarray[int], normalize: bool = False
+) -> ndarray[float]:
+    """
+    Returns face normals of a TET4 element.
+
+    Parameters
+    ----------
+    coords: numpy.ndarray
+        A 2d float array of shape (:, 3) of nodal coordinates.
+    topo: numpy.ndarray
+        A 1d int array of shape (4,) of the indices of the nodes.
+    normalize: bool, Optional
+        If True, the normals are normalized. Default is False.
+
+    """
+    normals = np.zeros((4, 3), dtype=np.float64)
+    # face 1
+    normals[0, :] = np.cross(
+        coords[topo[1]] - coords[topo[0]], coords[topo[3]] - coords[topo[0]]
+    )
+    # face 2
+    normals[1, :] = np.cross(
+        coords[topo[2]] - coords[topo[0]], coords[topo[3]] - coords[topo[0]]
+    )
+    # face 3
+    normals[2, :] = np.cross(
+        coords[topo[2]] - coords[topo[1]], coords[topo[3]] - coords[topo[1]]
+    )
+    # face 4
+    normals[3, :] = np.cross(
+        coords[topo[2]] - coords[topo[0]], coords[topo[1]] - coords[topo[0]]
+    )
+
+    if normalize:
+        for i in range(4):
+            normals[i] /= np.linalg.norm(normals[i])
+
+    return normals
+
+
+@njit(nogil=True, cache=__cache)
+def TET4_edge_vectors(
+    coords: ndarray[float], topo: ndarray[int], normalize: bool = False
+) -> ndarray[float]:
+    """
+    Returns edge vectors of a TET4 element.
+
+    Parameters
+    ----------
+    coords: numpy.ndarray
+        A 2d float array of shape (:, 3) of nodal coordinates.
+    topo: numpy.ndarray
+        A 1d int array of shape (4,) of the indices of the nodes.
+    normalize: bool, Optional
+        If True, the normals are normalized. Default is False.
+
+    """
+    edges = np.zeros((6, 3), dtype=np.float64)
+
+    edges[0, :] = coords[topo[1]] - coords[topo[0]]
+    edges[1, :] = coords[topo[3]] - coords[topo[0]]
+    edges[2, :] = coords[topo[2]] - coords[topo[0]]
+    edges[3, :] = coords[topo[2]] - coords[topo[1]]
+    edges[4, :] = coords[topo[2]] - coords[topo[3]]
+    edges[5, :] = coords[topo[3]] - coords[topo[1]]
+
+    if normalize:
+        for i in range(6):
+            edges[i] /= np.linalg.norm(edges[i])
+
+    return edges
