@@ -59,6 +59,9 @@ class TestVoxelize(unittest.TestCase):
         topo_T3 = np.array([[0, 1, 2]])
         shape = (10, 10, 10)
         voxelize_T3_H8(coords_T3, topo_T3, shape=shape, k_max=10)
+        voxelize_T3_H8(coords_T3, topo_T3, shape=10, k_max=10)
+        voxelize_T3_H8(coords_T3, topo_T3, resolution=0.1, k_max=10)
+        voxelize_T3_H8(coords_T3, topo_T3, resolution=100, k_max=10)
 
     def test_voxelize_T3_H8_TypeError(self):
         coords_T3 = np.array([[0, 0, 0], [1, 0, 0], [0, 1, 0]]).astype(float)
