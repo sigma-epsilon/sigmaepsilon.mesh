@@ -8,19 +8,19 @@ from sigmaepsilon.mesh import CartesianFrame
 class TestCartesianFrame(unittest.TestCase):
     def test_frame_instantiation(self):
         frame = CartesianFrame()
-        frame = CartesianFrame(origo = [1, 1, 1])
-        frame = CartesianFrame(origo = np.array([1, 1, 1]))
-        
+        frame = CartesianFrame(origo=[1, 1, 1])
+        frame = CartesianFrame(origo=np.array([1, 1, 1]))
+
         self.assertIsInstance(frame.origo, np.ndarray)
-        
+
         with self.assertRaises(Exception):
-            frame = CartesianFrame(origo = dict(a=1))
-            
+            frame = CartesianFrame(origo=dict(a=1))
+
         with self.assertRaises(ValueError):
-            frame = CartesianFrame(origo = np.zeros((3, 3)))
-            
+            frame = CartesianFrame(origo=np.zeros((3, 3)))
+
         del frame
-    
+
     def test_frame_move(self):
         A = CartesianFrame()
         B = A.orient_new("Body", [0, 0, 45 * np.pi / 180], "XYZ")

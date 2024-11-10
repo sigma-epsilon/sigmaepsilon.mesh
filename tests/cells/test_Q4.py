@@ -38,13 +38,14 @@ class TestQ4(SigmaEpsilonTestCase):
         cd = Q4(topo=topo, frames=frame)
         triangles = cd.to_triangles()
         self.assertEqual(triangles.shape[1], 3)
-    
+
     def test_Q4_Geometry(self):
         Q4.Geometry.polybase()
         Q4.Geometry.master_coordinates()
         Q4.Geometry.master_center()
         trimap = Q4.Geometry.trimap()
         self.assertTrue(trimap.shape[1] == 3)
-        
+
+
 if __name__ == "__main__":
     unittest.main()

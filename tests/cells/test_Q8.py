@@ -25,7 +25,7 @@ class TestQ8(SigmaEpsilonTestCase):
         self.assertTrue(np.isclose(cd.area(), Lx * Ly))
         self.assertTrue(np.isclose(cd.volume(), Lx * Ly))
         self.assertEqual(cd.jacobian_matrix().shape, (topo.shape[0], 8, 2, 2))
-        
+
     def test_Q8_to_triangles(self):
         Lx, Ly = 800, 600
         nx, ny = 8, 6
@@ -38,7 +38,7 @@ class TestQ8(SigmaEpsilonTestCase):
         cd = Q8(topo=topo, frames=frame)
         triangles = cd.to_triangles()
         self.assertEqual(triangles.shape[1], 3)
-    
+
     def test_Q8_Geometry(self):
         Q8.Geometry.polybase()
         Q8.Geometry.master_coordinates()
