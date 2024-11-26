@@ -161,6 +161,8 @@ class PolyData(DeepDict[Hashable, PDP | Any], Generic[PointDataLike, PolyCellLik
 
         self.point_index_manager = IndexManager()
         self.cell_index_manager = IndexManager()
+        self.global_point_index_manager = IndexManager()
+        self.global_cell_index_manager = IndexManager()
 
         if isinstance(pd, PointData):
             self.pointdata = pd
@@ -173,30 +175,40 @@ class PolyData(DeepDict[Hashable, PDP | Any], Generic[PointDataLike, PolyCellLik
         elif isinstance(cd, PolyCell):
             self.celldata = cd
 
-        pidkey = self.__class__._point_class_._dbkey_id_
-
         if self.pointdata is not None:
+            N = len(self.pointdata)
+            GIDs = self.root.global_point_index_manager.generate_np(N)
+            self.pd.gid = GIDs
             if self.pd.has_id:
                 if self.celldata is not None:
                     imap = self.pd.id
                     self.cd.rewire(imap=imap, invert=True)
-            N = len(self.pointdata)
-            GIDs = self.root.pim.generate_np(N)
-            self.pd[pidkey] = GIDs
+            else:
+                IDs = self.point_index_manager.generate_np(N)
+                self.pd.id = IDs
             self.pd.container = self
 
         if self.celldata is not None:
             N = len(self.celldata.db)
-            GIDs = self.root.cim.generate_np(N)
-            self.cd.db.id = GIDs
+            if (source := self.source()) is not None:
+                IDs = source.cell_index_manager.generate_np(N)
+                self.cd.db.id = IDs
+            GIDs = self.root.global_cell_index_manager.generate_np(N)
+            self.cd.db.gid = GIDs
             try:
-                pd = self.source().pd
+                pd = source.pd
             except Exception:
                 pd = None
             self.cd.pd = pd
             self.cd.container = self
 
-        super().__init__(*args, **kwargs)
+        polydata_kwargs = {k: v for k, v in kwargs.items() if isinstance(v, PolyData)}
+        not_polydata_kwargs = {
+            k: v for k, v in kwargs.items() if not isinstance(v, PolyData)
+        }
+        super().__init__(*args, **not_polydata_kwargs)
+        for k, v in polydata_kwargs.items():
+            self[k] = v
 
         if self.celldata is not None:
             self.celltype = self.celldata.__class__
@@ -1999,17 +2011,41 @@ class PolyData(DeepDict[Hashable, PDP | Any], Generic[PointDataLike, PolyCellLik
     ) -> NoneType:
         super().__join_parent__(parent, key)
         if self.celldata is not None:
-            GIDs = self.root.cim.generate_np(len(self.celldata.db))
-            self.celldata.db.id = atleast1d(GIDs)
+            GIDs = self.root.global_cell_index_manager.generate_np(
+                len(self.celldata.db)
+            )
+            self.celldata.db.gid = atleast1d(GIDs)
+
+            source = self.source()
+            if not (source is self):
+                IDs = source.cim.generate_np(len(self.celldata.db))
+                self.celldata.db.id = atleast1d(IDs)
+
             if self.celldata.pd is None:
                 self.celldata.pd = self.source().pd
+
             self.celldata.container = self
+
+        if self.pointdata is not None:
+            GIDs = self.root.global_point_index_manager.generate_np(len(self.pointdata))
+            self.pointdata.gid = atleast1d(GIDs)
+
+        if not self.is_root():
+            self.global_point_index_manager = None
+            self.global_cell_index_manager = None
 
     def __leave_parent__(self) -> NoneType:
         if self.celldata is not None:
-            self.root.cim.recycle(self.celldata.db.id)
-            dbkey = self.celldata.db._dbkey_id_
-            del self.celldata.db._wrapped[dbkey]
+            source = self.source()
+            if not (source is self):
+                source.cim.recycle(self.celldata.db.id)
+                dbkey = self.celldata.db._dbkey_id_
+                del self.celldata.db._wrapped[dbkey]
+
+        if self.is_root():
+            self.global_point_index_manager = IndexManager()
+            self.global_cell_index_manager = IndexManager()
+
         super().__leave_parent__()
 
     def __repr__(self):

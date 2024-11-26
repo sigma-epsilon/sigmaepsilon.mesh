@@ -62,6 +62,7 @@ class PointData(AkWrapper, ABC_AkWrapper):
         "x": "__x",  # coordinates
         "activity": "__activity",  # activity of the points
         "id": "__id",  # global indices of the points
+        "gid": "__gid",  # global indices of the points
     }
 
     def __init__(
@@ -156,6 +157,10 @@ class PointData(AkWrapper, ABC_AkWrapper):
         return cls._attr_map_["id"]
 
     @classproperty
+    def _dbkey_gid_(cls) -> str:
+        return cls._attr_map_["gid"]
+
+    @classproperty
     def _dbkey_x_(cls) -> str:
         return cls._attr_map_["x"]
 
@@ -170,6 +175,14 @@ class PointData(AkWrapper, ABC_AkWrapper):
         they are not.
         """
         return self._dbkey_id_ in self._wrapped.fields
+
+    @property
+    def has_gid(self) -> bool:
+        """
+        Returns `True` if the points are equipped with GIDs, `False` if
+        they are not.
+        """
+        return self._dbkey_gid_ in self._wrapped.fields
 
     @property
     def has_x(self) -> bool:
@@ -295,6 +308,35 @@ class PointData(AkWrapper, ABC_AkWrapper):
             )
 
         self._wrapped[self._dbkey_id_] = value.astype(int)
+
+    @property
+    def gid(self) -> ndarray:
+        """
+        Returns the GIDs of the points as an 1d NumPy integer array.
+        """
+        return self._wrapped[self._dbkey_gid_].to_numpy()
+
+    @gid.setter
+    def gid(self, value: ndarray) -> None:
+        """
+        Sets the GIDs of the points with an 1d NumPy integer array.
+        """
+        if not isinstance(value, ndarray):
+            raise TypeError(f"Expected a NumPy array, got {type(value)}")
+
+        if not isintegerarray(value):
+            raise ValueError(f"Expected an integer array, got dtype {value.dtype}.")
+
+        if not len(value.shape) == 1:
+            raise ValueError("The provided array must be 1 dimensional.")
+
+        if self.has_x and not len(value) == len(self):
+            raise ValueError(
+                f"The provided array contains {len(value)} values, but there are "
+                f"{len(self)} points in the dataset."
+            )
+
+        self._wrapped[self._dbkey_gid_] = value.astype(int)
 
     def pull(self, key: str, ndf: Union[ndarray, csr_matrix] = None) -> ndarray:
         """
