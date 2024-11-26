@@ -57,10 +57,11 @@ class CellData(Generic[PolyDataLike, PointDataLike], AkWrapper, ABC_AkWrapper):
     """
 
     _attr_map_ = {
-        "nodes": "_nodes",  # node indices
+        "nodes": "_topology",  # node indices
         "frames": "_frames",  # coordinate frames
         "ndf": "_ndf",  # nodal distribution factors
-        "id": "_id",  # global indices of the cells
+        "id": "_id",  # source indices of the cells
+        "gid": "_gid",  # global indices of the cells
         "areas": "_areas",  # areas of 1d cells
         "t": "_t",  # thicknesses for 2d cells
         "activity": "_activity",  # activity of the cells
@@ -186,6 +187,10 @@ class CellData(Generic[PolyDataLike, PointDataLike], AkWrapper, ABC_AkWrapper):
     def _dbkey_id_(cls) -> str:
         return cls._attr_map_["id"]
 
+    @classproperty
+    def _dbkey_gid_(cls) -> str:
+        return cls._attr_map_["gid"]
+
     @property
     def has_nodes(self) -> bool:
         return self._dbkey_nodes_ in self._wrapped.fields
@@ -193,6 +198,10 @@ class CellData(Generic[PolyDataLike, PointDataLike], AkWrapper, ABC_AkWrapper):
     @property
     def has_id(self) -> bool:
         return self._dbkey_id_ in self._wrapped.fields
+
+    @property
+    def has_gid(self) -> bool:
+        return self._dbkey_gid_ in self._wrapped.fields
 
     @property
     def has_frames(self) -> bool:
@@ -290,11 +299,42 @@ class CellData(Generic[PolyDataLike, PointDataLike], AkWrapper, ABC_AkWrapper):
 
     @property
     def id(self) -> ndarray:
-        """Returns global indices of the cells."""
+        """Returns reference indices of the cells."""
         return self._wrapped[self._dbkey_id_].to_numpy()
 
     @id.setter
     def id(self, value: ndarray) -> None:
+        """
+        Sets reference indices of the cells.
+
+        Parameters
+        ----------
+        value: numpy.ndarray
+            An 1d integer array.
+        """
+        if isinstance(value, int):
+            if len(self) == 1:
+                value = np.array(
+                    [
+                        value,
+                    ],
+                    dtype=int,
+                )
+            else:
+                raise ValueError(f"Expected an array, got {type(value)}")
+
+        if not isinstance(value, ndarray):
+            raise TypeError(f"Expected ndarray, got {type(value)}")
+
+        self._wrapped[self._dbkey_id_] = value
+
+    @property
+    def gid(self) -> ndarray:
+        """Returns global indices of the cells."""
+        return self._wrapped[self._dbkey_gid_].to_numpy()
+
+    @gid.setter
+    def gid(self, value: ndarray) -> None:
         """
         Sets global indices of the cells.
 
@@ -317,7 +357,7 @@ class CellData(Generic[PolyDataLike, PointDataLike], AkWrapper, ABC_AkWrapper):
         if not isinstance(value, ndarray):
             raise TypeError(f"Expected ndarray, got {type(value)}")
 
-        self._wrapped[self._dbkey_id_] = value
+        self._wrapped[self._dbkey_gid_] = value
 
     @property
     def activity(self) -> ndarray:
