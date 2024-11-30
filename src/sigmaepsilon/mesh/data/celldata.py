@@ -33,7 +33,7 @@ class CellData(Generic[PolyDataLike, PointDataLike], AkWrapper, ABC_AkWrapper):
     Parameters
     ----------
     activity: numpy.ndarray, Optional
-        1d boolean array describing the activity of the elements.
+        1d boolean array describing the activity of the cells.
     t or thickness: numpy.ndarray, Optional
         1d float array of thicknesses. Only for 2d cells.
         Default is None.
