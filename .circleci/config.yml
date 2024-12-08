@@ -7,7 +7,7 @@ orbs:
 executors:
   my-executor:
     docker:
-      - image: cimg/python:3.10.11
+      - image: cimg/python:3.10
 
 run_tests_template: &run_tests_template
   steps:
