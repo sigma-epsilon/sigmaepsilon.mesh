@@ -33,7 +33,7 @@ jobs:
           name: Run tests and generate coverage report
           command: |
             chmod +x ./run_tests_with_coverage.sh
-            ./run_tests_with_coverage.sh 
+            ./run_tests_with_coverage.sh
       - store_artifacts:
           name: Store coverage report as artifact
           path: htmlcov/
@@ -52,14 +52,10 @@ jobs:
       - python/install-packages:
           pkg-manager: poetry
       - run:
-          name: Add new command
-          command: chmod +x ./export_requirements.sh
-      - run:
           name: Build project
           command: |
             poetry check
             poetry lock
-            ./export_requirements.sh 
             poetry install
             poetry build
       - run:
@@ -79,14 +75,10 @@ jobs:
       - python/install-packages:
           pkg-manager: poetry
       - run:
-          name: Add new command
-          command: chmod +x ./export_requirements.sh
-      - run:
           name: Build project
           command: |
             poetry check
-            poetry lock
-            ./export_requirements.sh 
+            poetry lock 
             poetry install
             poetry build
       - run:
@@ -119,4 +111,3 @@ workflows:
             branches:
               only:
                 - main
-                
