@@ -144,8 +144,8 @@ class PolyData(DeepDict[Hashable, PDP | Any], Generic[PointDataLike, PolyCellLik
 
     def __init__(
         self,
-        pd: Optional[Union[PointData, PolyCell, None]] = None,
-        cd: Optional[Union[PolyCell, None]] = None,
+        pd: Optional[Union[PointData, PolyCell, NoneType]] = None,
+        cd: Optional[Union[PolyCell, NoneType]] = None,
         *args,
         **kwargs,
     ):
@@ -159,10 +159,8 @@ class PolyData(DeepDict[Hashable, PDP | Any], Generic[PointDataLike, PolyCellLik
         self._celldata = None
         self._init_config_()
 
-        self.point_index_manager = IndexManager()
-        self.cell_index_manager = IndexManager()
-        self.global_point_index_manager = IndexManager()
-        self.global_cell_index_manager = IndexManager()
+        self._point_index_manager = IndexManager()
+        self._cell_index_manager = IndexManager()
 
         if isinstance(pd, PointData):
             self.pointdata = pd
@@ -177,38 +175,22 @@ class PolyData(DeepDict[Hashable, PDP | Any], Generic[PointDataLike, PolyCellLik
 
         if self.pointdata is not None:
             N = len(self.pointdata)
-            GIDs = self.root.global_point_index_manager.generate_np(N)
-            self.pd.gid = GIDs
-            if self.pd.has_id:
-                if self.celldata is not None:
-                    imap = self.pd.id
-                    self.cd.rewire(imap=imap, invert=True)
-            else:
-                IDs = self.point_index_manager.generate_np(N)
-                self.pd.id = IDs
+            GIDs = self.root.pim.generate_np(N)
+            self.pd.id = GIDs
             self.pd.container = self
 
         if self.celldata is not None:
             N = len(self.celldata.db)
-            if (source := self.source()) is not None:
-                IDs = source.cell_index_manager.generate_np(N)
-                self.cd.db.id = IDs
-            GIDs = self.root.global_cell_index_manager.generate_np(N)
-            self.cd.db.gid = GIDs
+            GIDs = self.root.cim.generate_np(N)
+            self.cd.db.id = GIDs
             try:
-                pd = source.pd
+                pd = self.source().pd
             except Exception:
-                pd = None
+                pd = self.pd
             self.cd.pd = pd
             self.cd.container = self
 
-        polydata_kwargs = {k: v for k, v in kwargs.items() if isinstance(v, PolyData)}
-        not_polydata_kwargs = {
-            k: v for k, v in kwargs.items() if not isinstance(v, PolyData)
-        }
-        super().__init__(*args, **not_polydata_kwargs)
-        for k, v in polydata_kwargs.items():
-            self[k] = v
+        super().__init__(*args, **kwargs)
 
         if self.celldata is not None:
             self.celltype = self.celldata.__class__
@@ -384,7 +366,7 @@ class PolyData(DeepDict[Hashable, PDP | Any], Generic[PointDataLike, PolyCellLik
             bid2b, cid2bid = self._create_mappers_()
             self._cid2bid = cid2bid  # maps cell indices to block indices
             self._bid2b = bid2b  # maps block indices to block addresses
-        self._locked = True
+        super().lock()
         return self
 
     def unlock(self: PolyDataLike) -> PolyDataLike:
@@ -399,6 +381,7 @@ class PolyData(DeepDict[Hashable, PDP | Any], Generic[PointDataLike, PolyCellLik
         self._locked = False
         self._cid2bid = None  # maps cell indices to block indices
         self._bid2b = None  # maps block indices to block addresses
+        super().unlock()
         return self
 
     def blocks_of_cells(self, i: int | Iterable | NoneType = None) -> dict:
@@ -711,12 +694,12 @@ class PolyData(DeepDict[Hashable, PDP | Any], Generic[PointDataLike, PolyCellLik
         self.config[key]["show_edges"] = True
 
     @property
-    def pim(self) -> "IndexManager":
-        return self.point_index_manager
+    def pim(self) -> IndexManager:
+        return self._point_index_manager
 
     @property
-    def cim(self) -> "IndexManager":
-        return self.cell_index_manager
+    def cim(self) -> IndexManager:
+        return self._cell_index_manager
 
     @property
     def parent(self: PolyDataLike) -> PolyDataLike:
@@ -2005,48 +1988,53 @@ class PolyData(DeepDict[Hashable, PDP | Any], Generic[PointDataLike, PolyCellLik
             return self.k3dplot(config_key=config_key, **kwargs)
         elif backend == "pyvista":
             return self.pvplot(notebook=notebook, config_key=config_key, **kwargs)
-
-    def __join_parent__(
+    
+    def _reindex(self) -> NoneType:
+        root = self.root
+        source = self.source()
+        
+        for cb in self.cellblocks(inclusive=True):
+            GIDs = root.cim.generate_np(len(cb.celldata.db))
+            cb.celldata.db.id = atleast1d(GIDs)
+            
+            if cb.celldata.pd is None:
+                cb.celldata.pd = source.pd
+                
+        for pb in self.pointblocks(inclusive=True):
+            GIDs = root.pim.generate_np(len(pb.pointdata))
+            pb.pointdata.id = atleast1d(GIDs)
+    
+    def __after_join_parent__(
         self, parent: DeepDict, key: Hashable | NoneType = None
     ) -> NoneType:
-        super().__join_parent__(parent, key)
-        if self.celldata is not None:
-            GIDs = self.root.global_cell_index_manager.generate_np(
-                len(self.celldata.db)
-            )
-            self.celldata.db.gid = atleast1d(GIDs)
+        super().__after_join_parent__(parent, key)
+        self._point_index_manager = None
+        self._cell_index_manager = None
+        self._reindex()
 
-            source = self.source()
-            if not (source is self):
-                IDs = source.cim.generate_np(len(self.celldata.db))
-                self.celldata.db.id = atleast1d(IDs)
+    def __after_leave_parent__(self) -> NoneType:
+        has_cd = self.celldata is not None
+        has_pd = self.pointdata is not None
 
-            if self.celldata.pd is None:
-                self.celldata.pd = self.source().pd
+        if has_cd or has_pd:
+            root = self.root
+            is_root = self is root
 
-            self.celldata.container = self
+        if has_cd and not is_root:
+            root.cim.recycle(self.celldata.db.id)
+            dbkey = self.celldata.db._dbkey_id_
+            del self.celldata.db._wrapped[dbkey]
 
-        if self.pointdata is not None:
-            GIDs = self.root.global_point_index_manager.generate_np(len(self.pointdata))
-            self.pointdata.gid = atleast1d(GIDs)
-
-        if not self.is_root():
-            self.global_point_index_manager = None
-            self.global_cell_index_manager = None
-
-    def __leave_parent__(self) -> NoneType:
-        if self.celldata is not None:
-            source = self.source()
-            if not (source is self):
-                source.cim.recycle(self.celldata.db.id)
-                dbkey = self.celldata.db._dbkey_id_
-                del self.celldata.db._wrapped[dbkey]
+        if has_pd and not is_root:
+            root.pim.recycle(self.pointdata.id)
+            dbkey = self.pointdata._dbkey_id_
+            del self.pointdata._wrapped[dbkey]
 
         if self.is_root():
-            self.global_point_index_manager = IndexManager()
-            self.global_cell_index_manager = IndexManager()
+            self._point_index_manager = IndexManager()
+            self._cell_index_manager = IndexManager()
 
-        super().__leave_parent__()
+        super().__after_leave_parent__()
 
     def __repr__(self):
         return "PolyData(%s)" % (dict.__repr__(self))
