@@ -89,7 +89,7 @@ workflows:
           context:
             - TestPyPI deploy
           requires:
-            - run_tests
+            - Run tests and generate coverage report
           filters:
             branches:
               only:
@@ -101,7 +101,7 @@ workflows:
           context:
             - PyPI deploy
           requires:
-            - run_tests
+            - Run tests and generate coverage report
           filters:
             branches:
               only:
