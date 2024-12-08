@@ -63,7 +63,6 @@ class PointData(AkWrapper, ABC_AkWrapper):
         "x": "__x",  # coordinates
         "activity": "__activity",  # activity of the points
         "id": "__id",  # global indices of the points
-        "gid": "__gid",  # global indices of the points
     }
 
     def __init__(
@@ -158,10 +157,6 @@ class PointData(AkWrapper, ABC_AkWrapper):
         return cls._attr_map_["id"]
 
     @classproperty
-    def _dbkey_gid_(cls) -> str:
-        return cls._attr_map_["gid"]
-
-    @classproperty
     def _dbkey_x_(cls) -> str:
         return cls._attr_map_["x"]
 
@@ -176,14 +171,6 @@ class PointData(AkWrapper, ABC_AkWrapper):
         they are not.
         """
         return self._dbkey_id_ in self._wrapped.fields
-
-    @property
-    def has_gid(self) -> bool:
-        """
-        Returns `True` if the points are equipped with GIDs, `False` if
-        they are not.
-        """
-        return self._dbkey_gid_ in self._wrapped.fields
 
     @property
     def has_x(self) -> bool:

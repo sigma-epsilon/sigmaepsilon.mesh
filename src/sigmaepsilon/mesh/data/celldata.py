@@ -187,10 +187,6 @@ class CellData(Generic[PolyDataLike, PointDataLike], AkWrapper, ABC_AkWrapper):
     def _dbkey_id_(cls) -> str:
         return cls._attr_map_["id"]
 
-    @classproperty
-    def _dbkey_gid_(cls) -> str:
-        return cls._attr_map_["gid"]
-
     @property
     def has_nodes(self) -> bool:
         return self._dbkey_nodes_ in self._wrapped.fields
@@ -198,10 +194,6 @@ class CellData(Generic[PolyDataLike, PointDataLike], AkWrapper, ABC_AkWrapper):
     @property
     def has_id(self) -> bool:
         return self._dbkey_id_ in self._wrapped.fields
-
-    @property
-    def has_gid(self) -> bool:
-        return self._dbkey_gid_ in self._wrapped.fields
 
     @property
     def has_frames(self) -> bool:
