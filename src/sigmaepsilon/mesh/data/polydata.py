@@ -1221,13 +1221,24 @@ class PolyData(DeepDict[Hashable, PDP | Any], Generic[PointDataLike, PolyCellLik
         else:
             return topo
 
-    def cell_indices(self) -> ndarray:
+    def cell_ids(self) -> ndarray:
         """
-        Returns the indices of the cells along the walk.
+        Returns the ids of the cells along the walk.
         """
         blocks = self.cellblocks(inclusive=True)
         m = map(lambda b: b.cd.id, blocks)
         return np.concatenate(list(m))
+
+    def cell_indices(self) -> ndarray:  # pragma: no cover
+        """
+        Returns the indices of the cells along the walk.
+        """
+        warnings.warn(
+            "The method 'cell_indices' is deprecated and will be removed in a future version. "
+            "Use 'cell_ids' instead.",
+            DeprecationWarning,
+        )
+        return self.cell_ids()
 
     def detach(self: PolyDataLike, nummrg: bool = False) -> PolyDataLike:
         """
@@ -1506,21 +1517,21 @@ class PolyData(DeepDict[Hashable, PDP | Any], Generic[PointDataLike, PolyCellLik
         return adj_csr
 
     def number_of_cells(self) -> int:
-        """Returns the number of cells."""
+        """Returns the number of cells in the mesh."""
         blocks = self.cellblocks(inclusive=True)
         return np.sum(list(map(lambda i: len(i.celldata), blocks)))
 
     def number_of_points(self) -> int:
-        """Returns the number of points."""
+        """Returns the number of points in the mesh."""
         return len(self.source().pointdata)
 
     def cells_coords(self) -> ndarray:
-        """Returns the coordiantes of the cells in explicit format."""
+        """Returns the coordinates of the cells in explicit format."""
         return cells_coords(self.source().coords(), self.topology().to_numpy())
 
     def center(self, target: FrameLike | NoneType = None) -> ndarray:
         """
-        Returns the center of the pointcloud of the mesh.
+        Returns the center of the mesh.
 
         Parameters
         ----------
@@ -1640,7 +1651,13 @@ class PolyData(DeepDict[Hashable, PDP | Any], Generic[PointDataLike, PolyCellLik
         return KNN(c, c, k=k, **knn_options)
 
     def areas(self, *args, **kwargs) -> ndarray:
-        """Returns the areas."""
+        """
+        Returns the areas of the cells in the mesh as the walk progresses
+        through the mesh.
+
+        To know which value belongs to which cell, you can use the `cell_ids`
+        method.
+        """
         blocks = self.cellblocks(*args, inclusive=True, **kwargs)
         blocks2d = filter(
             lambda b: b.celltype.Geometry.number_of_spatial_dimensions < 3, blocks
@@ -1653,7 +1670,13 @@ class PolyData(DeepDict[Hashable, PDP | Any], Generic[PointDataLike, PolyCellLik
         return np.sum(self.areas(*args, **kwargs))
 
     def volumes(self, *args, **kwargs) -> ndarray:
-        """Returns the volumes of the cells."""
+        """
+        Returns the volumes of the cells in the mesh as the walk progresses
+        through the mesh.
+
+        To know which value belongs to which cell, you can use the `cell_ids`
+        method.
+        """
         blocks = self.cellblocks(*args, inclusive=True, **kwargs)
         vmap = map(lambda b: b.celldata.volumes(), blocks)
         return np.concatenate(list(vmap))
@@ -1988,22 +2011,22 @@ class PolyData(DeepDict[Hashable, PDP | Any], Generic[PointDataLike, PolyCellLik
             return self.k3dplot(config_key=config_key, **kwargs)
         elif backend == "pyvista":
             return self.pvplot(notebook=notebook, config_key=config_key, **kwargs)
-    
+
     def _reindex(self) -> NoneType:
         root = self.root
         source = self.source()
-        
+
         for cb in self.cellblocks(inclusive=True):
             GIDs = root.cim.generate_np(len(cb.celldata.db))
             cb.celldata.db.id = atleast1d(GIDs)
-            
+
             if cb.celldata.pd is None:
                 cb.celldata.pd = source.pd
-                
+
         for pb in self.pointblocks(inclusive=True):
             GIDs = root.pim.generate_np(len(pb.pointdata))
             pb.pointdata.id = atleast1d(GIDs)
-    
+
     def __after_join_parent__(
         self, parent: DeepDict, key: Hashable | NoneType = None
     ) -> NoneType:
