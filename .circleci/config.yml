@@ -1,13 +1,16 @@
 version: 2.1
 
 orbs:
-  python: circleci/python@3.0.0
   codecov: codecov/codecov@5.0.3
 
 executors:
   my-executor:
     docker:
-      - image: cimg/python:3.10
+      - image: cimg/python:3.12
+
+  executor-python-312:
+    docker:
+      - image: cimg/python:3.12
 
 run_tests_template: &run_tests_template
   steps:
@@ -21,8 +24,6 @@ run_tests_template: &run_tests_template
     - run:
         name: Create lock file
         command: poetry lock
-    - python/install-packages:
-        pkg-manager: poetry
     - run:
         name: Install project
         command: poetry install --with test
@@ -41,41 +42,20 @@ run_tests_template: &run_tests_template
 
 jobs:
   run_tests:
-    executor: my-executor
+    executor: executor-python-312
     <<: *run_tests_template
-
-  deploy_to_test_pypi:
-    executor: my-executor
-    steps:
-      - checkout
-      - run:
-          name: Create lock file
-          command: poetry lock
-      - python/install-packages:
-          pkg-manager: poetry
-      - run:
-          name: Build project
-          command: |
-            poetry check
-            poetry lock
-            poetry install
-            poetry build
-      - run:
-          name: Deploy to TestPyPI
-          command: |
-            poetry config repositories.testpypi https://test.pypi.org/legacy/
-            poetry config pypi-token.testpypi $TEST_PYPI_TOKEN
-            poetry publish -r testpypi --skip-existing
 
   deploy_to_pypi:
     executor: my-executor
+    parameters:
+      test:
+        type: boolean
+        default: true  # Default to TestPyPI
     steps:
       - checkout
       - run:
           name: Create lock file
           command: poetry lock
-      - python/install-packages:
-          pkg-manager: poetry
       - run:
           name: Build project
           command: |
@@ -86,15 +66,25 @@ jobs:
       - run:
           name: Deploy to PyPI
           command: |
-            poetry config pypi-token.pypi $PYPI_TOKEN
-            poetry publish --skip-existing
+            if [ "<< parameters.test >>" = "true" ]; then
+              echo "Deploying to TestPyPI"
+              poetry config repositories.testpypi https://test.pypi.org/legacy/
+              poetry config pypi-token.testpypi $TEST_PYPI_TOKEN
+              poetry publish -r testpypi --skip-existing
+            else
+              echo "Deploying to PyPI"
+              poetry config pypi-token.pypi $PYPI_TOKEN
+              poetry publish --skip-existing
+            fi
 
 workflows:
   test_and_deploy:
     jobs:
       - run_tests
 
-      - deploy_to_test_pypi:
+      - deploy_to_pypi:
+          name: Deploy to TestPyPI
+          test: true
           context:
             - TestPyPI deploy
           requires:
@@ -105,6 +95,8 @@ workflows:
                 - test
 
       - deploy_to_pypi:
+          name: Deploy to PyPI
+          test: false
           context:
             - PyPI deploy
           requires:
