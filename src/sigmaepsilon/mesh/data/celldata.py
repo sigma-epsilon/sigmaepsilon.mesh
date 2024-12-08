@@ -1,4 +1,5 @@
 from typing import Union, Iterable, Generic, TypeVar, Optional
+from types import NoneType
 from copy import deepcopy
 
 import numpy as np
@@ -60,8 +61,7 @@ class CellData(Generic[PolyDataLike, PointDataLike], AkWrapper, ABC_AkWrapper):
         "nodes": "_topology",  # node indices
         "frames": "_frames",  # coordinate frames
         "ndf": "_ndf",  # nodal distribution factors
-        "id": "_id",  # source indices of the cells
-        "gid": "_gid",  # global indices of the cells
+        "id": "_id",  # global indices of the cells
         "areas": "_areas",  # areas of 1d cells
         "t": "_t",  # thicknesses for 2d cells
         "activity": "_activity",  # activity of the cells
@@ -70,15 +70,15 @@ class CellData(Generic[PolyDataLike, PointDataLike], AkWrapper, ABC_AkWrapper):
     def __init__(
         self,
         *args,
-        wrap: Optional[Union[AwkwardLike, None]] = None,
-        topo: Optional[Union[ndarray, None]] = None,
-        fields: Optional[Union[dict, None]] = None,
-        activity: Optional[Union[ndarray, None]] = None,
-        frames: Optional[Union[ndarray, ReferenceFrame, None]] = None,
-        areas: Optional[Union[ndarray, float, None]] = None,
-        t: Optional[Union[ndarray, float, None]] = None,
-        db: Optional[Union[AwkwardLike, None]] = None,
-        i: Optional[Union[ndarray, None]] = None,
+        wrap: Optional[Union[AwkwardLike, NoneType]] = None,
+        topo: Optional[Union[ndarray, NoneType]] = None,
+        fields: Optional[Union[dict, NoneType]] = None,
+        activity: Optional[Union[ndarray, NoneType]] = None,
+        frames: Optional[Union[ndarray, ReferenceFrame, NoneType]] = None,
+        areas: Optional[Union[ndarray, float, NoneType]] = None,
+        t: Optional[Union[ndarray, float, NoneType]] = None,
+        db: Optional[Union[AwkwardLike, NoneType]] = None,
+        i: Optional[Union[ndarray, NoneType]] = None,
         **kwargs,
     ):
         fields = {} if fields is None else fields
@@ -327,37 +327,6 @@ class CellData(Generic[PolyDataLike, PointDataLike], AkWrapper, ABC_AkWrapper):
             raise TypeError(f"Expected ndarray, got {type(value)}")
 
         self._wrapped[self._dbkey_id_] = value
-
-    @property
-    def gid(self) -> ndarray:
-        """Returns global indices of the cells."""
-        return self._wrapped[self._dbkey_gid_].to_numpy()
-
-    @gid.setter
-    def gid(self, value: ndarray) -> None:
-        """
-        Sets global indices of the cells.
-
-        Parameters
-        ----------
-        value: numpy.ndarray
-            An 1d integer array.
-        """
-        if isinstance(value, int):
-            if len(self) == 1:
-                value = np.array(
-                    [
-                        value,
-                    ],
-                    dtype=int,
-                )
-            else:
-                raise ValueError(f"Expected an array, got {type(value)}")
-
-        if not isinstance(value, ndarray):
-            raise TypeError(f"Expected ndarray, got {type(value)}")
-
-        self._wrapped[self._dbkey_gid_] = value
 
     @property
     def activity(self) -> ndarray:

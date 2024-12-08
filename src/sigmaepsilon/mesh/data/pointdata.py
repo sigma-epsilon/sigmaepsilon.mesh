@@ -1,4 +1,5 @@
 from typing import Union, Iterable, Optional
+from types import NoneType
 from copy import deepcopy
 
 import numpy as np
@@ -68,13 +69,13 @@ class PointData(AkWrapper, ABC_AkWrapper):
     def __init__(
         self,
         *args,
-        points: Optional[Union[ndarray, None]] = None,
-        coords: Optional[Union[ndarray, None]] = None,
-        wrap: Optional[Union[akRecord, None]] = None,
-        fields: Optional[Union[Iterable, None]] = None,
-        frame: Optional[Union[CartesianFrame, None]] = None,
-        db: Optional[Union[akRecord, None]] = None,
-        container: Optional[Union[PolyDataProtocol, None]] = None,
+        points: Optional[Union[ndarray, NoneType]] = None,
+        coords: Optional[Union[ndarray, NoneType]] = None,
+        wrap: Optional[Union[akRecord, NoneType]] = None,
+        fields: Optional[Union[Iterable, NoneType]] = None,
+        frame: Optional[Union[CartesianFrame, NoneType]] = None,
+        db: Optional[Union[akRecord, NoneType]] = None,
+        container: Optional[Union[PolyDataProtocol, NoneType]] = None,
         **kwargs,
     ):
         if db is not None:
@@ -308,35 +309,6 @@ class PointData(AkWrapper, ABC_AkWrapper):
             )
 
         self._wrapped[self._dbkey_id_] = value.astype(int)
-
-    @property
-    def gid(self) -> ndarray:
-        """
-        Returns the GIDs of the points as an 1d NumPy integer array.
-        """
-        return self._wrapped[self._dbkey_gid_].to_numpy()
-
-    @gid.setter
-    def gid(self, value: ndarray) -> None:
-        """
-        Sets the GIDs of the points with an 1d NumPy integer array.
-        """
-        if not isinstance(value, ndarray):
-            raise TypeError(f"Expected a NumPy array, got {type(value)}")
-
-        if not isintegerarray(value):
-            raise ValueError(f"Expected an integer array, got dtype {value.dtype}.")
-
-        if not len(value.shape) == 1:
-            raise ValueError("The provided array must be 1 dimensional.")
-
-        if self.has_x and not len(value) == len(self):
-            raise ValueError(
-                f"The provided array contains {len(value)} values, but there are "
-                f"{len(self)} points in the dataset."
-            )
-
-        self._wrapped[self._dbkey_gid_] = value.astype(int)
 
     def pull(self, key: str, ndf: Union[ndarray, csr_matrix] = None) -> ndarray:
         """

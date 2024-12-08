@@ -50,11 +50,6 @@ class PointDataProtocol(Protocol):  # pragma: no cover
         ...
 
     @property
-    def gid(self) -> ndarray:
-        """Ought to return global ids of the points as an 1d integer array."""
-        ...
-
-    @property
     def frame(self) -> FrameLike:
         """Ought to return a frame of reference."""
         ...
@@ -80,11 +75,6 @@ class CellDataProtocol(Generic[PolyDataLike, PointDataLike], Protocol):
     @property
     def id(self) -> ndarray:
         """Ought to return reference ids of the cells."""
-        ...
-
-    @property
-    def gid(self) -> ndarray:
-        """Ought to return global ids of the cells."""
         ...
 
     @property
@@ -122,6 +112,7 @@ class CellDataProtocol(Generic[PolyDataLike, PointDataLike], Protocol):
         `False` if they are not.
         """
         ...
+
 
 @runtime_checkable
 class PolyCellProtocol(
