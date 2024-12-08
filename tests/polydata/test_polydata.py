@@ -168,9 +168,9 @@ class TestPolyDataMultiBlock(SigmaEpsilonTestCase):
         self.assertIsInstance(mesh["grids", "Q4"].topology().to_numpy(), np.ndarray)
 
         topo, _ = mesh.topology(return_inds=True)
-        mesh.cell_indices()
+        mesh.cell_ids()
         mesh["grids", "Q4"].topology(return_inds=True)
-        mesh["grids", "Q4"].cell_indices()
+        mesh["grids", "Q4"].cell_ids()
 
         nE = self.mesh.number_of_cells()
         self.assertEqual(nE, topo.shape[0])
