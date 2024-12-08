@@ -9,38 +9,41 @@ executors:
     docker:
       - image: cimg/python:3.10.11
 
+run_tests_template: &run_tests_template
+  steps:
+    - checkout
+    - run:
+        name: Refresh packages
+        command: sudo apt-get update
+    - run:
+        name: Install xvfb for offline rendering
+        command: sudo apt-get install libgl1-mesa-glx xvfb
+    - run:
+        name: Create lock file
+        command: poetry lock --no-update
+    - python/install-packages:
+        pkg-manager: poetry
+    - run:
+        name: Install project
+        command: |
+          poetry install --with test
+    - run:
+        name: Run tests and generate coverage report
+        command: |
+          chmod +x ./run_tests_with_coverage.sh
+          ./run_tests_with_coverage.sh
+    - store_artifacts:
+        name: Store coverage report as artifact
+        path: htmlcov/
+    - codecov/upload
+    - store_test_results:
+        name: Store test results
+        path: test-results
+
 jobs:
   run_tests:
     executor: my-executor
-    steps:
-      - checkout
-      - run:
-          name: Refresh packages
-          command: sudo apt-get update
-      - run:
-          name: Install xvfb for offline rendering
-          command: sudo apt-get install libgl1-mesa-glx xvfb
-      - run:
-          name: Create lock file
-          command: poetry lock --no-update
-      - python/install-packages:
-          pkg-manager: poetry
-      - run:
-          name: Install project
-          command: |
-            poetry install --with test
-      - run:
-          name: Run tests and generate coverage report
-          command: |
-            chmod +x ./run_tests_with_coverage.sh
-            ./run_tests_with_coverage.sh
-      - store_artifacts:
-          name: Store coverage report as artifact
-          path: htmlcov/
-      - codecov/upload
-      - store_test_results:
-          name: Store test results
-          path: test-results
+    <<: *run_tests_template
 
   deploy_to_test_pypi:
     executor: my-executor
