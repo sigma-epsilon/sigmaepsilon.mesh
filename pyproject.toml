@@ -20,9 +20,9 @@ authors = ["Bence Balogh <bencebalogh@sigmaepsilon.com>"]
 maintainers = ["Bence Balogh <bencebalogh@sigmaepsilon.com>"]
 license = "MIT"
 keywords = [
-    "engineering", "mathematics", "optimization", "vector", "tensor",
-    "vector algebra", "tensor algebra", "symbolic mathematics", 
-    "nonlinear optimization"
+    "computational geometry", "polygonal mesh", "polygonal mesh analysis",
+    "polygonal mesh manipulation", "polygonal mesh generation", "polygonal mesh visualization",
+    "polygonal mesh conversion", "polygonal mesh export", "polygonal mesh import",
 ]
 homepage = "https://github.com/sigma-epsilon/sigmaepsilon.mesh"
 repository = "https://github.com/sigma-epsilon/sigmaepsilon.mesh"
