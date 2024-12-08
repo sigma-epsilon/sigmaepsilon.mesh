@@ -20,7 +20,7 @@ run_tests_template: &run_tests_template
         command: sudo apt-get install libgl1-mesa-glx xvfb
     - run:
         name: Create lock file
-        command: poetry lock --no-update
+        command: poetry lock
     - python/install-packages:
         pkg-manager: poetry
     - run:
@@ -51,7 +51,7 @@ jobs:
       - checkout
       - run:
           name: Create lock file
-          command: poetry lock --no-update
+          command: poetry lock
       - python/install-packages:
           pkg-manager: poetry
       - run:
@@ -74,7 +74,7 @@ jobs:
       - checkout
       - run:
           name: Create lock file
-          command: poetry lock --no-update
+          command: poetry lock
       - python/install-packages:
           pkg-manager: poetry
       - run:
