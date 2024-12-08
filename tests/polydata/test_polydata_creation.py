@@ -16,7 +16,7 @@ class TestPolyDataCreation(unittest.TestCase):
         frames = frames_of_lines(coords, topology)
         return coords, topology, frames
 
-    def test_multi_source_pre_fed(self):
+    def test_multi_host_pre_fed(self):
         coordsA, topologyA, framesA = self._gen_L2_mesh_data()
         coordsB, *_ = self._gen_L2_mesh_data()
         coordsB[:, 2] = 1
@@ -35,15 +35,11 @@ class TestPolyDataCreation(unittest.TestCase):
         self.assertTrue(mesh.pd is None)
         self.assertTrue(mesh.cd is None)
         self.assertTrue(np.all(mesh["A"].pd.id == np.arange(5)))
-        self.assertTrue(np.all(mesh["A"].pd.gid == np.arange(5)))
-        self.assertTrue(np.all(mesh["B"].pd.id == np.arange(5)))
-        self.assertTrue(np.all(mesh["B"].pd.gid == np.arange(5,10)))
-        self.assertTrue(np.all(mesh["A"].cd.db.id == np.array([0, 1, 2, 3])))
-        self.assertTrue(np.all(mesh["B"].cd.db.id == np.array([0, 1, 2, 3])))
-        self.assertTrue(np.all(mesh["A"].cd.db.gid == np.array([0, 1, 2, 3])))
-        self.assertTrue(np.all(mesh["B"].cd.db.gid == np.array([4, 5, 6, 7])))
+        self.assertTrue(np.all(mesh["B"].pd.id == np.arange(5, 10)))
+        self.assertTrue(np.all(mesh["A"].cd.db.id == np.arange(4)))
+        self.assertTrue(np.all(mesh["B"].cd.db.id == np.arange(4, 8)))
 
-    def test_multi_source_post_fed(self):
+    def test_multi_host_post_fed(self):
         coordsA, topologyA, framesA = self._gen_L2_mesh_data()
         coordsB, *_ = self._gen_L2_mesh_data()
         coordsB[:, 2] = 1
@@ -64,15 +60,11 @@ class TestPolyDataCreation(unittest.TestCase):
         self.assertTrue(mesh.pd is None)
         self.assertTrue(mesh.cd is None)
         self.assertTrue(np.all(mesh["A"].pd.id == np.arange(5)))
-        self.assertTrue(np.all(mesh["A"].pd.gid == np.arange(5)))
-        self.assertTrue(np.all(mesh["B"].pd.id == np.arange(5)))
-        self.assertTrue(np.all(mesh["B"].pd.gid == np.arange(5,10)))
-        self.assertTrue(np.all(mesh["A"].cd.db.id == np.array([0, 1, 2, 3])))
-        self.assertTrue(np.all(mesh["B"].cd.db.id == np.array([0, 1, 2, 3])))
-        self.assertTrue(np.all(mesh["A"].cd.db.gid == np.array([0, 1, 2, 3])))
-        self.assertTrue(np.all(mesh["B"].cd.db.gid == np.array([4, 5, 6, 7])))
-        
-    def test_single_source_post_fed(self):
+        self.assertTrue(np.all(mesh["B"].pd.id == np.arange(5, 10)))
+        self.assertTrue(np.all(mesh["A"].cd.db.id == np.arange(4)))
+        self.assertTrue(np.all(mesh["B"].cd.db.id == np.arange(4, 8)))
+
+    def test_single_host_post_fed(self):
         coordsA, topologyA, framesA = self._gen_L2_mesh_data()
         coordsB, topologyB, _ = self._gen_L2_mesh_data()
         coordsB[:, 2] = 1
@@ -95,13 +87,10 @@ class TestPolyDataCreation(unittest.TestCase):
         self.assertTrue(mesh["A"].pd is None)
         self.assertTrue(mesh["B"].pd is None)
         self.assertTrue(np.all(mesh.pd.id == np.arange(10)))
-        self.assertTrue(np.all(mesh.pd.gid == np.arange(10)))
-        self.assertTrue(np.all(mesh["A"].cd.db.id == np.array([0, 1, 2, 3])))
-        self.assertTrue(np.all(mesh["A"].cd.db.gid == np.array([0, 1, 2, 3])))
-        self.assertTrue(np.all(mesh["B"].cd.db.id == np.array([4, 5, 6, 7])))
-        self.assertTrue(np.all(mesh["B"].cd.db.gid == np.array([4, 5, 6, 7])))
-        
-    def test_single_source_pre_fed(self):
+        self.assertTrue(np.all(mesh["A"].cd.db.id == np.arange(4)))
+        self.assertTrue(np.all(mesh["B"].cd.db.id == np.arange(4, 8)))
+
+    def test_single_host_pre_fed(self):
         coordsA, topologyA, framesA = self._gen_L2_mesh_data()
         coordsB, topologyB, _ = self._gen_L2_mesh_data()
         coordsB[:, 2] = 1
@@ -122,8 +111,5 @@ class TestPolyDataCreation(unittest.TestCase):
         self.assertTrue(mesh["A"].pd is None)
         self.assertTrue(mesh["B"].pd is None)
         self.assertTrue(np.all(mesh.pd.id == np.arange(10)))
-        self.assertTrue(np.all(mesh.pd.gid == np.arange(10)))
-        self.assertTrue(np.all(mesh["A"].cd.db.id == np.array([0, 1, 2, 3])))
-        self.assertTrue(np.all(mesh["A"].cd.db.gid == np.array([0, 1, 2, 3])))
-        self.assertTrue(np.all(mesh["B"].cd.db.id == np.array([4, 5, 6, 7])))
-        self.assertTrue(np.all(mesh["B"].cd.db.gid == np.array([4, 5, 6, 7])))
+        self.assertTrue(np.all(mesh["A"].cd.db.id == np.arange(4)))
+        self.assertTrue(np.all(mesh["B"].cd.db.id == np.arange(4, 8)))
