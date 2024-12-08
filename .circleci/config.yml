@@ -80,7 +80,8 @@ jobs:
 workflows:
   test_and_deploy:
     jobs:
-      - run_tests
+      - run_tests:
+          name: Run tests and generate coverage report
 
       - deploy_to_pypi:
           name: Deploy to TestPyPI
