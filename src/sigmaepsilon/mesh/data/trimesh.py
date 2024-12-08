@@ -94,7 +94,7 @@ class TriMesh(PolyData):
     def extrude(self, *, h: float, N: int) -> PolyData:
         """
         Exctrude mesh perpendicular to the plane of the triangulation.
-        
+
         Parameters
         ----------
         h: float
@@ -120,7 +120,7 @@ class TriMesh(PolyData):
     def edges(self, return_cells: bool = False) -> Tuple[ndarray, Optional[ndarray]]:
         """
         Returns point indices of the unique edges in the model.
-        
+
         If `return_cells` is `True`, it also returns the edge
         indices of the triangles, referencing the edges.
 
@@ -149,7 +149,7 @@ class TriMesh(PolyData):
     def to_triobj(self) -> Any:
         """
         Returns a matplotlib triangulation object.
-        
+
         See :func:`~sigmaepsilon.mesh.triang.triangulate` for the details.
 
         Note
