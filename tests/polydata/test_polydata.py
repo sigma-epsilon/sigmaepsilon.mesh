@@ -9,6 +9,7 @@ import meshio
 
 from sigmaepsilon.core.testing import SigmaEpsilonTestCase
 from sigmaepsilon.core.warning import SigmaEpsilonPerformanceWarning
+from sigmaepsilon.deepdict.exceptions import DeepDictLockedError
 from sigmaepsilon.mesh import PolyData, PointData, CartesianFrame, triangulate
 from sigmaepsilon.mesh.data.trimesh import TriMesh
 from sigmaepsilon.mesh.data.celldata import CellData
@@ -167,9 +168,9 @@ class TestPolyDataMultiBlock(SigmaEpsilonTestCase):
         self.assertIsInstance(mesh["grids", "Q4"].topology().to_numpy(), np.ndarray)
 
         topo, _ = mesh.topology(return_inds=True)
-        mesh.cell_indices()
+        mesh.cell_ids()
         mesh["grids", "Q4"].topology(return_inds=True)
-        mesh["grids", "Q4"].cell_indices()
+        mesh["grids", "Q4"].cell_ids()
 
         nE = self.mesh.number_of_cells()
         self.assertEqual(nE, topo.shape[0])
@@ -226,21 +227,23 @@ class TestPolyDataMultiBlock(SigmaEpsilonTestCase):
         self.mesh.to_pv(multiblock=True)
 
     def test_delete(self):
+        self.mesh.unlock()
         del self.mesh["grids", "Q4"]
         self.mesh.lock()
 
         def boo():
             self.mesh["grids", "Q4"]
 
-        self.assertFailsProperly(KeyError, boo)
+        self.assertFailsProperly(DeepDictLockedError, boo)
 
-    """def test_replace(self):
+    def test_replace(self):
         A = StandardFrame(dim=3)
         coords, topo, _ = triangulate(size=(100, 100), shape=(4, 4))
         pd = PointData(coords=coords, frame=A)
         cd = T3(topo=topo, frames=A)
         tri = TriMesh(pd, cd)
-        self.mesh["tri", "T3"] = tri"""
+        self.mesh.unlock()
+        self.mesh["tri", "T3"] = tri
 
     def test_centers(self):
         self.mesh.centers()
