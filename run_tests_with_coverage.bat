@@ -16,7 +16,7 @@ if "%1"=="NUMBA_DISABLE_JIT" (
 
 set COVERAGE_RCFILE=%rc_path%
 
-poetry run coverage run --source=src -m pytest
+poetry run coverage run --source=src -m pytest tests/
 poetry run coverage xml
 poetry run coverage html
 

@@ -1,122 +1,108 @@
 version: 2.1
 
 orbs:
-  python: circleci/python@2.1.1
-  codecov: codecov/codecov@4.2.0
+  codecov: codecov/codecov@5.0.3
 
 executors:
   my-executor:
     docker:
       - image: cimg/python:3.12
 
+  executor-python-312:
+    docker:
+      - image: cimg/python:3.12
+
+run_tests_template: &run_tests_template
+  steps:
+    - checkout
+    - run:
+        name: Refresh packages
+        command: sudo apt-get update
+    - run:
+        name: Install xvfb for offline rendering
+        command: sudo apt-get install libgl1-mesa-glx xvfb
+    - run:
+        name: Create lock file
+        command: poetry lock
+    - run:
+        name: Install project
+        command: poetry install --with test
+    - run:
+        name: Run tests and generate coverage report
+        command: |
+          chmod +x ./run_tests_with_coverage.sh
+          ./run_tests_with_coverage.sh
+    - store_artifacts:
+        name: Store coverage report as artifact
+        path: htmlcov/
+    - codecov/upload
+    - store_test_results:
+        name: Store test results
+        path: test-results
+
 jobs:
   run_tests:
-    executor: my-executor
-    steps:
-      - checkout
-      - run:
-          name: Refresh packages
-          command: sudo apt-get update
-      - run:
-          name: Install xvfb for offline rendering
-          command: sudo apt-get install libgl1-mesa-glx xvfb
-      - run:
-          name: Create lock file
-          command: poetry lock --no-update
-      - python/install-packages:
-          pkg-manager: poetry
-      - run:
-          name: Install project
-          command: |
-            poetry install --with test
-      - run:
-          name: Run tests and generate coverage report
-          command: |
-            chmod +x ./run_tests_with_coverage.sh
-            ./run_tests_with_coverage.sh 
-      - store_artifacts:
-          name: Store coverage report as artifact
-          path: htmlcov/
-      - codecov/upload
-      - store_test_results:
-          name: Store test results
-          path: test-results
-
-  deploy_to_test_pypi:
-    executor: my-executor
-    steps:
-      - checkout
-      - run:
-          name: Create lock file
-          command: poetry lock --no-update
-      - python/install-packages:
-          pkg-manager: poetry
-      - run:
-          name: Add new command
-          command: chmod +x ./export_requirements.sh
-      - run:
-          name: Build project
-          command: |
-            poetry check
-            poetry lock
-            ./export_requirements.sh 
-            poetry install
-            poetry build
-      - run:
-          name: Deploy to TestPyPI
-          command: |
-            poetry config repositories.testpypi https://test.pypi.org/legacy/
-            poetry config pypi-token.testpypi $TEST_PYPI_TOKEN
-            poetry publish -r testpypi --skip-existing
+    executor: executor-python-312
+    <<: *run_tests_template
 
   deploy_to_pypi:
     executor: my-executor
+    parameters:
+      test:
+        type: boolean
+        default: true  # Default to TestPyPI
     steps:
       - checkout
       - run:
           name: Create lock file
-          command: poetry lock --no-update
-      - python/install-packages:
-          pkg-manager: poetry
-      - run:
-          name: Add new command
-          command: chmod +x ./export_requirements.sh
+          command: poetry lock
       - run:
           name: Build project
           command: |
             poetry check
-            poetry lock
-            ./export_requirements.sh 
+            poetry lock 
             poetry install
             poetry build
       - run:
           name: Deploy to PyPI
           command: |
-            poetry config pypi-token.pypi $PYPI_TOKEN
-            poetry publish --skip-existing
+            if [ "<< parameters.test >>" = "true" ]; then
+              echo "Deploying to TestPyPI"
+              poetry config repositories.testpypi https://test.pypi.org/legacy/
+              poetry config pypi-token.testpypi $TEST_PYPI_TOKEN
+              poetry publish -r testpypi --skip-existing
+            else
+              echo "Deploying to PyPI"
+              poetry config pypi-token.pypi $PYPI_TOKEN
+              poetry publish --skip-existing
+            fi
 
 workflows:
   test_and_deploy:
     jobs:
-      - run_tests
+      - run_tests:
+          name: Run tests and generate coverage report
 
-      - deploy_to_test_pypi:
+      - deploy_to_pypi:
+          name: Deploy to TestPyPI
+          test: true
           context:
             - TestPyPI deploy
           requires:
-            - run_tests
+            - Run tests and generate coverage report
           filters:
             branches:
               only:
                 - test
 
       - deploy_to_pypi:
+          name: Deploy to PyPI
+          test: false
           context:
             - PyPI deploy
           requires:
-            - run_tests
+            - Run tests and generate coverage report
           filters:
             branches:
               only:
                 - main
-                
