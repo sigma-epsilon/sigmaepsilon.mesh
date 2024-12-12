@@ -143,7 +143,7 @@ else:
 
         if isinstance(theme, str):
             try:
-                new_theme_type = pv.themes._ALLOWED_THEMES[theme].value
+                new_theme_type = pv.themes._NATIVE_THEMES[theme].value
                 theme = new_theme_type()
             except Exception:
                 if theme == "dark":
@@ -171,6 +171,9 @@ else:
 
         if edge_color is not None:
             theme.edge_color = edge_color
+            
+        if theme is not None:
+            pv.set_plot_theme(theme)
 
         if plotter is None:
             pvparams = dict()
@@ -180,7 +183,6 @@ else:
 
             pvparams.update(kwargs)
             pvparams.update(notebook=notebook)
-            pvparams.update(theme=theme)
 
             if "title" not in pvparams:
                 pvparams["title"] = "SigmaEpsilon"
@@ -228,7 +230,7 @@ else:
 
             if isinstance(show_scalar_bar, bool):
                 params["show_scalar_bar"] = show_scalar_bar
-
+            
             plotter.add_mesh(poly, **params)
 
         if add_legend:
