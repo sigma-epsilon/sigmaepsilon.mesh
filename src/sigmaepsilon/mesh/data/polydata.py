@@ -489,8 +489,8 @@ class PolyData(DeepDict[Hashable, PDP | Any], Generic[PointDataLike, PolyCellLik
     def to_dataframe(
         self,
         *args,
-        point_fields: Optional[Union[Iterable[str], None]] = None,
-        cell_fields: Optional[Union[Iterable[str], None]] = None,
+        point_fields: Iterable[str] | NoneType = None,
+        cell_fields: Iterable[str] | NoneType = None,
         **kwargs,
     ) -> Any:
         """
@@ -521,8 +521,8 @@ class PolyData(DeepDict[Hashable, PDP | Any], Generic[PointDataLike, PolyCellLik
         path_pd: str,
         path_cd: str,
         *args,
-        point_fields: Optional[Union[Iterable[str], None]] = None,
-        cell_fields: Optional[Union[Iterable[str], None]] = None,
+        point_fields: Iterable[str] | NoneType = None,
+        cell_fields: Iterable[str] | NoneType = None,
         **kwargs,
     ) -> None:
         """
@@ -556,8 +556,8 @@ class PolyData(DeepDict[Hashable, PDP | Any], Generic[PointDataLike, PolyCellLik
     def to_ak(
         self,
         *args,
-        point_fields: Optional[Union[Iterable[str], None]] = None,
-        cell_fields: Optional[Union[Iterable[str], None]] = None,
+        point_fields: Iterable[str] | NoneType = None,
+        cell_fields: Iterable[str] | NoneType = None,
         **__,
     ) -> Tuple[ak.Array]:
         """
@@ -587,8 +587,8 @@ class PolyData(DeepDict[Hashable, PDP | Any], Generic[PointDataLike, PolyCellLik
     def to_lists(
         self,
         *,
-        point_fields: Optional[Union[Iterable[str], None]] = None,
-        cell_fields: Optional[Union[Iterable[str], None]] = None,
+        point_fields: Iterable[str] | NoneType = None,
+        cell_fields: Iterable[str] | NoneType = None,
     ) -> Tuple[list]:
         """
         Returns data of the object as a tuple of lists. The first is a list
@@ -1413,17 +1413,8 @@ class PolyData(DeepDict[Hashable, PDP | Any], Generic[PointDataLike, PolyCellLik
 
     def cells_at_nodes(self, *args, **kwargs) -> Iterable:
         """
-        Returns the neighbouring cells of nodes.
-
-        Returns
-        -------
-        object
-            Some kind of iterable, depending on the inputs.
-            See the docs below for further details.
-
-        See Also
-        --------
-        :func:`cells_at_nodes`
+        Returns the neighbouring cells of nodes. For the arguments
+        and results see the documentation of the :func:`cells_at_nodes` function.
         """
         topo = self.topology()
 
