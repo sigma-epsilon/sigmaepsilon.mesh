@@ -140,3 +140,9 @@ docs/source/notebooks/*.parquet
 *.parquet
 /*.ipynb
 /*.inp
+
+#Ignore vscode AI rules
+.github/instructions/codacy.instructions.md
+
+# MacOS
+.DS_Store

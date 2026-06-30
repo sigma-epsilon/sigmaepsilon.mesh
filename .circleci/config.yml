@@ -22,11 +22,14 @@ run_tests_template: &run_tests_template
         name: Install xvfb for offline rendering
         command: sudo apt-get install libgl1-mesa-glx xvfb
     - run:
+        name: Install uv
+        command: pip install uv
+    - run:
         name: Create lock file
-        command: poetry lock
+        command: uv lock
     - run:
         name: Install project
-        command: poetry install --with test
+        command: uv sync --no-default-groups --group test
     - run:
         name: Run tests and generate coverage report
         command: |
@@ -54,27 +57,25 @@ jobs:
     steps:
       - checkout
       - run:
+          name: Install uv
+          command: pip install uv
+      - run:
           name: Create lock file
-          command: poetry lock
+          command: uv lock
       - run:
           name: Build project
           command: |
-            poetry check
-            poetry lock 
-            poetry install
-            poetry build
+            uv sync
+            uv build
       - run:
           name: Deploy to PyPI
           command: |
             if [ "<< parameters.test >>" = "true" ]; then
               echo "Deploying to TestPyPI"
-              poetry config repositories.testpypi https://test.pypi.org/legacy/
-              poetry config pypi-token.testpypi $TEST_PYPI_TOKEN
-              poetry publish -r testpypi --skip-existing
+              uv publish --publish-url https://test.pypi.org/legacy/ --check-url https://test.pypi.org/simple/ --token $TEST_PYPI_TOKEN
             else
               echo "Deploying to PyPI"
-              poetry config pypi-token.pypi $PYPI_TOKEN
-              poetry publish --skip-existing
+              uv publish --check-url https://pypi.org/simple/ --token $PYPI_TOKEN
             fi
 
 workflows:
