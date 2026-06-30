@@ -18,10 +18,14 @@ Gallery
     examples/import_pyvista.ipynb
     examples/joint_cube.ipynb
     examples/lighting.ipynb
+    examples/marching_cubes_roundtrip.ipynb
+    examples/minecraft_gt40.ipynb
+    examples/minecraft_mountain.ipynb
     examples/plot_surface_normals.ipynb
     examples/section.ipynb
     examples/shape_functions_1d.ipynb
     examples/shape_functions_Q9.ipynb
     examples/shape_functions_T6.ipynb
+    examples/solid_bunny.ipynb
     examples/sphere.ipynb
     examples/trigridQ4.ipynb
