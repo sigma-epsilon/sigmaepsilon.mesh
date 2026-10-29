@@ -41,7 +41,7 @@ dependencies = [
 [project.urls]
 Homepage = "https://github.com/sigma-epsilon/sigmaepsilon.mesh"
 Repository = "https://github.com/sigma-epsilon/sigmaepsilon.mesh"
-Documentation = "https://sigmaepsilonmath.readthedocs.io/en/latest/?badge=latest"
+Documentation = "https://sigmaepsilonmesh.readthedocs.io/en/latest/"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/sigmaepsilon"]

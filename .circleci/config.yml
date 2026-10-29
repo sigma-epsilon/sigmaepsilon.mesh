@@ -1,7 +1,7 @@
 version: 2.1
 
 orbs:
-  codecov: codecov/codecov@5.0.3
+  codecov: codecov/codecov@6.0.0
 
 executors:
   my-executor:
@@ -38,7 +38,8 @@ run_tests_template: &run_tests_template
     - store_artifacts:
         name: Store coverage report as artifact
         path: htmlcov/
-    - codecov/upload
+    - codecov/upload:
+        token: CODECOV_TOKEN
     - store_test_results:
         name: Store test results
         path: test-results
