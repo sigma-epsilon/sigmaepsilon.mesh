@@ -2053,11 +2053,11 @@ class PolyData(DeepDict[Hashable, PDP | Any], Generic[PointDataLike, PolyCellLik
             dbkey = self.pointdata._dbkey_id_
             del self.pointdata._wrapped[dbkey]
 
-        if self.is_root():
-            self._point_index_manager = IndexManager()
-            self._cell_index_manager = IndexManager()
-
         super().__after_leave_parent__()
+
+        # the block is a root now, it needs its own index managers
+        self._point_index_manager = IndexManager()
+        self._cell_index_manager = IndexManager()
 
     def __repr__(self):
         return "PolyData(%s)" % (dict.__repr__(self))
