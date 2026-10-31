@@ -16,7 +16,6 @@ from copy import deepcopy
 
 import numpy as np
 from numpy import ndarray
-from numpy.lib.index_tricks import IndexExpression
 
 from sigmaepsilon.core.typing import issequence
 from sigmaepsilon.math import atleast1d, atleast2d, atleastnd, ascont
@@ -78,6 +77,7 @@ from ..config import __haspyvista__
 if __haspyvista__:
     import pyvista as pv
 
+IndexExpression = type(np.s_)  # numpy.lib.index_tricks was removed in NumPy 2
 MapLike = Union[ndarray, MutableMapping]
 PointDataLike = TypeVar("PointDataLike", bound=PointDataProtocol)
 MeshDataLike = TypeVar("MeshDataLike", bound=PolyDataProtocol)
