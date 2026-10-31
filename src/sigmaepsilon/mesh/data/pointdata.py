@@ -1,4 +1,5 @@
 from typing import Union, Iterable, Optional
+from types import NoneType
 from copy import deepcopy
 
 import numpy as np
@@ -67,13 +68,13 @@ class PointData(AkWrapper, ABC_AkWrapper):
     def __init__(
         self,
         *args,
-        points: Optional[Union[ndarray, None]] = None,
-        coords: Optional[Union[ndarray, None]] = None,
-        wrap: Optional[Union[akRecord, None]] = None,
-        fields: Optional[Union[Iterable, None]] = None,
-        frame: Optional[Union[CartesianFrame, None]] = None,
-        db: Optional[Union[akRecord, None]] = None,
-        container: Optional[Union[PolyDataProtocol, None]] = None,
+        points: Optional[Union[ndarray, NoneType]] = None,
+        coords: Optional[Union[ndarray, NoneType]] = None,
+        wrap: Optional[Union[akRecord, NoneType]] = None,
+        fields: Optional[Union[Iterable, NoneType]] = None,
+        frame: Optional[Union[CartesianFrame, NoneType]] = None,
+        db: Optional[Union[akRecord, NoneType]] = None,
+        container: Optional[Union[PolyDataProtocol, NoneType]] = None,
         **kwargs,
     ):
         if db is not None:

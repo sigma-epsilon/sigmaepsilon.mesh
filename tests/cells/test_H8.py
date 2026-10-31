@@ -7,6 +7,12 @@ from sigmaepsilon.mesh.grid import grid
 from sigmaepsilon.mesh.cells import H8
 
 
+def test_pyvista_surface_extraction():
+    from pyvista import examples
+    grid = examples.load_hexbeam()
+    surf = grid.extract_surface()
+
+
 class TestHex(unittest.TestCase):
     def test_H8(self):
         def test_H8_volume(Lx, Ly, Lz, nx, ny, nz):

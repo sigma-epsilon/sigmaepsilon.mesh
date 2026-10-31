@@ -21,9 +21,9 @@ fi
 export COVERAGE_RCFILE=$rc_path
 
 # Run the coverage commands using the specified .coveragerc file
-poetry run coverage run --source=src -m pytest
-poetry run coverage xml
-poetry run coverage html
+uv run coverage run --source=src -m pytest tests/
+uv run coverage xml
+uv run coverage html
 
 # Restore the original NUMBA_DISABLE_JIT value
 export NUMBA_DISABLE_JIT=$jit_value
