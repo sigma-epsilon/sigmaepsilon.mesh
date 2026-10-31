@@ -50,7 +50,7 @@ jobs:
                 command: uv sync --resolution lowest-direct --no-default-groups --group test --python << parameters.python >>
       - run:
           name: Run tests and generate coverage report
-          command: uv run --no-sync pytest tests --cov=src --cov-config=.coveragerc --cov-report=xml --cov-report=html
+          command: xvfb-run -a uv run --no-sync pytest tests --cov=src --cov-config=.coveragerc --cov-report=xml --cov-report=html
       - when:
           condition:
             and:
