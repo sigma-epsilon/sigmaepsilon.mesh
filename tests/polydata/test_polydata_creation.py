@@ -113,3 +113,48 @@ class TestPolyDataCreation(unittest.TestCase):
         self.assertTrue(np.all(mesh.pd.id == np.arange(10)))
         self.assertTrue(np.all(mesh["A"].cd.db.id == np.arange(4)))
         self.assertTrue(np.all(mesh["B"].cd.db.id == np.arange(4, 8)))
+
+    def test_multi_host_remove_block(self):
+        coordsA, topologyA, framesA = self._gen_L2_mesh_data()
+        coordsB, *_ = self._gen_L2_mesh_data()
+        coordsB[:, 2] = 1
+        topologyB = topologyA + len(coordsA)
+        framesB = frames_of_lines(coordsB, topologyB)
+
+        pdA = PointData(coordsA)
+        cdA = L2(topo=topologyA, frames=framesA)
+        pdB = PointData(coordsB)
+        cdB = L2(topo=topologyB, frames=framesB)
+        mesh = PolyData(A=LineData(pdA, cdA), B=LineData(pdB, cdB))
+
+        B = mesh["B"]
+        del mesh["B"]
+
+        self.assertTrue(B.is_root())
+        self.assertFalse(B.pd.has_id)
+        self.assertTrue(B.pim is not None)
+        self.assertTrue(B.cim is not None)
+        self.assertTrue(np.all(np.sort(mesh.pim.generate_np(5)) == np.arange(5, 10)))
+        self.assertTrue(np.all(np.sort(mesh.cim.generate_np(4)) == np.arange(4, 8)))
+
+    def test_single_host_remove_block(self):
+        coordsA, topologyA, framesA = self._gen_L2_mesh_data()
+        coordsB, topologyB, _ = self._gen_L2_mesh_data()
+        coordsB[:, 2] = 1
+        framesB = frames_of_lines(coordsB, topologyB)
+        coords = np.vstack([coordsA, coordsB])
+        topologyB += len(coordsA)
+
+        pd = PointData(coords)
+        cdA = L2(topo=topologyA, frames=framesA)
+        cdB = L2(topo=topologyB, frames=framesB)
+        mesh = PolyData(pd, A=LineData(cdA), B=LineData(cdB))
+
+        B = mesh["B"]
+        del mesh["B"]
+
+        self.assertTrue(B.is_root())
+        self.assertTrue(B.pim is not None)
+        self.assertTrue(B.cim is not None)
+        self.assertTrue(np.all(mesh.pd.id == np.arange(10)))
+        self.assertTrue(np.all(np.sort(mesh.cim.generate_np(4)) == np.arange(4, 8)))
