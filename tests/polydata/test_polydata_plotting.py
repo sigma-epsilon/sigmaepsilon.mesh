@@ -15,7 +15,8 @@ import pyvista
 from pyvista import themes
 
 
-if sys.platform.startswith("linux"):
+# start_xvfb was removed in PyVista 0.49, where VTK renders off-screen without a display
+if sys.platform.startswith("linux") and hasattr(pyvista, "start_xvfb"):
     pyvista.start_xvfb()
 
 
