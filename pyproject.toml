@@ -31,15 +31,15 @@ classifiers = [
     "Operating System :: OS Independent",
 ]
 dependencies = [
-    "sigmaepsilon-core>=1.2.0",
+    "sigmaepsilon-core>=1.2.1",
     "sigmaepsilon-deepdict>=3.0.0",
     "sigmaepsilon-math>=2.6.0",
-    "numpy>=1.23",
-    "scipy>=1.9",
-    "numba>=0.56.2",
+    "numpy>=1.24",
+    "scipy>=1.10",
+    "numba>=0.57",
     "sympy>=1.9",
-    "awkward>=2.0.0",
-    "packaging>=20.0",
+    "awkward>=2.6.1",
+    "packaging>=22.0",
     "sectionproperties>=3.1.2",
     "meshio>=5.3.5",
 ]
