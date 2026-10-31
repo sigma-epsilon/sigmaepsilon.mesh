@@ -52,6 +52,11 @@ Documentation = "https://sigmaepsilonmesh.readthedocs.io/en/latest/"
 [tool.hatch.build.targets.wheel]
 packages = ["src/sigmaepsilon"]
 
+[tool.uv]
+# Lock-only constraint, it does not end up in the package metadata. The Linux wheels
+# of cytriangle>=2 need glibc 2.39, which Ubuntu 22.04 (CircleCI, Read the Docs) lacks.
+constraint-dependencies = ["cytriangle<2; sys_platform == 'linux'"]
+
 [dependency-groups]
 dev = [
     "networkx>=3.0",
