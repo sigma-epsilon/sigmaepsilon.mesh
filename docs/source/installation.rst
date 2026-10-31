@@ -45,6 +45,10 @@ To avoid this, install the OpenMP runtime with `Homebrew <https://brew.sh/>`_ an
 
 Homebrew installs ``libomp`` without linking it into the default library path, which is why ``DYLD_LIBRARY_PATH`` is needed. Add the ``export`` line to your shell profile (e.g. ``~/.zshrc``) to make it permanent. If you use Jupyter, the variable must be set in the environment that starts the kernel.
 
+.. note::
+
+   macOS removes ``DYLD_*`` variables from processes started through a system executable such as ``/bin/sh`` or ``/usr/bin/env``. If a command-line tool (e.g. ``pytest``) has such a shebang line, the variable does not reach Python and Numba falls back to ``workqueue`` again. In that case, run the tool through the interpreter instead, e.g. ``python -m pytest``.
+
 To check which threading layer Numba uses, run a parallel function first:
 
 .. code-block:: python
