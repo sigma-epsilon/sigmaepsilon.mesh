@@ -12,41 +12,58 @@ executors:
     docker:
       - image: cimg/python:3.12
 
-run_tests_template: &run_tests_template
-  steps:
-    - checkout
-    - run:
-        name: Refresh packages
-        command: sudo apt-get update
-    - run:
-        name: Install xvfb for offline rendering
-        command: sudo apt-get install libgl1-mesa-glx xvfb
-    - run:
-        name: Install uv
-        command: pip install uv
-    - run:
-        name: Create lock file
-        command: uv lock
-    - run:
-        name: Install project
-        command: uv sync --no-default-groups --group test
-    - run:
-        name: Run tests and generate coverage report
-        command: |
-          chmod +x ./run_tests_with_coverage.sh
-          ./run_tests_with_coverage.sh
-    - store_artifacts:
-        name: Store coverage report as artifact
-        path: htmlcov/
-    - codecov/upload
-    - store_test_results:
-        name: Store test results
-        path: test-results
-
 jobs:
   run_tests:
     executor: executor-python-312
-    <<: *run_tests_template
+    parameters:
+      python:
+        type: string
+      resolution:
+        description: uv resolution strategy; lowest-direct checks the minimum versions in pyproject.toml.
+        type: enum
+        enum: ["highest", "lowest-direct"]
+        default: "highest"
+    steps:
+      - checkout
+      - run:
+          name: Refresh packages
+          command: sudo apt-get update
+      - run:
+          name: Install xvfb for offline rendering
+          command: sudo apt-get install libgl1-mesa-glx xvfb
+      - run:
+          name: Install uv
+          command: pip install uv
+      - when:
+          condition:
+            equal: ["highest", << parameters.resolution >>]
+          steps:
+            - run:
+                name: Install project
+                command: uv sync --locked --no-default-groups --group test --python << parameters.python >>
+      - when:
+          condition:
+            equal: ["lowest-direct", << parameters.resolution >>]
+          steps:
+            - run:
+                name: Install project with the lowest direct dependencies
+                command: uv sync --resolution lowest-direct --no-default-groups --group test --python << parameters.python >>
+      - run:
+          name: Run tests and generate coverage report
+          command: xvfb-run -a uv run --no-sync pytest tests --cov=src --cov-config=.coveragerc --cov-report=xml --cov-report=html
+      - when:
+          condition:
+            and:
+              - equal: ["3.12", << parameters.python >>]
+              - equal: ["highest", << parameters.resolution >>]
+          steps:
+            - store_artifacts:
+                name: Store coverage report as artifact
+                path: htmlcov/
+            - codecov/upload
+      - store_test_results:
+          name: Store test results
+          path: test-results
 
   deploy_to_pypi:
     executor: my-executor
@@ -82,7 +99,14 @@ workflows:
   test_and_deploy:
     jobs:
       - run_tests:
-          name: Run tests and generate coverage report
+          matrix:
+            parameters:
+              python: ["3.10", "3.12", "3.13"]
+
+      - run_tests:
+          name: run_tests_lowest
+          python: "3.10"
+          resolution: "lowest-direct"
 
       - deploy_to_pypi:
           name: Deploy to TestPyPI
@@ -90,7 +114,8 @@ workflows:
           context:
             - TestPyPI deploy
           requires:
-            - Run tests and generate coverage report
+            - run_tests
+            - run_tests_lowest
           filters:
             branches:
               only:
@@ -102,7 +127,8 @@ workflows:
           context:
             - PyPI deploy
           requires:
-            - Run tests and generate coverage report
+            - run_tests
+            - run_tests_lowest
           filters:
             branches:
               only:

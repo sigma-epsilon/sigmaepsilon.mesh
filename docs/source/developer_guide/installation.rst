@@ -32,3 +32,8 @@ way is to add them as path sources. For instance, if you want to install `sigmae
 
 
 If the library that you want to install in editable mode is located somewhere else, adjust the path accordingly.
+
+.. note::
+
+   On macOS, the test suite aborts unless Numba can use its OpenMP threading layer. Follow the steps in the
+   :ref:`macOS installation notes <macos_installation>` before running the tests.
