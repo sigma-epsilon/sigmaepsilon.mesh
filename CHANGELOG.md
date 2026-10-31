@@ -5,6 +5,26 @@ All notable changes to this project will be documented in this file. If you are 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.2.0]
+
+### Added
+
+- `PolyData.cell_ids`, returning the ids of the cells along the walk.
+
+### Changed
+
+- The build system is now Hatchling, and the project is managed with uv instead of Poetry.
+- `PolyData.cell_indices` is deprecated in favour of `PolyData.cell_ids`.
+
+### Removed
+
+- The `has_gid` property and the global index field of `CellData` and `PointData`.
+
+### Fixed
+
+- Cell indices of submeshes that have their own hosting pointcloud (#149).
+- A block removed from a `PolyData` instance now gets its own point and cell index managers.
+
 ## [3.1.0]
 
 ### Added
