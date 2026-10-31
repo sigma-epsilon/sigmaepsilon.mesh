@@ -17,8 +17,30 @@ import warnings
 
 import pyvista
 
-if sys.platform.startswith("linux"):
-    pyvista.start_xvfb()
+
+
+def start_xvfb(display: str = ":99", wait: float = 3.0) -> None:
+    """
+    Starts a virtual framebuffer for off-screen rendering, like `pyvista.start_xvfb`
+    used to before it was removed in PyVista 0.49.
+    """
+    import shutil
+    import subprocess
+    import time
+
+    if shutil.which("Xvfb") is None:
+        raise OSError("Xvfb is not installed, see the apt_packages in .readthedocs.yaml")
+    subprocess.Popen(
+        ["Xvfb", display, "-screen", "0", "1024x768x24"],
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
+    )
+    os.environ["DISPLAY"] = display
+    time.sleep(wait)
+
+
+if sys.platform.startswith("linux") and not os.environ.get("DISPLAY"):
+    start_xvfb()
 
 
 import sigmaepsilon.mesh as library
