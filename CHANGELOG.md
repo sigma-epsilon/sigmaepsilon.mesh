@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file. If you are 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.3.1]
+
+### Fixed
+
+- Nested Numba parallel regions that aborted the process with the `workqueue` threading layer, e.g. in `PolyData.cells_around_cells` and H27 cells (#159).
+
 ## [3.2.0]
 
 ### Added
@@ -24,7 +30,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Cell indices of submeshes that have their own hosting pointcloud (#149).
 - A block removed from a `PolyData` instance now gets its own point and cell index managers.
-- Nested Numba parallel regions that aborted the process with the `workqueue` threading layer, e.g. in `PolyData.cells_around_cells` and H27 cells (#159).
 
 ## [3.1.0]
 
