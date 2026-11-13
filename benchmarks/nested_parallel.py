@@ -1,20 +1,19 @@
-"""Benchmark for nested Numba parallel regions (issue #159).
+"""Benchmark for nested Numba parallel regions (issue #159)."""
 
-Some kernels call a ``parallel=True`` function from inside the ``prange`` loop
-of another ``parallel=True`` function. This crashes with Numba's ``workqueue``
-threading layer. The fix makes the inner call serial. This script compares
-the two variants ("nested", the current code, and "serial", the fix) for
-every pattern touched by the fix, so the change can be checked on each
-platform before it is merged.
-
-Run it with
-
-    uv run python benchmarks/nested_parallel.py
-
-The "nested" variants abort the process with the ``workqueue`` layer, so on
-macOS run it with OpenMP available (see the installation guide) or set
-``--serial-only``.
-"""
+# Some kernels call a ``parallel=True`` function from inside the ``prange``
+# loop of another ``parallel=True`` function. This crashes with Numba's
+# ``workqueue`` threading layer. The fix makes the inner call serial. This
+# script compares the two variants ("nested", the current code, and "serial",
+# the fix) for every pattern touched by the fix, so the change can be checked
+# on each platform before it is merged.
+#
+# Run it with
+#
+#     uv run python benchmarks/nested_parallel.py
+#
+# The "nested" variants abort the process with the ``workqueue`` layer, so on
+# macOS run it with OpenMP available (see the installation guide) or set
+# ``--serial-only``.
 
 import argparse
 import os
@@ -243,7 +242,7 @@ def best_of(f, args, repeat):
 
 
 def main():
-    parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
+    parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--repeat", type=int, default=7)
     parser.add_argument("--serial-only", action="store_true")
     parser.add_argument("--size", type=int, default=20_000, help="number of cells")
