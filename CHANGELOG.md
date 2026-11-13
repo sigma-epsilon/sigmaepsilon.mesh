@@ -24,6 +24,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Cell indices of submeshes that have their own hosting pointcloud (#149).
 - A block removed from a `PolyData` instance now gets its own point and cell index managers.
+- Nested Numba parallel regions that aborted the process with the `workqueue` threading layer, e.g. in `PolyData.cells_around_cells` and H27 cells (#159).
 
 ## [3.1.0]
 
