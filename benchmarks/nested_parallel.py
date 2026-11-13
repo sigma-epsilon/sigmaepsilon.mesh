@@ -1,5 +1,4 @@
-"""
-Benchmark for nested Numba parallel regions (issue #159).
+"""Benchmark for nested Numba parallel regions (issue #159).
 
 Some kernels call a ``parallel=True`` function from inside the ``prange`` loop
 of another ``parallel=True`` function. This crashes with Numba's ``workqueue``
@@ -244,7 +243,7 @@ def best_of(f, args, repeat):
 
 
 def main():
-    parser = argparse.ArgumentParser(description=__doc__.splitlines()[1])
+    parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--repeat", type=int, default=7)
     parser.add_argument("--serial-only", action="store_true")
     parser.add_argument("--size", type=int, default=20_000, help="number of cells")
@@ -293,7 +292,8 @@ def main():
             print(f"checking {name}", flush=True)
             a, b = f_nested(*args), f_serial(*args)
             for x, y in zip(a, b) if isinstance(a, tuple) else [(a, b)]:
-                assert np.allclose(x, y), name
+                if not np.allclose(x, y):
+                    raise RuntimeError(f"{name}: the nested and serial variants differ")
 
     print(f"platform        : {platform.platform()} ({platform.machine()})")
     print(f"python          : {sys.version.split()[0]}")
