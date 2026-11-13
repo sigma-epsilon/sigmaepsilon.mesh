@@ -22,10 +22,11 @@ def monoms_H8_multi(x: ndarray) -> ndarray:
 
 @njit(nogil=True, parallel=True, cache=__cache)
 def monoms_H8_bulk_multi(x: ndarray) -> ndarray:
-    nE = x.shape[0]
+    nE, nP = x.shape[:2]
     res = np.zeros((nE, 8, 8), dtype=x.dtype)
     for i in prange(nE):
-        res[i] = monoms_H8_multi(x[i])
+        for j in range(nP):
+            res[i, j] = monoms_H8_single(x[i, j])
     return res
 
 

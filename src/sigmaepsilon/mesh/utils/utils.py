@@ -148,17 +148,25 @@ def _cells_data_to_jagged(data, widths):
 def _cells_around_MT_(
     centers: ndarray, r_max: float, n_max: int = 10
 ) -> Tuple[ndarray, ndarray]:
-    nE = len(centers)
+    # The distances are computed in a serial inner loop. Calling a parallel
+    # function (like `norms`) here would nest parallel regions, which aborts
+    # the process with Numba's workqueue threading layer.
+    nE, nD = centers.shape
     res = np.zeros((nE, n_max), dtype=np.int64)
     widths = np.zeros(nE, dtype=np.int64)
     for iE in prange(nE):
-        inds = np.where(norms(centers - centers[iE]) <= r_max)[0]
-        if inds.shape[0] <= n_max:
-            res[iE, : inds.shape[0]] = inds
-            widths[iE] = len(inds)
-        else:
-            res[iE, :] = inds[:n_max]
-            widths[iE] = n_max
+        n = 0
+        for jE in range(nE):
+            d2 = 0.0
+            for k in range(nD):
+                diff = centers[jE, k] - centers[iE, k]
+                d2 += diff * diff
+            if np.sqrt(d2) <= r_max:
+                res[iE, n] = jE
+                n += 1
+                if n == n_max:
+                    break
+        widths[iE] = n
     return res, widths
 
 
@@ -296,7 +304,7 @@ def cells_coords(coords: ndarray, topo: ndarray) -> ndarray:
     return res
 
 
-@njit(nogil=True, parallel=True, cache=__cache)
+@njit(nogil=True, cache=__cache)
 def cell_coords(coords: ndarray, topo: ndarray) -> ndarray:
     """
     Returns coordinates of a single cell from a coordinate
@@ -325,7 +333,7 @@ def cell_coords(coords: ndarray, topo: ndarray) -> ndarray:
     """
     nNE = len(topo)
     res = np.zeros((nNE, coords.shape[1]), dtype=coords.dtype)
-    for iNE in prange(nNE):
+    for iNE in range(nNE):
         res[iNE] = coords[topo[iNE]]
     return res
 

@@ -23,10 +23,11 @@ def monoms_TET10_multi(x: ndarray) -> ndarray:
 
 @njit(nogil=True, parallel=True, cache=__cache)
 def monoms_TET10_bulk_multi(x: ndarray) -> ndarray:
-    nE = x.shape[0]
+    nE, nP = x.shape[:2]
     res = np.zeros((nE, 10, 10), dtype=x.dtype)
     for i in prange(nE):
-        res[i] = monoms_TET10_multi(x[i])
+        for j in range(nP):
+            res[i, j] = monoms_TET10_single(x[i, j])
     return res
 
 

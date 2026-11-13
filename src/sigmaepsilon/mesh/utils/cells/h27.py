@@ -55,10 +55,11 @@ def monoms_H27_multi(x: ndarray) -> ndarray:
 
 @njit(nogil=True, parallel=True, cache=__cache)
 def monoms_H27_bulk_multi(x: ndarray) -> ndarray:
-    nE = x.shape[0]
+    nE, nP = x.shape[:2]
     res = np.zeros((nE, 27, 27), dtype=x.dtype)
     for i in prange(nE):
-        res[i] = monoms_H27_multi(x[i])
+        for j in range(nP):
+            res[i, j] = monoms_H27_single(x[i, j])
     return res
 
 
@@ -309,12 +310,12 @@ def shp_H27_multi(pcoords: np.ndarray):
     return res
 
 
-@njit(nogil=True, parallel=True, cache=__cache)
+@njit(nogil=True, parallel=False, cache=__cache)
 def shape_function_matrix_H27(pcoord: np.ndarray, ndof: int = 3):
     eye = np.eye(ndof, dtype=pcoord.dtype)
     shp = shp_H27(pcoord)
     res = np.zeros((ndof, ndof * 27), dtype=pcoord.dtype)
-    for i in prange(27):
+    for i in range(27):
         res[:, i * ndof : (i + 1) * ndof] = eye * shp[i]
     return res
 
