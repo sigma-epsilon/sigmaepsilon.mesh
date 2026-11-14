@@ -5541,7 +5541,7 @@ wheels = [
 
 [[package]]
 name = "sigmaepsilon-mesh"
-version = "3.4.0"
+version = "3.4.1"
 source = { editable = "." }
 dependencies = [
     { name = "awkward" },
