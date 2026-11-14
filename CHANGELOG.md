@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file. If you are 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.4.0]
+
+### Changed
+
+- `H8_to_TET4` and `H27_to_TET10` now split every hexahedron into 6 tetrahedra instead of 5 (the Kuhn split around the diagonal from local node 0 to local node 6). Code that relies on the old number or order of the tetrahedra must be updated.
+
+### Fixed
+
+- `H8_to_TET4` and `H27_to_TET10` returned non-conforming tetrahedral meshes, which also affected `ribbed_plate(..., tetrahedralize=True)` (#165).
+
 ## [3.3.1]
 
 ### Fixed

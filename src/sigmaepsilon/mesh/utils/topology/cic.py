@@ -482,7 +482,7 @@ def H8_in_TET4(
 
     _coords_TET4, _topology_TET4 = H8_to_TET4(coords_H8, topology_H8)
     _out = TET4_in_TET4(_coords_TET4, _topology_TET4, coords_TET4, topology_TET4, k=k)
-    out = np.any(_out.reshape((len(topology_H8), 5)), axis=1)
+    out = np.any(_out.reshape((len(topology_H8), -1)), axis=1)
     return out
 
 
@@ -662,5 +662,5 @@ def H8_in_T3(
 
     _coords_TET4, _topology_TET4 = H8_to_TET4(coords_H8, topology_H8)
     _out = TET4_in_T3(_coords_TET4, _topology_TET4, coords_T3, topology_T3, k=k)
-    out = np.any(_out.reshape((len(topology_H8), 5)), axis=1)
+    out = np.any(_out.reshape((len(topology_H8), -1)), axis=1)
     return out

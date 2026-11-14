@@ -1,4 +1,6 @@
 import unittest
+from collections import Counter
+
 import numpy as np
 
 from sigmaepsilon.core.testing import SigmaEpsilonTestCase
@@ -24,6 +26,7 @@ from sigmaepsilon.mesh.utils.topology import (
     Q4_to_Q8,
     Q8_to_T3,
     H27_to_H8,
+    H27_to_TET10,
     W6_to_TET4,
     W18_to_W6,
     W6_to_W18,
@@ -102,7 +105,7 @@ class TestTopoTR(SigmaEpsilonTestCase):
             coords, topo = H8_to_TET4(coords, topo)
             coords, topo = TET4_to_TET10(coords, topo)
             nE2 = topo.shape[0]
-            return nE1 * 5 == nE2
+            return nE1 * 6 == nE2
 
         assert test_6(1, 1, 1, 2, 2, 2)
 
@@ -178,6 +181,64 @@ class TestTopoTR(SigmaEpsilonTestCase):
         self.assertFailsProperly(
             ValueError, to_T3, coords, topo, path=np.array([[1, 2, 3, 4]], dtype=int)
         )
+
+
+TET4_FACES = [(1, 2, 3), (0, 2, 3), (0, 1, 3), (0, 1, 2)]
+TET10_EDGES = [(0, 1), (1, 2), (2, 0), (0, 3), (1, 3), (2, 3)]
+GRID_SHAPES = [(1, 1, 1), (2, 1, 1), (2, 2, 2), (4, 4, 4), (3, 2, 5)]
+
+
+def _count_inner_unmatched_faces(coords, tets, size):
+    """
+    Returns the number of tetrahedral faces inside the domain that are
+    not shared by exactly two tetrahedra (see issue #165).
+    """
+    count = Counter(
+        tuple(sorted(t[list(f)])) for t in tets[:, :4] for f in TET4_FACES
+    )
+    single = [f for f, n in count.items() if n == 1]
+    inner = [
+        f
+        for f in single
+        if not any(
+            np.allclose(coords[list(f), i], v) for i in range(3) for v in (0, size[i])
+        )
+    ]
+    overused = [f for f, n in count.items() if n > 2]
+    return len(inner) + len(overused)
+
+
+def _signed_volumes(coords, tets):
+    x = coords[tets[:, :4]]
+    return np.linalg.det(x[:, 1:] - x[:, :1]) / 6
+
+
+class TestHexToTetConformity(SigmaEpsilonTestCase):
+    size = (2.0, 2.0, 2.0)
+
+    def test_H8_to_TET4(self):
+        for shape in GRID_SHAPES:
+            coords, topo = grid(size=self.size, shape=shape, eshape="H8")
+            _, tets = H8_to_TET4(coords, topo)
+            self.assertEqual(tets.shape, (6 * len(topo), 4))
+            self.assertEqual(_count_inner_unmatched_faces(coords, tets, self.size), 0)
+            volumes = _signed_volumes(coords, tets)
+            self.assertTrue(np.all(volumes > 0))
+            self.assertTrue(np.isclose(np.sum(volumes), np.prod(self.size)))
+
+    def test_H27_to_TET10(self):
+        for shape in GRID_SHAPES:
+            coords, topo = grid(size=self.size, shape=shape, eshape="H27")
+            _, tets = H27_to_TET10(coords, topo)
+            self.assertEqual(tets.shape, (6 * len(topo), 10))
+            self.assertEqual(_count_inner_unmatched_faces(coords, tets, self.size), 0)
+            volumes = _signed_volumes(coords, tets)
+            self.assertTrue(np.all(volumes > 0))
+            self.assertTrue(np.isclose(np.sum(volumes), np.prod(self.size)))
+            # the edge nodes of the TET10 cells are at the midpoints of the edges
+            for k, (i, j) in enumerate(TET10_EDGES):
+                midpoints = (coords[tets[:, i]] + coords[tets[:, j]]) / 2
+                self.assertTrue(np.allclose(coords[tets[:, 4 + k]], midpoints))
 
 
 if __name__ == "__main__":
