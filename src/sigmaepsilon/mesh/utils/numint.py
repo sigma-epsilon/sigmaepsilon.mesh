@@ -37,8 +37,8 @@ def Gauss_Legendre_Line_Grid(n: int) -> Tuple[ndarray, ndarray]:
 
 def _complete_natural_coordinates(nat: ndarray) -> ndarray:
     res = np.zeros((len(nat), 3), dtype=nat.dtype)
-    for i in range(len(res)):
-        res[i, 2] = 1 - res[i, 0] - res[i, 1]
+    res[:, :2] = nat[:, :2]
+    res[:, 2] = 1 - nat[:, 0] - nat[:, 1]
     return res
 
 
