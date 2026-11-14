@@ -366,12 +366,70 @@ def H8_to_TET4(
     path: ndarray = None,
     **kwargs,
 ) -> Tuple[ndarray]:
+    """
+    Splits H8 cells into TET4 cells.
+
+    By default, every hexahedron is split into 6 tetrahedra around its main
+    diagonal from local node 0 to local node 6 (the Kuhn, or Freudenthal,
+    split). There is one tetrahedron for each path from node 0 to node 6
+    along the edges of the hexahedron:
+
+    ``[0, 1, 2, 6], [0, 5, 1, 6], [0, 2, 3, 6], [0, 3, 7, 6], [0, 4, 5, 6], [0, 7, 4, 6]``
+
+    Two nodes are swapped in some of them, so that every tetrahedron is
+    positively oriented.
+
+    Every square face of a hexahedron is cut along the diagonal through the
+    corner of the face that is closest to local node 0. This rule doesn't
+    depend on which cell owns the face, hence two neighbouring hexahedra
+    always cut their shared face along the same diagonal and the resulting
+    tetrahedral mesh is conforming. This requires the local numbering of the
+    hexahedra to be oriented consistently, which is the case for meshes
+    created by :func:`~sigmaepsilon.mesh.grid.grid`. Meshes with
+    inconsistently oriented local numbering may result in a non-conforming
+    tetrahedral mesh.
+
+    Parameters
+    ----------
+    coords: numpy.ndarray
+        The coordinates of the points.
+    topo: numpy.ndarray
+        The topology of the H8 cells as a 2d integer array of shape (nE, 8).
+    data: numpy.ndarray or Sequence[numpy.ndarray], Optional
+        Data attached to the cells. Default is None.
+    path: numpy.ndarray, Optional
+        A custom transformation path of shape (nT, 4). Default is None,
+        which means the Kuhn split described above.
+
+    Returns
+    -------
+    Tuple[numpy.ndarray]
+        The coordinates, the topology of the TET4 cells and optionally the
+        transformed data. The tetrahedra of the i-th hexahedron are rows
+        6*i to 6*i+5 of the output topology.
+
+    Example
+    -------
+    >>> from sigmaepsilon.mesh import grid
+    >>> from sigmaepsilon.mesh.utils.topology import H8_to_TET4
+    >>> coords, topo = grid(size=(1, 1, 1), shape=(2, 2, 2), eshape="H8")
+    >>> coords, topo = H8_to_TET4(coords, topo)
+    >>> topo.shape
+    (48, 4)
+    """
     if isinstance(path, ndarray):
         assert path.shape[1] == 4
     else:
         if path is None:
             path = np.array(
-                [[1, 2, 0, 5], [3, 0, 2, 7], [5, 4, 7, 0], [6, 5, 7, 2], [0, 2, 7, 5]],
+                [
+                    [0, 1, 2, 6],
+                    [0, 5, 1, 6],
+                    [0, 2, 3, 6],
+                    [0, 3, 7, 6],
+                    [0, 4, 5, 6],
+                    [0, 7, 4, 6],
+                ],
                 dtype=topo.dtype,
             )
         elif isinstance(path, str):
@@ -390,17 +448,71 @@ def H27_to_TET10(
     path: ndarray = None,
     **kwargs,
 ) -> Tuple[ndarray]:
+    """
+    Splits H27 cells into TET10 cells.
+
+    By default, every hexahedron is split into 6 tetrahedra around its main
+    diagonal from local node 0 to local node 6 (the Kuhn, or Freudenthal,
+    split), the same way as in :func:`H8_to_TET4`. The corner nodes of the
+    tetrahedra are
+
+    ``[0, 1, 2, 6], [0, 5, 1, 6], [0, 2, 3, 6], [0, 3, 7, 6], [0, 4, 5, 6], [0, 7, 4, 6]``
+
+    No new nodes are needed: the edges of the tetrahedra that run along the
+    edges of the hexahedron use the edge nodes of the hexahedron, those
+    along the face diagonals use the face-centre nodes, and the main
+    diagonal uses the volume-centre node.
+
+    Every square face of a hexahedron is cut along the diagonal through the
+    corner of the face that is closest to local node 0. This rule doesn't
+    depend on which cell owns the face, hence two neighbouring hexahedra
+    always cut their shared face along the same diagonal and the resulting
+    tetrahedral mesh is conforming. This requires the local numbering of the
+    hexahedra to be oriented consistently, which is the case for meshes
+    created by :func:`~sigmaepsilon.mesh.grid.grid`. Meshes with
+    inconsistently oriented local numbering may result in a non-conforming
+    tetrahedral mesh.
+
+    Parameters
+    ----------
+    coords: numpy.ndarray
+        The coordinates of the points.
+    topo: numpy.ndarray
+        The topology of the H27 cells as a 2d integer array of shape (nE, 27).
+    data: numpy.ndarray or Sequence[numpy.ndarray], Optional
+        Data attached to the cells. Default is None.
+    path: numpy.ndarray, Optional
+        A custom transformation path of shape (nT, 10). Default is None,
+        which means the Kuhn split described above.
+
+    Returns
+    -------
+    Tuple[numpy.ndarray]
+        The coordinates, the topology of the TET10 cells and optionally the
+        transformed data. The tetrahedra of the i-th hexahedron are rows
+        6*i to 6*i+5 of the output topology.
+
+    Example
+    -------
+    >>> from sigmaepsilon.mesh import grid
+    >>> from sigmaepsilon.mesh.utils.topology import H27_to_TET10
+    >>> coords, topo = grid(size=(1, 1, 1), shape=(2, 2, 2), eshape="H27")
+    >>> coords, topo = H27_to_TET10(coords, topo)
+    >>> topo.shape
+    (48, 10)
+    """
     if isinstance(path, ndarray):
         assert path.shape[1] == 10
     else:
         if path is None:
             path = np.array(
                 [
-                    [1, 2, 0, 5, 9, 24, 8, 17, 21, 22],
-                    [3, 0, 2, 7, 11, 24, 10, 19, 20, 23],
-                    [5, 4, 7, 0, 12, 15, 25, 22, 16, 20],
-                    [6, 5, 7, 2, 13, 25, 14, 18, 21, 23],
-                    [0, 2, 7, 5, 24, 23, 20, 22, 21, 25],
+                    [0, 1, 2, 6, 8, 9, 24, 26, 21, 18],
+                    [0, 5, 1, 6, 22, 17, 8, 26, 13, 21],
+                    [0, 2, 3, 6, 24, 10, 11, 26, 18, 23],
+                    [0, 3, 7, 6, 11, 19, 20, 26, 23, 14],
+                    [0, 4, 5, 6, 16, 12, 22, 26, 25, 13],
+                    [0, 7, 4, 6, 20, 15, 16, 26, 14, 25],
                 ],
                 dtype=topo.dtype,
             )
