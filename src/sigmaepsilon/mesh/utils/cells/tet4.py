@@ -23,10 +23,11 @@ def monoms_TET4_multi(x: ndarray) -> ndarray:
 
 @njit(nogil=True, parallel=True, cache=__cache)
 def monoms_TET4_bulk_multi(x: ndarray) -> ndarray:
-    nE = x.shape[0]
+    nE, nP = x.shape[:2]
     res = np.zeros((nE, 4, 4), dtype=x.dtype)
     for i in prange(nE):
-        res[i] = monoms_TET4_multi(x[i])
+        for j in range(nP):
+            res[i, j] = monoms_TET4_single(x[i, j])
     return res
 
 
@@ -57,12 +58,12 @@ def shp_TET4_multi(pcoords: ndarray) -> ndarray:
     return res
 
 
-@njit(nogil=True, parallel=True, cache=__cache)
+@njit(nogil=True, parallel=False, cache=__cache)
 def shape_function_matrix_TET4(pcoord: ndarray, ndof: int = 3) -> ndarray:
     eye = np.eye(ndof, dtype=pcoord.dtype)
     shp = shp_TET4(pcoord)
     res = np.zeros((ndof, ndof * 4), dtype=pcoord.dtype)
-    for i in prange(4):
+    for i in range(4):
         res[:, i * ndof : (i + 1) * ndof] = eye * shp[i]
     return res
 
