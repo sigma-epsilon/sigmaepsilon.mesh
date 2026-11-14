@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file. If you are 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.4.1]
+
+### Fixed
+
+- `Gauss_Legendre_Tri_6` returned six identical points on one corner of the triangle. It now returns the correct points and is exact for polynomials up to degree 4 (#168).
+
 ## [3.4.0]
 
 ### Changed
