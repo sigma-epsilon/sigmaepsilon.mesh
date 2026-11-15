@@ -25,7 +25,7 @@ from sigmaepsilon.mesh.utils.tri import (
 class TestT3(SigmaEpsilonTestCase):
     def test_T3(self, N: int = 3):
         shp, dshp, shpf, shpmf, dshpf = T3.Geometry.generate_class_functions(
-            return_symbolic=True
+            return_symbolic=True, update=False
         )
         r, s = symbols("r, s", real=True)
 
@@ -56,8 +56,8 @@ class TestT3(SigmaEpsilonTestCase):
                 np.allclose(dshpA, np.array(dshp_sym.tolist(), dtype=float))
             )
 
-            shpmfA = shpmf(x_loc)
-            shpmfB = T3.Geometry.shape_function_matrix(x_loc)
+            shpmfA = shpmf(x_loc, 3)
+            shpmfB = T3.Geometry.shape_function_matrix(x_loc, N=3)
             self.assertTrue(np.allclose(shpmfA, shpmfB))
 
         mc = T3.Geometry.master_coordinates()
@@ -80,7 +80,7 @@ class TestT3(SigmaEpsilonTestCase):
 
     def test_T6(self, N: int = 3):
         shp, dshp, shpf, shpmf, dshpf = T6.Geometry.generate_class_functions(
-            return_symbolic=True
+            return_symbolic=True, update=False
         )
         r, s = symbols("r, s", real=True)
 
@@ -111,8 +111,8 @@ class TestT3(SigmaEpsilonTestCase):
                 np.allclose(dshpA, np.array(dshp_sym.tolist(), dtype=float))
             )
 
-            shpmfA = shpmf(x_loc)
-            shpmfB = T6.Geometry.shape_function_matrix(x_loc)
+            shpmfA = shpmf(x_loc, 3)
+            shpmfB = T6.Geometry.shape_function_matrix(x_loc, N=3)
             self.assertTrue(np.allclose(shpmfA, shpmfB))
 
         mc = T6.Geometry.master_coordinates()

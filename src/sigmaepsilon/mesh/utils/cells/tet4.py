@@ -46,7 +46,7 @@ def monoms_TET4(x: ndarray) -> ndarray:
 @njit(nogil=True, cache=__cache)
 def shp_TET4(pcoord: ndarray) -> ndarray:
     r, s, t = pcoord
-    return np.array([1 / 3 - r - s - t, r + 1 / 3, s + 1 / 3, t + 1 / 3])
+    return np.array([-r - s - t, r + 1 / 3, s + 1 / 3, t + 1 / 3])
 
 
 @njit(nogil=True, parallel=True, cache=__cache)
