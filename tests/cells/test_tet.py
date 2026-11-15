@@ -50,7 +50,7 @@ class TestTet(unittest.TestCase):
     def test_shp_TET4(self):
         pcoords = TET4.Geometry.master_coordinates()
         shpf, shpmf, dshpf = TET4.Geometry.generate_class_functions(
-            return_symbolic=False
+            return_symbolic=False, update=False
         )
         shpf(pcoords)
         shpmf(pcoords)
@@ -59,7 +59,7 @@ class TestTet(unittest.TestCase):
     def test_shp_TET10(self):
         pcoords = TET10.Geometry.master_coordinates()
         shpf, shpmf, dshpf = TET10.Geometry.generate_class_functions(
-            return_symbolic=False
+            return_symbolic=False, update=False
         )
         shpf(pcoords)
         shpmf(pcoords)
@@ -84,7 +84,7 @@ class TestTet(unittest.TestCase):
 class TestTET4(SigmaEpsilonTestCase):
     def test_TET4(self, N: int = 3):
         shp, dshp, shpf, shpmf, dshpf = TET4.Geometry.generate_class_functions(
-            return_symbolic=True
+            return_symbolic=True, update=False
         )
         r, s, t = symbols("r, s, t", real=True)
 
@@ -110,8 +110,8 @@ class TestTET4(SigmaEpsilonTestCase):
                 np.allclose(dshpA, np.array(dshp_sym.tolist(), dtype=float))
             )
 
-            shpmfA = shpmf(x_loc)
-            shpmfB = TET4.Geometry.shape_function_matrix(x_loc)
+            shpmfA = shpmf(x_loc, 3)
+            shpmfB = TET4.Geometry.shape_function_matrix(x_loc, N=3)
             self.assertTrue(np.allclose(shpmfA, shpmfB))
 
         nX = 2

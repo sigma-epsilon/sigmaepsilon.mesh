@@ -36,7 +36,7 @@ class TestPolyCell1d(SigmaEpsilonTestCase):
         self.assertTrue(np.isclose(cd.length(), 1.0))
 
         shp, dshp, shpf, shpmf, dshpf = CellData.Geometry.generate_class_functions(
-            return_symbolic=True
+            return_symbolic=True, update=False
         )
         r = symbols("r", real=True)
 
@@ -54,8 +54,8 @@ class TestPolyCell1d(SigmaEpsilonTestCase):
         self.assertTrue(np.allclose(dshpA, dshpB))
         self.assertTrue(np.allclose(dshpA, np.array(dshp_sym.tolist(), dtype=float)))
 
-        shpmfA = shpmf(x_loc)
-        shpmfB = CellData.Geometry.shape_function_matrix(x_loc)
+        shpmfA = shpmf(x_loc, 3)
+        shpmfB = CellData.Geometry.shape_function_matrix(x_loc, N=3)
         self.assertTrue(np.allclose(shpmfA, shpmfB))
 
         mc = CellData.Geometry.master_coordinates()

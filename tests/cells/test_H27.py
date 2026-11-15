@@ -68,12 +68,12 @@ class TestH27(unittest.TestCase):
         shpmf = H27.Geometry.shape_function_matrix
         dshpf = H27.Geometry.shape_function_derivatives
         shpfH27, shpmfH27, dshpfH27 = H27.Geometry.generate_class_functions(
-            return_symbolic=False
+            return_symbolic=False, update=False
         )
 
         self.assertTrue(np.all(np.isclose(shpfH27(pcoords), shpf(pcoords))))
         self.assertTrue(np.all(np.isclose(dshpfH27(pcoords), dshpf(pcoords))))
-        self.assertTrue(np.all(np.isclose(shpmfH27(pcoords), shpmf(pcoords))))
+        self.assertTrue(np.all(np.isclose(shpmfH27(pcoords, 3), shpmf(pcoords, N=3))))
 
     def test_H27_shape_function_derivatives(self):
         Lx, Ly, Lz = 1, 1, 1
