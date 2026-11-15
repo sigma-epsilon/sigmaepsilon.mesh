@@ -35,12 +35,12 @@ class TestHex(unittest.TestCase):
         shpmf = H8.Geometry.shape_function_matrix
         dshpf = H8.Geometry.shape_function_derivatives
         shpfH8, shpmfH8, dshpfH8 = H8.Geometry.generate_class_functions(
-            return_symbolic=False
+            return_symbolic=False, update=False
         )
 
         self.assertTrue(np.all(np.isclose(shpfH8(pcoords), shpf(pcoords))))
         self.assertTrue(np.all(np.isclose(dshpfH8(pcoords), dshpf(pcoords))))
-        self.assertTrue(np.all(np.isclose(shpmfH8(pcoords), shpmf(pcoords))))
+        self.assertTrue(np.all(np.isclose(shpmfH8(pcoords, 3), shpmf(pcoords, N=3))))
 
     def test_H8_shape_function_derivatives(self):
         Lx, Ly, Lz = 800, 600, 100

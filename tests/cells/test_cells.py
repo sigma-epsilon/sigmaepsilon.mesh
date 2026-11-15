@@ -12,11 +12,11 @@ class TestGeneratedExpressions(unittest.TestCase):
         shpmf = H8.Geometry.shape_function_matrix
         dshpf = H8.Geometry.shape_function_derivatives
         _shpf, _shpmf, _dshpf = H8.Geometry.generate_class_functions(
-            return_symbolic=False
+            return_symbolic=False, update=False
         )
         self.assertTrue(np.all(np.isclose(_shpf(pcoords), shpf(pcoords))))
         self.assertTrue(np.all(np.isclose(_dshpf(pcoords), dshpf(pcoords))))
-        self.assertTrue(np.all(np.isclose(_shpmf(pcoords), shpmf(pcoords))))
+        self.assertTrue(np.all(np.isclose(_shpmf(pcoords, 3), shpmf(pcoords, N=3))))
 
     def test_generated_TET10(self):
         pcoords = TET10.Geometry.master_coordinates()
@@ -24,11 +24,11 @@ class TestGeneratedExpressions(unittest.TestCase):
         shpmf = TET10.Geometry.shape_function_matrix
         dshpf = TET10.Geometry.shape_function_derivatives
         _shpf, _shpmf, _dshpf = TET10.Geometry.generate_class_functions(
-            return_symbolic=False
+            return_symbolic=False, update=False
         )
         self.assertTrue(np.all(np.isclose(_shpf(pcoords), shpf(pcoords))))
         self.assertTrue(np.all(np.isclose(_dshpf(pcoords), dshpf(pcoords))))
-        self.assertTrue(np.all(np.isclose(_shpmf(pcoords), shpmf(pcoords))))
+        self.assertTrue(np.all(np.isclose(_shpmf(pcoords, 3), shpmf(pcoords, N=3))))
 
 
 class TestPIP(unittest.TestCase):

@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file. If you are 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.4.2]
+
+### Fixed
+
+- The shape functions of `TET4` didn't sum to one: the first one was 4/3 at its own node and 1/3 at the others. This also affected the shape function matrix, and with it masses, body loads and interpolated values. The derivatives were correct (#171).
+
 ## [3.4.1]
 
 ### Fixed
