@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "sigmaepsilon.mesh"
-version = "3.4.2"
+version = "3.4.3"
 description = "A Python package to build, manipulate and analyze polygonal meshes."
 readme = "README.md"
 license = { text = "MIT" }
@@ -33,7 +33,7 @@ classifiers = [
 dependencies = [
     "sigmaepsilon-core>=1.2.1",
     "sigmaepsilon-deepdict>=3.0.0",
-    "sigmaepsilon-math>=2.6.0",
+    "sigmaepsilon-math>=2.9.0",
     "numpy>=1.24",
     "scipy>=1.10",
     "numba>=0.57",
