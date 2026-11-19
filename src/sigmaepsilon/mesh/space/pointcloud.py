@@ -472,17 +472,27 @@ class PointCloud(Vector):
 
     def rotate(self, *args, **kwargs) -> "PointCloud":
         """
-        Applies a transformation to the coordinates in-place. All arguments
-        are passed to `ReferenceFrame.orient_new`, see its docs to know more.
+        Rotates the points in-place about the axes of the ambient frame and
+        returns the object for continuation.
 
-        Returns the object for continuation.
+        The points are rotated the same way
+        :meth:`~sigmaepsilon.math.linalg.ReferenceFrame.orient` rotates a frame
+        with the same arguments, whatever the frame of the point cloud is. The
+        frame of the point cloud is left unchanged, only the coordinates change.
 
         Parameters
         ----------
-        *args: tuple,
-            The first positional argument can be a ReferenceFrame object.
-            If it is not, all positional and keyword arguments are forwarded
-            to `ReferenceFrame.orient_new`.
+        *args: tuple
+            If the first positional argument is a frame, the points are rotated
+            by the rotation that takes the frame of the point cloud into that
+            frame, that is, the points move together with the frame of the point
+            cloud if it was rotated into the given one. Only the orientation of
+            the given frame is used, its origin is ignored. Otherwise, all
+            positional and keyword arguments are forwarded to
+            :meth:`~sigmaepsilon.math.linalg.Vector.orient`.
+        **kwargs: dict
+            Keyword arguments forwarded to
+            :meth:`~sigmaepsilon.math.linalg.Vector.orient`.
 
         Returns
         -------
@@ -498,13 +508,25 @@ class PointCloud(Vector):
         >>> coords, *_ = triangulate(size=(800, 600), shape=(10, 10))
         >>> points = PointCloud(coords)
         >>> rotated_pointcloud = points.rotate('Space', [0, 0, np.pi/2], 'XYZ')
+
+        Rotating with a frame gives the same result as rotating with the
+        arguments that created that frame from the frame of the point cloud:
+
+        >>> frame = points.frame.orient_new('Space', [0, 0, np.pi/2], 'XYZ')
+        >>> points_1 = PointCloud(coords).rotate('Space', [0, 0, np.pi/2], 'XYZ')
+        >>> points_2 = PointCloud(coords).rotate(frame)
+        >>> bool(np.allclose(points_1.show(), points_2.show()))
+        True
         """
-        if isinstance(args[0], FrameLike):
-            self.orient(dcm=args[0].dcm())
-            return self
+        if len(args) > 0 and isinstance(args[0], FrameLike):
+            # The axes of the target frame are G_target = G @ R, where G holds
+            # the axes of the frame of the point cloud and R is the DCM of the
+            # rotation about the ambient axes, hence R = inv(G) @ G_target.
+            dcm = np.linalg.inv(self.frame.dcm()) @ args[0].dcm()
+            self.orient(dcm=dcm)
         else:
-            target = self.frame.orient_new(*args, **kwargs)
-            return self.rotate(target)
+            self.orient(*args, **kwargs)
+        return self
 
     def idsort(self) -> ndarray:
         """

@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file. If you are 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.4.3]
+
+### Changed
+
+- Requires `sigmaepsilon.math>=2.9.0`, where vectors are rotated about the axes of the ambient frame for any frame.
+
+### Fixed
+
+- `PointCloud.rotate` gave wrong coordinates if the frame of the point cloud was not the ambient frame. It now rotates about the axes of the ambient frame for any frame, the same way `ReferenceFrame.orient` rotates frames. When called with a frame, the points are rotated by the rotation that takes the frame of the point cloud into that frame. This also fixes `PolyData.rotate` and `PolyData.spin` for meshes in such a frame (#174).
+
 ## [3.4.2]
 
 ### Fixed
