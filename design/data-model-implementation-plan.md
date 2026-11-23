@@ -2,7 +2,7 @@
 
 **Implements:** [data-model-proposal.md](data-model-proposal.md). Section numbers (§) refer to the proposal.
 
-**Status:** draft. Nothing in this plan has been started (current phase: none). Progress is tracked per work package in section 2.
+**Status:** in progress (current phase: P0). Progress is tracked per work package in section 2.
 
 **Baseline:** `main` at `ad942db`, version 3.4.3, Python ≥ 3.10.
 
@@ -75,11 +75,11 @@ Each phase lists its work packages, the files touched, the tests that close it, 
 
 **Tracking progress.** The `Status` column of each work package is `–` (not started), `in progress (#PR)` or `done (#PR)`, with a link to the pull request. The heading of a phase says `not started`, `in progress` or `released in x.y`, and the status line at the top of the file names the current phase. Update the row in the PR that does the work, so the plan and the code never disagree.
 
-### P0. Preparation (no release) — not started
+### P0. Preparation (no release) — in progress
 
 | # | Work | Files | Status |
 |---|---|---|---|
-| P0.1 | Add `pydantic>=2` as a direct dependency (today it only comes through `sigmaepsilon.math`). Add `typing_extensions` for `Self` (Python 3.10). The `hdf5` extra with `h5py` is added in P7.5, where it is first used. | `pyproject.toml`, `uv.lock` | – |
+| P0.1 | Add `pydantic>=2` as a direct dependency (today it only comes through `sigmaepsilon.math`). Add `typing_extensions` for `Self` (Python 3.10). The `hdf5` extra with `h5py` is added in P7.5, where it is first used. | `pyproject.toml`, `uv.lock` | in progress |
 | P0.2 | Characterization tests for every finding of §2 that the proposal changes, each marked with the section it comes from. They assert today's behaviour where it is going to change, and are `xfail(strict=True)` where they assert the target behaviour of a bug. | `tests/design/test_audit_*.py` (new) | – |
 | P0.3 | Benchmarks for the numbers quoted in §2: `to_ak` on 216k H8 cells (2.9 s), memory of shared frames (2160 bytes for 30 cells), and `topology()` / `volumes()` on a large mixed subtree. Plain scripts, not part of CI. | `benchmarks/` (new) | – |
 | P0.4 | Inventory of what `solid.fem` and `solid.material` use from `mesh`: `_attr_map_`, `_wrapped`, `PolyCell`, `data_class`, `.db`, `_init_config_`, `pd`/`cd`, `coords=`/`topo=`. Kept as a checklist in the fem port PRs. | – | – |

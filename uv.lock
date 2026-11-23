@@ -5550,6 +5550,7 @@ dependencies = [
     { name = "numpy", version = "2.4.6", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version == '3.11.*'" },
     { name = "numpy", version = "2.5.4", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.12'" },
     { name = "packaging" },
+    { name = "pydantic" },
     { name = "scipy", version = "1.15.3", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.11'" },
     { name = "scipy", version = "1.17.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version == '3.11.*'" },
     { name = "scipy", version = "1.18.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.12'" },
@@ -5559,6 +5560,7 @@ dependencies = [
     { name = "sigmaepsilon-deepdict" },
     { name = "sigmaepsilon-math" },
     { name = "sympy" },
+    { name = "typing-extensions" },
 ]
 
 [package.dev-dependencies]
@@ -5653,12 +5655,14 @@ requires-dist = [
     { name = "numba", specifier = ">=0.57" },
     { name = "numpy", specifier = ">=1.24" },
     { name = "packaging", specifier = ">=22.0" },
+    { name = "pydantic", specifier = ">=2.0" },
     { name = "scipy", specifier = ">=1.10" },
     { name = "sectionproperties", specifier = ">=3.1.2" },
     { name = "sigmaepsilon-core", specifier = ">=1.2.1" },
     { name = "sigmaepsilon-deepdict", specifier = ">=3.0.0" },
     { name = "sigmaepsilon-math", specifier = ">=2.9.0" },
     { name = "sympy", specifier = ">=1.9" },
+    { name = "typing-extensions", specifier = ">=4.0" },
 ]
 
 [package.metadata.requires-dev]
