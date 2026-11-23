@@ -81,7 +81,7 @@ Each phase lists its work packages, the files touched, the tests that close it, 
 | # | Work | Files | Status |
 |---|---|---|---|
 | P0.1 | Add `pydantic>=2` as a direct dependency (today it only comes through `sigmaepsilon.math`). Add `typing_extensions` for `Self` (Python 3.10). The `hdf5` extra with `h5py` is added in P7.5, where it is first used. | `pyproject.toml`, `uv.lock` | done (#177) |
-| P0.2 | Characterization tests for every finding of §2 that the proposal changes, each marked with the section it comes from. They assert today's behaviour where it is going to change, and are `xfail(strict=True)` where they assert the target behaviour of a bug. | `tests/design/test_audit_*.py` (new) | in progress |
+| P0.2 | Characterization tests for every finding of §2 that the proposal changes, each marked with the section it comes from. They assert today's behaviour where it is going to change, and are `xfail(strict=True)` where they assert the target behaviour of a bug. | `tests/design/test_audit_*.py` (new) | done (#179) |
 | P0.3 | Benchmarks for the numbers quoted in §2: `to_ak` on 216k H8 cells (2.9 s), memory of shared frames (2160 bytes for 30 cells), and `topology()` / `volumes()` on a large mixed subtree. Plain scripts, not part of CI. | `benchmarks/` (new) | – |
 | P0.4 | Inventory of what `solid.fem` and `solid.material` use from `mesh`: `_attr_map_`, `_wrapped`, `PolyCell`, `data_class`, `.db`, `_init_config_`, `pd`/`cd`, `coords=`/`topo=`. Kept as a checklist in the fem port PRs. | – | – |
 
