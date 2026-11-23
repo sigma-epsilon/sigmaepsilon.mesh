@@ -702,8 +702,8 @@ class PolyCell(Generic[MeshDataLike, PointDataLike], ABC_PolyCell):
             return res
         else:
             shp = self.Geometry.shape_function_values(points)
-            if len(shp) == 3:  # variable metric cells
-                shp = shp if len(shp) == 2 else shp[cells]
+            if shp.ndim == 3:  # variable metric cells
+                shp = shp[cells]
             return pcoords_to_coords(points, ecoords, shp)  # (nE, nP, nD)
 
     def local_coordinates(

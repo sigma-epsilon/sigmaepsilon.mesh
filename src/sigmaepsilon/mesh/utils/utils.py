@@ -216,6 +216,11 @@ def points_of_cells(
     points in the same frame.
     """
     if local_axes is not None:
+        local_axes = np.asarray(local_axes)
+        if local_axes.ndim == 2:
+            local_axes = np.ascontiguousarray(
+                np.broadcast_to(local_axes, (topo.shape[0], 3, 3))
+            )
         if centralize:
             if centers is not None:
                 ec = _centralize_cells_coords_2(cells_coords(coords, topo), centers)

@@ -252,7 +252,7 @@ def index_of_closest_point(coords: ndarray, target: ndarray) -> int:
         assert (
             coords.shape[1] == target.shape[0]
         ), "The dimensions of `coords` and `target` are not compatible."
-        return _index_of_closest_point(coords, target)
+        return int(_index_of_closest_point(coords, target))
     else:
         return k_nearest_neighbours(coords, target)
 
@@ -279,7 +279,7 @@ def index_of_furthest_point(coords: ndarray, target: ndarray) -> int:
         assert (
             coords.shape[1] == target.shape[0]
         ), "The dimensions of `coords` and `target` are not compatible."
-        return _index_of_furthest_point(coords, target)
+        return int(_index_of_furthest_point(coords, target))
     else:
         d = distance_matrix(target, coords)
         return np.argmax(d, axis=1)
