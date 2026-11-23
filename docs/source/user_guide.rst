@@ -16,6 +16,7 @@ useful background information and explanation.
     notebooks/points_and_pointclouds
     notebooks/mesh_composition
     notebooks/mesh_structure
+    notebooks/data_model
     notebooks/plotting
     notebooks/grids
     notebooks/trafo_geom
