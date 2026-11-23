@@ -102,11 +102,19 @@ workflows:
           matrix:
             parameters:
               python: ["3.10", "3.12", "3.13"]
+          filters:
+            branches:
+              ignore:
+                - /^planning\/.*/
 
       - run_tests:
           name: run_tests_lowest
           python: "3.10"
           resolution: "lowest-direct"
+          filters:
+            branches:
+              ignore:
+                - /^planning\/.*/
 
       - deploy_to_pypi:
           name: Deploy to TestPyPI

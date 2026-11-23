@@ -91,6 +91,7 @@ extensions = [
     "sphinx.ext.extlinks",
     "sphinx.ext.mathjax",
     "sphinx_design",
+    "sphinxcontrib.mermaid",
     "sphinx_inline_tabs",
     #"pyvista.ext.plot_directive",
     "sphinx_plotly_directive",
