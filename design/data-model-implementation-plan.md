@@ -27,7 +27,8 @@ Persistence goes into 4.0 rather than 3.x. The saved format holds the block conf
 
 ### 1.3 Working rules
 
-- One PR per work package (the `Pn.m` items below), against `dev`. Each PR keeps the full test suite green, with and without `NUMBA_DISABLE_JIT`.
+- One branch per phase, `phase/pN`, cut from `dev`. The work packages of the phase (the `Pn.m` items below) land on it one by one, as commits or as PRs into it, and the phase goes to `dev` in one PR when its exit criteria are met. Every work package keeps the full test suite green, with and without `NUMBA_DISABLE_JIT`. Phases released together (P3 and P4, P6 and P7) can share a branch.
+- Branch names never start with `test/`: the remote has a branch named `test` (TestPyPI), so git can't create refs below it.
 - Behaviour the proposal changes is first pinned by a test of today's behaviour, so the PR that changes it shows up as a deliberate edit of that test.
 - Every public symbol goes through `__all__` and gets a NumPy-style docstring with a runnable example (`--doctest-modules` is on).
 - Docs notebooks compute the numbers they show and declare every variable they use; `docs/source/notebooks/data_model.ipynb` is updated in every phase that changes what it describes.
@@ -73,7 +74,7 @@ The promise to users is Semantic Versioning: code that runs on 3.4 without warni
 
 Each phase lists its work packages, the files touched, the tests that close it, and its exit criteria.
 
-**Tracking progress.** The `Status` column of each work package is `–` (not started), `in progress (#PR)` or `done (#PR)`, with a link to the pull request. The heading of a phase says `not started`, `in progress` or `released in x.y`, and the status line at the top of the file names the current phase. Update the row in the PR that does the work, so the plan and the code never disagree.
+**Tracking progress.** The `Status` column of each work package is `–` (not started), `in progress` or `done`, followed by the pull request that brought it to `dev` (`done (#PR)`), which for most packages is the PR of their phase. The heading of a phase says `not started`, `in progress` or `released in x.y`, and the status line at the top of the file names the current phase. Update the row in the commit that does the work, so the plan and the code never disagree.
 
 ### P0. Preparation (no release) — in progress
 
