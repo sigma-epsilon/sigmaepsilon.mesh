@@ -66,6 +66,27 @@ class TestPolyCell2d(SigmaEpsilonTestCase):
         poc = self.cd.points_of_cells(points=points)
         poc = self.cd.points_of_cells(points=points, cells=[0, 1])
 
+    def test_points_of_cells_at_master_nodes(self):
+        # mapping the master nodes gives back the nodes of the cells,
+        # for every evaluation point (not only the first two)
+        points = np.array(self.cd.Geometry.master_coordinates())
+        nodes = self.cd.points_of_cells()
+        self.assertTrue(np.allclose(self.cd.points_of_cells(points=points), nodes))
+        self.assertTrue(
+            np.allclose(self.cd.points_of_cells(points=points, cells=[0, 1]), nodes[:2])
+        )
+
+    def test_local_coordinates_in_a_single_target_frame(self):
+        # every cell is transformed with the same frame
+        target = CartesianFrame(dim=3).orient_new("Body", [0, 0, np.pi / 2], "XYZ")
+        res = self.cd.local_coordinates(target=target)
+        dcm = np.asarray(target.show())
+        nodes = self.cd.points_of_cells()
+        centers = self.cd.loc_to_glob(self.cd.Geometry.master_center())
+        centers = centers.reshape(len(self.cd), 1, 3)
+        expected = np.einsum("ij,ekj->eki", dcm, nodes - centers)
+        self.assertTrue(np.allclose(res, expected[:, :, :2]))
+
     def test_pip(self):
         res = self.cd.pip([0.0, 0.0, 0.0], lazy=False)
         self.assertTrue(res)

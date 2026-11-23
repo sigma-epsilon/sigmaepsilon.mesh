@@ -21,7 +21,7 @@ class TestPolyDataCreation(unittest.TestCase):
         coordsB, *_ = self._gen_L2_mesh_data()
         coordsB[:, 2] = 1
         topologyB = topologyA + len(coordsA)
-        framesB = frames_of_lines(coordsB, topologyB)
+        framesB = frames_of_lines(coordsB, topologyA)
 
         pdA = PointData(coordsA)
         cdA = L2(topo=topologyA, frames=framesA)
@@ -44,7 +44,7 @@ class TestPolyDataCreation(unittest.TestCase):
         coordsB, *_ = self._gen_L2_mesh_data()
         coordsB[:, 2] = 1
         topologyB = topologyA + len(coordsA)
-        framesB = frames_of_lines(coordsB, topologyB)
+        framesB = frames_of_lines(coordsB, topologyA)
 
         pdA = PointData(coordsA)
         cdA = L2(topo=topologyA, frames=framesA)
@@ -119,7 +119,7 @@ class TestPolyDataCreation(unittest.TestCase):
         coordsB, *_ = self._gen_L2_mesh_data()
         coordsB[:, 2] = 1
         topologyB = topologyA + len(coordsA)
-        framesB = frames_of_lines(coordsB, topologyB)
+        framesB = frames_of_lines(coordsB, topologyA)
 
         pdA = PointData(coordsA)
         cdA = L2(topo=topologyA, frames=framesA)
